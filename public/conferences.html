@@ -260,15 +260,71 @@
       transform: translateY(-2px);
     }
 
-    @media (max-width: 960px) {
+    /* Comprehensive Responsive Breakpoints */
+    @media (max-width: 1024px) {
       .stage-demo-grid {
         grid-template-columns: 1fr;
+        min-height: auto;
+      }
+      .speaker-stage-panel {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      }
+      .conference-hero {
+        padding: 60px 0 60px;
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .site-nav .nav-menu {
+        display: none;
       }
       .delegate-phone-grid {
         grid-template-columns: 1fr;
       }
+      .conference-headline {
+        font-size: clamp(30px, 6.5vw, 42px);
+        line-height: 1.15;
+      }
+      .conference-subtitle {
+        font-size: 15px;
+      }
+      .hero-cta-cinematic-row {
+        gap: 10px;
+      }
+      .hero-highlights {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .speaker-stage-panel, .attendees-mobile-panel {
+        padding: 20px 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
       .conference-hero {
-        padding: 60px 0 80px;
+        padding: 40px 0 30px;
+      }
+      .conference-headline {
+        font-size: 27px;
+      }
+      .hero-cta-cinematic-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .hero-cta-cinematic-row .btn-pill,
+      .hero-cta-cinematic-row .btn-book-demo {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+      .keynote-controls {
+        gap: 6px;
+      }
+      .demo-stage-header {
+        padding: 10px 14px;
       }
     }
   </style>
@@ -332,9 +388,10 @@
 
       <div class="nav-actions">
         <a href="/auth" class="btn-signin" id="btnSignInNav" onclick="event.preventDefault(); openSignInModal();">Sign In</a>
-        <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnCreateSessionNav" style="background: var(--slate-850); padding: 9px 20px; font-size: 13px;">
+        <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnCreateSessionNav" style="background: var(--slate-850); padding: 7px 15px; font-size: 12.5px;">
           Create a Session
         </a>
+        <button class="btn-signin mobile-menu-btn" style="padding: 6px 10px; font-size: 18px;" onclick="toggleMobileDrawer()" title="Menu">☰</button>
       </div>
     </div>
   </header>
@@ -372,10 +429,10 @@
 
         <!-- Main Action Buttons -->
         <div class="hero-cta-cinematic-row" style="margin-bottom: 28px;">
-          <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnCreateConferenceHero" style="background: var(--gold-400); color: #141210; font-weight: 700; padding: 14px 28px;">
+          <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnCreateConferenceHero" style="background: var(--gold-400); color: #141210; font-weight: 700; padding: 10px 22px; font-size: 13.5px;">
             Create a Conference Session <span class="arrow-icon">→</span>
           </a>
-          <a href="#stage-demo" class="btn-book-demo" id="btnWatchProductionDemo" onclick="runStageDemoAuto();">
+          <a href="#stage-demo" class="btn-book-demo" id="btnWatchProductionDemo" onclick="runStageDemoAuto();" style="padding: 10px 22px; font-size: 13.5px;">
             Watch Production Demo (1 Min)
           </a>
         </div>
@@ -1338,12 +1395,73 @@
       document.getElementById('signInModal').classList.remove('active');
     }
 
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobileNavDrawer');
+      const backdrop = document.getElementById('mobileNavBackdrop');
+      if (drawer && backdrop) {
+        const isOpen = drawer.classList.contains('active');
+        if (isOpen) {
+          drawer.classList.remove('active');
+          backdrop.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          drawer.classList.add('active');
+          backdrop.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+    }
+
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeConferenceDemoModal();
         closeSignInModal();
+        const drawer = document.getElementById('mobileNavDrawer');
+        if (drawer && drawer.classList.contains('active')) {
+          toggleMobileDrawer();
+        }
       }
     });
   </script>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop" onclick="toggleMobileDrawer()"></div>
+  <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobile Navigation">
+    <div>
+      <div class="mobile-nav-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="brand-symbol" style="width: 28px; height: 28px; font-size: 15px;">B</div>
+          <span class="brand-name" style="font-size: 18px;">BridgeeAI</span>
+        </div>
+        <button class="mobile-nav-close" onclick="toggleMobileDrawer()" aria-label="Close Navigation">✕</button>
+      </div>
+
+      <div class="mobile-nav-section-title">Solutions</div>
+      <ul class="mobile-nav-links" style="margin: 8px 0 16px;">
+        <li><a href="/conferences" class="mobile-nav-link active" onclick="toggleMobileDrawer()">🎙️ Conferences & Summits <span>↗</span></a></li>
+        <li><a href="/education" class="mobile-nav-link" onclick="toggleMobileDrawer()">🎓 Education & Bootcamps <span>↗</span></a></li>
+        <li><a href="/church" class="mobile-nav-link" onclick="toggleMobileDrawer()">🕊️ Faith & Sanctuary <span>↗</span></a></li>
+        <li><a href="/events" class="mobile-nav-link" onclick="toggleMobileDrawer()">🌐 Hybrid & Global Events <span>↗</span></a></li>
+      </ul>
+
+      <div class="mobile-nav-section-title">Explore</div>
+      <ul class="mobile-nav-links" style="margin: 8px 0 16px;">
+        <li><a href="#how-it-works" class="mobile-nav-link" onclick="toggleMobileDrawer()">How It Works</a></li>
+        <li><a href="#languages" class="mobile-nav-link" onclick="toggleMobileDrawer()">Supported Languages</a></li>
+        <li><a href="#broadcast" class="mobile-nav-link" onclick="toggleMobileDrawer()">Production Overlays</a></li>
+        <li><a href="#pricing" class="mobile-nav-link" onclick="toggleMobileDrawer()">Pricing</a></li>
+        <li><a href="/join" class="mobile-nav-link" onclick="toggleMobileDrawer()" style="color: var(--aqua-400);">Join a Live Room</a></li>
+      </ul>
+    </div>
+
+    <div class="mobile-nav-actions">
+      <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" style="background: var(--gold-400); color: #141210; font-weight: 700; width: 100%; text-align: center; justify-content: center; padding: 10px 18px; font-size: 13px;">
+        Create Conference Session ↗
+      </a>
+      <a href="/auth" class="btn-signin" style="width: 100%; border: 1px solid rgba(255,252,244,0.15); border-radius: 999px; padding: 9px; text-align: center; text-decoration: none;">
+        Sign In
+      </a>
+    </div>
+  </aside>
 </body>
 </html>

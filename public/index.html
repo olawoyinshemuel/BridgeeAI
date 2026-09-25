@@ -66,11 +66,10 @@
 
       <div class="nav-actions">
         <button class="btn-signin" id="btnSignInNav" onclick="openSignInModal()">Sign in</button>
-        <a href="/join" class="nav-link" style="font-weight: 600; padding: 0 4px;">Get started</a>
-        <a href="/host/console/TECH-2026" class="btn-start-free" id="btnCreateSessionNav" style="padding: 9px 18px; font-size: 13px;">
+        <a href="/host/console/TECH-2026" class="btn-start-free" id="btnCreateSessionNav" style="padding: 7px 15px; font-size: 12.5px;">
           Get started ↗
         </a>
-        <button class="btn-signin" style="padding: 6px; font-size: 18px;" onclick="openAllLanguagesModal()" title="Menu">☰</button>
+        <button class="btn-signin mobile-menu-btn" style="padding: 6px 10px; font-size: 18px;" onclick="toggleMobileDrawer()" title="Menu">☰</button>
       </div>
     </div>
   </header>
@@ -1111,6 +1110,64 @@
         }, 200);
       }, 3500);
     }
+
+    // Mobile Navigation Drawer Toggle
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobileNavDrawer');
+      const backdrop = document.getElementById('mobileNavBackdrop');
+      if (drawer && backdrop) {
+        const isOpen = drawer.classList.contains('active');
+        if (isOpen) {
+          drawer.classList.remove('active');
+          backdrop.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          drawer.classList.add('active');
+          backdrop.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+    }
   </script>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop" onclick="toggleMobileDrawer()"></div>
+  <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobile Navigation">
+    <div>
+      <div class="mobile-nav-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="brand-symbol" style="width: 28px; height: 28px; font-size: 15px;">B</div>
+          <span class="brand-name" style="font-size: 18px;">BridgeeAI</span>
+        </div>
+        <button class="mobile-nav-close" onclick="toggleMobileDrawer()" aria-label="Close Navigation">✕</button>
+      </div>
+
+      <div class="mobile-nav-section-title">Solutions</div>
+      <ul class="mobile-nav-links" style="margin: 8px 0 16px;">
+        <li><a href="/conferences" class="mobile-nav-link" onclick="toggleMobileDrawer()">🎙️ Conferences & Summits <span>↗</span></a></li>
+        <li><a href="/education" class="mobile-nav-link" onclick="toggleMobileDrawer()">🎓 Education & Bootcamps <span>↗</span></a></li>
+        <li><a href="/church" class="mobile-nav-link" onclick="toggleMobileDrawer()">🕊️ Faith & Sanctuary <span>↗</span></a></li>
+        <li><a href="/events" class="mobile-nav-link" onclick="toggleMobileDrawer()">🌐 Hybrid & Global Events <span>↗</span></a></li>
+      </ul>
+
+      <div class="mobile-nav-section-title">Explore</div>
+      <ul class="mobile-nav-links" style="margin: 8px 0 16px;">
+        <li><a href="#how-it-works" class="mobile-nav-link" onclick="toggleMobileDrawer()">How It Works</a></li>
+        <li><a href="#languages" class="mobile-nav-link" onclick="toggleMobileDrawer()">Supported Languages</a></li>
+        <li><a href="#overlays" class="mobile-nav-link" onclick="toggleMobileDrawer()">Production Overlays</a></li>
+        <li><a href="#pricing" class="mobile-nav-link" onclick="toggleMobileDrawer()">Pricing</a></li>
+        <li><a href="/join" class="mobile-nav-link" onclick="toggleMobileDrawer()" style="color: var(--aqua-400);">Join a Live Room</a></li>
+      </ul>
+    </div>
+
+    <div class="mobile-nav-actions">
+      <a href="/host/console/TECH-2026" class="btn-start-free" style="width: 100%; text-align: center; justify-content: center; padding: 11px 18px;">
+        Start Session Free ↗
+      </a>
+      <button class="btn-signin" onclick="toggleMobileDrawer(); openSignInModal();" style="width: 100%; border: 1px solid rgba(255,252,244,0.15); border-radius: 999px; padding: 10px;">
+        Sign In
+      </button>
+    </div>
+  </aside>
 </body>
 </html>
