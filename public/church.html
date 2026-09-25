@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI for Church & Faith — Real-Time Sermon Translation</title>
+  <meta name="description" content="Include every worshipper in every sermon, in real time. BridgeeAI turns live preaching into translated captions and voice streams directly on congregant phones.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <style>
+    /* Church Landing Page Dedicated Styles */
+    .church-hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      background-color: #121012;
+      color: var(--bone-50);
+      overflow: hidden;
+      padding: 80px 0 60px;
+    }
+
+    .church-hero-bg-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .church-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center right;
+      filter: contrast(1.05) brightness(0.88);
+    }
+
+    .church-hero-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(18, 16, 18, 0.97) 0%,
+        rgba(18, 16, 18, 0.92) 40%,
+        rgba(18, 16, 18, 0.65) 65%,
+        rgba(18, 16, 18, 0.35) 88%,
+        rgba(18, 16, 18, 0.5) 100%
+      );
+      pointer-events: none;
+    }
+
+    .church-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      text-align: left;
+    }
+
+    .church-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(122, 217, 210, 0.15);
+      border: 1px solid rgba(122, 217, 210, 0.35);
+      color: var(--aqua-400);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .church-headline {
+      font-family: var(--font-serif);
+      font-size: clamp(40px, 5.5vw, 64px);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      font-weight: 500;
+      color: #FFFFFF;
+      margin-bottom: 22px;
+    }
+
+    .church-subtitle {
+      font-size: clamp(16px, 1.8vw, 19px);
+      line-height: 1.6;
+      color: rgba(255, 252, 244, 0.88);
+      max-width: 620px;
+      margin-bottom: 34px;
+    }
+
+    /* Sanctuary Demo Two-Panel Architecture */
+    .sanctuary-demo-stage {
+      background: #171517;
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      margin-top: 40px;
+    }
+
+    .sanctuary-demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      min-height: 520px;
+    }
+
+    .pastor-panel {
+      padding: 34px 28px;
+      background: radial-gradient(circle at top left, rgba(213, 174, 104, 0.15), transparent 70%), #1B181B;
+      border-right: 1px solid rgba(255, 252, 244, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .congregants-panel {
+      padding: 30px 24px;
+      background: rgba(26, 23, 26, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .phone-simulator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .phone-card {
+      background: rgba(35, 31, 35, 0.95);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .phone-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold-400);
+      background: rgba(45, 40, 45, 0.98);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .phone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .phone-member {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 252, 244, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .phone-lang-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-400);
+      margin-bottom: 6px;
+    }
+
+    .phone-caption {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--bone-50);
+      margin-bottom: 10px;
+    }
+
+    .callout-toast {
+      background: rgba(213, 174, 104, 0.12);
+      border: 1px dashed rgba(213, 174, 104, 0.4);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--gold-400);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Workflow Cards */
+    .av-workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+
+    .av-workflow-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(26, 24, 24, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 34px 28px;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s ease;
+    }
+
+    .av-workflow-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Terminology Cards */
+    .context-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .context-feature-card {
+      background: rgba(35, 31, 35, 0.85);
+      border: 1px solid rgba(255, 252, 244, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 30px 24px;
+      color: var(--bone-50);
+    }
+
+    /* Plans for Ministries */
+    .ministry-plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+
+    .ministry-plan-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(26, 24, 24, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .ministry-plan-card.featured {
+      border-color: var(--aqua-400);
+      box-shadow: 0 16px 45px rgba(122, 217, 210, 0.2);
+    }
+
+    @media (max-width: 960px) {
+      .sanctuary-demo-grid {
+        grid-template-columns: 1fr;
+      }
+      .phone-simulator-grid {
+        grid-template-columns: 1fr;
+      }
+      .av-workflow-grid, .context-feature-grid, .ministry-plans-grid {
+        grid-template-columns: 1fr;
+      }
+      .church-hero {
+        padding: 60px 0 80px;
+      }
+    }
+  </style>
+</head>
+<body class="landing-body">
+
+  <!-- 1. TOP NAVIGATION BAR -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand-link" id="navLogo">
+        <div class="brand-symbol">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <!-- Solutions Dropdown -->
+          <li class="nav-item">
+            <a href="#verticals" class="nav-link" id="navSolutionsLink">
+              Solutions
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <div class="nav-dropdown" id="solutionsDropdown">
+              <a href="/church" class="dropdown-item" style="background: rgba(122, 217, 210, 0.12);">
+                <div class="dropdown-icon" style="color: var(--aqua-400);">⛪</div>
+                <div>
+                  <div class="dropdown-title">Church & Faith</div>
+                  <div class="dropdown-desc">Sermons, fellowship & scripture</div>
+                </div>
+              </a>
+              <a href="/education" class="dropdown-item">
+                <div class="dropdown-icon">🎓</div>
+                <div>
+                  <div class="dropdown-title">Education</div>
+                  <div class="dropdown-desc">Lectures, training & classrooms</div>
+                </div>
+              </a>
+              <a href="/conferences" class="dropdown-item">
+                <div class="dropdown-icon">🎙️</div>
+                <div>
+                  <div class="dropdown-title">Conferences</div>
+                  <div class="dropdown-desc">Keynotes, summits & breakout rooms</div>
+                </div>
+              </a>
+              <a href="/events" class="dropdown-item">
+                <div class="dropdown-icon">🏛️</div>
+                <div>
+                  <div class="dropdown-title">Events</div>
+                  <div class="dropdown-desc">Civic forums, exhibitions & broadcasts</div>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li class="nav-item"><a href="#languages" class="nav-link">Supported Languages</a></li>
+          <li class="nav-item"><a href="#broadcast" class="nav-link">Production Overlays (OBS / vMix)</a></li>
+          <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/auth" class="btn-signin" id="btnSignInNav" style="text-decoration: none;">Sign In</a>
+        <a href="/auth" class="btn-pill btn-pill-primary" id="btnCreateSessionNav" style="background: var(--slate-850); padding: 9px 20px; font-size: 13px;">
+          Create a Session
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION (TOP OF PAGE) -->
+  <section class="church-hero" id="hero">
+    <!-- Visual Image: Sanctuary with Pastor and Diverse Congregants Wearing Earbuds -->
+    <div class="church-hero-bg-wrap">
+      <img 
+        src="/assets/church_sanctuary.jpg" 
+        alt="Multicultural church congregation listening to live translated Sunday sermon wearing discreet earbuds"
+        class="church-hero-img"
+      >
+      <div class="church-hero-scrim"></div>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 2; width: 100%;">
+      <div class="church-hero-content">
+        
+        <!-- Small Top Tag -->
+        <div class="church-tag">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--aqua-400); box-shadow: 0 0 8px var(--aqua-400);"></span>
+          REAL-TIME FAITH & CHURCH TRANSLATION
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="church-headline">
+          Include every worshipper in every sermon, in real time.
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="church-subtitle">
+          BridgeeAI transforms live sermons and teachings into real-time translated text captions and spoken audio. Allow multi-ethnic and immigrant congregants to follow along in their native language—right on their own mobile devices.
+        </p>
+
+        <!-- Main Buttons -->
+        <div class="hero-cta-cinematic-row" style="margin-bottom: 28px;">
+          <a href="/auth" class="btn-pill btn-pill-primary" id="btnCreateWorshipHero" style="background: var(--aqua-400); color: #0E1A16; font-weight: 700; padding: 14px 28px;">
+            Create a Worship Session <span class="arrow-icon">→</span>
+          </a>
+          <a href="#church-demo" class="btn-book-demo" id="btnSeeChurchDemo">
+            See Church Demo (1 Min)
+          </a>
+        </div>
+
+        <!-- Quick Highlights -->
+        <div class="hero-highlights" style="justify-content: flex-start; color: rgba(255,252,244,0.85); font-size: 13px;">
+          <span>✓ Zero app download or account setup required for congregants</span>
+          <span>✓ Members join instantly by scanning a QR code on sanctuary screens or bulletins</span>
+          <span>✓ Preserves the preacher's voice, rhythm, and passion without pauses</span>
+        </div>
+
+      </div>
+
+      <!-- INTERACTIVE SANCTUARY VISUAL DEMO -->
+      <div class="sanctuary-demo-stage" id="church-demo">
+        <div class="demo-stage-header" style="background: #1F1B1F; border-bottom: 1px solid rgba(255,252,244,0.08);">
+          <div class="demo-header-dots">
+            <span class="demo-dot red"></span>
+            <span class="demo-dot yellow"></span>
+            <span class="demo-dot green"></span>
+          </div>
+          <div class="demo-stage-title" style="color: var(--bone-50);">
+            <span>●</span> Live Sanctuary Translation Demo · Room: CHURCH-LIVE
+          </div>
+          <div style="font-size: 12px; color: var(--aqua-400); font-weight: 600;">
+            Sunday Service Sync · Sub-500ms
+          </div>
+        </div>
+
+        <div class="sanctuary-demo-grid">
+          
+          <!-- Left Panel: Pastor delivering a sermon in English on the altar [Live Audio Waveform] -->
+          <div class="pastor-panel">
+            <div>
+              <div class="speaker-live-badge" style="background: rgba(213, 174, 104, 0.2); border-color: var(--gold-400); color: var(--gold-400);">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--gold-400); animation: pulse-glow 1.5s infinite;"></span>
+                PULPIT MICROPHONE ACTIVE (ENGLISH)
+              </div>
+
+              <div class="speaker-profile-wrap">
+                <div class="speaker-avatar" style="background: linear-gradient(135deg, #7AD9D2, #D5AE68);">✝️</div>
+                <div>
+                  <div class="speaker-name-title">Pastor Marcus Adeyemi</div>
+                  <div class="speaker-role">Grace International Fellowship · Pulpit Mic Feed</div>
+                </div>
+              </div>
+
+              <div class="speaker-audio-box" style="background: rgba(22, 19, 22, 0.8);">
+                <div class="audio-box-label">
+                  <span>Live Sermon Speech (English)</span>
+                  <span>16kHz PCM Stream</span>
+                </div>
+
+                <!-- Animated Audio Waveform -->
+                <div class="audio-equalizer-bars">
+                  <span style="height: 40%;"></span>
+                  <span style="height: 85%;"></span>
+                  <span style="height: 100%;"></span>
+                  <span style="height: 65%;"></span>
+                  <span style="height: 90%;"></span>
+                  <span style="height: 50%;"></span>
+                  <span style="height: 95%;"></span>
+                  <span style="height: 70%;"></span>
+                  <span style="height: 85%;"></span>
+                  <span style="height: 45%;"></span>
+                </div>
+
+                <div class="spoken-quote" id="pastorLiveQuote">
+                  "For we are called together as one body, united in grace and truth across all tongues and nations."
+                </div>
+              </div>
+            </div>
+
+            <div class="speaker-meta-footer">
+              <a href="/host/console/CHURCH-LIVE" style="color: var(--aqua-400); font-weight: 600; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                Open Pulpit Mic Console 🎙 →
+              </a>
+              <a href="/join/CHURCH-LIVE" style="color: var(--bone-50); font-weight: 600; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                Pew Bulletin QR 📱
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Panel: Simulated congregant smartphones displaying real-time sermon translations -->
+          <div class="congregants-panel">
+            <div class="listeners-side-header">
+              <span>CONGREGANT MOBILE STREAMS (LIVE SANCTUARY TRANSLATION)</span>
+              <span>Zero Disturbance</span>
+            </div>
+
+            <div class="phone-simulator-grid">
+              
+              <!-- Member 01: Yorùbá — Mode: Read (Sanctuary Captions) -->
+              <div class="phone-card">
+                <div class="phone-header">
+                  <div class="phone-member"><span>📱 Member 01</span> · Lagos Diaspora</div>
+                  <span class="listener-mode-badge mode-read-only">Read (Captions)</span>
+                </div>
+                <div class="phone-lang-title">Yorùbá 🇳🇬</div>
+                <p class="phone-caption">
+                  "Nítorí a pè wá papọ̀ gẹ́gẹ́ bí ara kan, tí a sọ di ọ̀kan nínú oore-ọ̀fẹ́ àti òtítọ́ ní gbogbo èdè àti orílẹ̀-èdè."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Silent Pew Captions</span>
+                  <span style="color: var(--violet-500);">● 1.1 KB/s</span>
+                </div>
+              </div>
+
+              <!-- Member 02: Français — Mode: Listen (Voice in Earbuds) -->
+              <div class="phone-card">
+                <div class="phone-header">
+                  <div class="phone-member"><span>📱 Member 02</span> · West Africa / Paris</div>
+                  <span class="listener-mode-badge mode-listen-only">Listen (Earbuds)</span>
+                </div>
+                <div class="phone-lang-title">Français 🇫🇷</div>
+                <p class="phone-caption">
+                  "Car nous sommes appelés ensemble comme un seul corps, unis dans la grâce et la vérité à travers toutes les nations."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Earbuds Voice Stream</span>
+                  <div class="audio-pulse-bars-mini"><span></span><span></span><span></span></div>
+                </div>
+              </div>
+
+              <!-- Member 03: Spanish — Mode: Read + Listen (Synchronized) -->
+              <div class="phone-card">
+                <div class="phone-header">
+                  <div class="phone-member"><span>📱 Member 03</span> · Latino Fellowship</div>
+                  <span class="listener-mode-badge mode-read-listen">Read + Listen</span>
+                </div>
+                <div class="phone-lang-title">Español 🇪🇸</div>
+                <p class="phone-caption">
+                  "Porque somos llamados juntos como un solo cuerpo, unidos en gracia y verdad a través de todas las lenguas y naciones."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Dual Sync Stream</span>
+                  <span style="color: var(--gold-400);">🎧 + 📝 100%</span>
+                </div>
+              </div>
+
+              <!-- Member 04: Kiswahili — Mode: Read (Text-First Mode) -->
+              <div class="phone-card">
+                <div class="phone-header">
+                  <div class="phone-member"><span>📱 Member 04</span> · East Africa</div>
+                  <span class="listener-mode-badge mode-read-only">Text-First</span>
+                </div>
+                <div class="phone-lang-title">Kiswahili 🇰🇪</div>
+                <p class="phone-caption">
+                  "Kwani tumeitwa pamoja kama mwili mmoja, tukiwa tumeungana katika neema na kweli katika lugha zote na mataifa yote."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Crowded Wi-Fi Safe</span>
+                  <span style="color: var(--aqua-400);">&lt; 1.5 KB/s</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Callout Toast -->
+            <div class="callout-toast">
+              <span style="font-size: 16px;">💬</span>
+              <span><strong>Callout Toast:</strong> Members can switch languages anytime during praise, worship, or the sermon.</span>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. QUICK MINISTRY IMPACT STATS -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Global & African Languages Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 1.2s</div>
+          <div class="stat-label">Real-Time Translation Speed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">100% Web-Based (No hardware rentals or app store downloads)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 2 KB/s</div>
+          <div class="stat-label">Bandwidth Footprint (Works reliably on crowded church Wi-Fi)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. THE PROBLEM IN MULTILINGUAL MINISTRY -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Ministry Challenge</div>
+        <h2 class="section-title">Language shouldn't divide a congregation.</h2>
+        <p class="section-lead">
+          Churches are welcoming increasingly diverse, multicultural, and multi-ethnic communities. Yet delivering a single sermon across multiple languages remains an operational challenge:
+        </p>
+      </div>
+
+      <div class="problem-split-grid">
+        
+        <!-- The Operational Barrier -->
+        <div class="problem-card">
+          <span class="problem-card-badge">Current Sunday Barriers</span>
+          <h3 class="problem-card-title">Delivering a sermon across languages today often creates friction:</h3>
+          <ul class="problem-list">
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Line-by-line human translation</strong> doubles the length of the service and disrupts the pastor's spiritual flow.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Specialized FM interpreter headsets</strong> are expensive to buy, easy to lose, and uncomfortable for guests.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Separate language services</strong> divide the church body into isolated groups.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Non-native speakers and visitors</strong> struggle to understand deeper biblical concepts and feel disconnected.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- The BridgeeAI Unity Solution -->
+        <div class="solution-card">
+          <div>
+            <span class="solution-card-badge" style="background: rgba(122, 217, 210, 0.2); color: var(--aqua-400);">Unified Sanctuary</span>
+            <div class="solution-statement">
+              "BridgeeAI unifies the church body. The pastor speaks naturally, and every member receives the message in the language of their heart."
+            </div>
+            <p class="solution-lead-desc">
+              No interpreter booths, no doubling service times, and no segregated sanctuaries. The Word goes forth once from the pulpit, and every member of the body rejoices in full comprehension.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            <a href="/host/console/CHURCH-LIVE" class="btn-pill btn-pill-primary" style="background: var(--aqua-400); color: #121A16; font-weight: 700; padding: 11px 24px; font-size: 14px;">
+              Create Worship Session →
+            </a>
+            <span style="font-size: 13px; color: rgba(255,252,244,0.65);">Ready in 60 seconds on any church mic</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HOW IT WORKS IN 3 SIMPLE STEPS -->
+  <section class="section section-dark" id="how-it-works">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--aqua-400);">Sunday Morning Simplicity</div>
+        <h2 class="section-title">How It Works in 3 Simple Steps</h2>
+        <p class="section-lead">
+          From pulpit microphone to member hearts in under two seconds.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-badge">STEP 01</div>
+          <h3 class="step-title">The Pastor Speaks Naturally</h3>
+          <p class="step-desc">
+            The speaker talks into the existing pulpit, lavalier, or wireless microphone system. No need to pause, slow down, or wait for an interpreter.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Preserves preaching rhythm & emotion</li>
+            <li>✓ Connects to existing church soundboard or laptop</li>
+            <li>✓ Zero special microphone hardware needed</li>
+          </ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" style="border-color: rgba(122, 217, 210, 0.4);">
+          <div class="step-badge" style="color: var(--aqua-400);">STEP 02</div>
+          <h3 class="step-title">BridgeeAI Applies Scripture & Sermon Context</h3>
+          <p class="step-desc">
+            Our system processes the sermon audio in real time, matching terms against pre-loaded sermon outlines, scriptures, and church vocabulary.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Biblical names & theology mapped accurately</li>
+            <li>✓ Multi-language batch neural synthesis</li>
+            <li>✓ Sub-second real-time caption stream</li>
+          </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--gold-400);">STEP 03</div>
+          <h3 class="step-title">Congregants Experience the Word</h3>
+          <p class="step-desc">
+            Members scan a QR code placed on pew cards or sanctuary displays, select their native language, and choose:
+          </p>
+          <ul class="step-sublist">
+            <li><strong>Read:</strong> Follow live translated text captions on their phone screen.</li>
+            <li><strong>Listen:</strong> Hear translated voice audio through their personal earbuds.</li>
+            <li><strong>Read + Listen:</strong> View captions and listen to matching voice translation concurrently.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PURPOSE-BUILT FOR CHURCH AV & BROADCAST WORKFLOWS -->
+  <section class="section" id="broadcast">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Media Ministry Integration</div>
+        <h2 class="section-title">Purpose-Built for Church AV & Broadcast Workflows</h2>
+        <p class="section-lead">
+          Seamlessly fits into your existing media ministry setup. BridgeeAI works alongside your sanctuary audio visual setup and live stream environment:
+        </p>
+      </div>
+
+      <div class="av-workflow-grid">
+        
+        <!-- Feature 1 -->
+        <div class="av-workflow-card">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">🎧</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Personal Mobile Listening</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.72); margin-bottom: 20px;">
+              Members plug their own earbuds into their mobile phones to listen without disturbing neighboring worshippers in the pews.
+            </p>
+          </div>
+          <a href="/join/CHURCH-LIVE" class="dest-link">Test Mobile Experience →</a>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="av-workflow-card" style="border-color: rgba(122, 217, 210, 0.4);">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">📽️</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Sanctuary Projector & LED Display (/venue)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.72); margin-bottom: 20px;">
+              Output full-screen, high-legibility translated captions to overflow rooms, secondary halls, or balcony screens with zero clutter.
+            </p>
+          </div>
+          <a href="/venue/CHURCH-LIVE" class="dest-link">Open Sanctuary Projector View →</a>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="av-workflow-card">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">📡</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Live Broadcast Overlays (/overlay)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.72); margin-bottom: 20px;">
+              Send transparent lower-third caption bars directly into OBS Studio, vMix, or church broadcast software for online YouTube and Facebook viewers.
+            </p>
+          </div>
+          <a href="/overlay/CHURCH-LIVE" class="dest-link">Launch OBS Lower-Third Studio →</a>
+        </div>
+
+      </div>
+
+      <!-- Large Screen Stage LED Transcription Visual Showcase -->
+      <div style="margin-top: 48px; border-radius: var(--radius-lg); overflow: hidden; position: relative; border: 1px solid rgba(26, 24, 24, 0.12); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);">
+        <img 
+          src="/assets/venue_led_screen.jpg" 
+          alt="Live sermon speech transcription displayed on large stage LED screen in church sanctuary" 
+          style="width: 100%; height: auto; max-height: 520px; object-fit: cover; display: block;"
+        >
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 32px; background: linear-gradient(180deg, transparent 0%, rgba(18, 16, 18, 0.95) 50%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua-400); margin-bottom: 4px;">Sanctuary Stage LED Display Mode (/venue)</div>
+            <div style="font-family: var(--font-serif); font-size: 22px; font-weight: 600; color: #FFFFFF;">Crystal-Clear Live Captions Projected on Stage LED Wall for the Entire Sanctuary</div>
+          </div>
+          <a href="/venue/CHURCH-LIVE" class="btn-pill btn-pill-primary" style="background: var(--aqua-400); color: #0E1A16; font-weight: 700; text-decoration: none; padding: 11px 22px; font-size: 13px;">
+            Open Live Stage LED View 📽
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 7. PRE-LOAD SERMONS & BIBLICAL TERMINOLOGY -->
+  <section class="section section-dark" id="theology-context">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--gold-400);">Doctrinal Precision</div>
+        <h2 class="section-title">Pre-Load Sermons & Biblical Terminology for 99%+ Accuracy</h2>
+        <p class="section-lead">
+          Give the AI context before the service starts. General AI translation tools often struggle with biblical names, theological terms, and specific sermon themes. BridgeeAI lets media teams prime the system before the service starts:
+        </p>
+      </div>
+
+      <div class="context-feature-grid">
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">📖</div>
+          <h3 class="font-serif" style="font-size: 22px; color: var(--bone-50); margin-bottom: 10px;">Sermon Notes & Slides</h3>
+          <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">
+            Upload sermon notes, slide decks (.PPTX, .PDF), and scripture readings prior to the service for instant thematic priming.
+          </p>
+        </div>
+
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">🕊️</div>
+          <h3 class="font-serif" style="font-size: 22px; color: var(--bone-50); margin-bottom: 10px;">Theological Phrasing</h3>
+          <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">
+            Add custom church terms, pastor names, and specific theological phrasing (e.g., <em>Sanctification, Grace, Covenant, Righteousness</em>).
+          </p>
+        </div>
+
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">🛡️</div>
+          <h3 class="font-serif" style="font-size: 22px; color: var(--bone-50); margin-bottom: 10px;">Enforced Accuracy</h3>
+          <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">
+            BridgeeAI enforces exact biblical vocabulary and doctrinal accuracy throughout the live teaching without hallucination.
+          </p>
+        </div>
+      </div>
+
+      <div class="context-benefit-banner" style="margin-top: 32px; border-color: rgba(213, 174, 104, 0.4);">
+        ✨ <strong>Media ministers can upload Sunday sermon outlines in 30 seconds for complete doctrinal accuracy across all target languages.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. BUILT FOR MULTILINGUAL CONGREGATIONS & AFRICAN LANGUAGES -->
+  <section class="section" id="languages">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Kingdom Inclusivity</div>
+        <h2 class="section-title">Built for Multilingual Congregations & African Languages</h2>
+        <p class="section-lead">
+          Native support for regional and international church communities. Language should never be a barrier to gospel accessibility. BridgeeAI offers robust neural speech model support tailored specifically for regional and global church bodies:
+        </p>
+      </div>
+
+      <!-- Featured Church Languages List -->
+      <div class="lang-chips-wrap">
+        <span class="lang-chip active">Yorùbá</span>
+        <span class="lang-chip">Igbo</span>
+        <span class="lang-chip">Hausa</span>
+        <span class="lang-chip">Kiswahili</span>
+        <span class="lang-chip">French</span>
+        <span class="lang-chip">Spanish</span>
+        <span class="lang-chip">Portuguese</span>
+        <span class="lang-chip">Arabic</span>
+        <span class="lang-chip">Amharic</span>
+        <span class="lang-chip">Afrikaans</span>
+        <span class="lang-chip">isiZulu</span>
+        <span class="lang-chip">isiXhosa</span>
+        <span class="lang-chip">Lingala</span>
+        <span class="lang-chip">Kinyarwanda</span>
+        <span class="lang-chip">Twi</span>
+      </div>
+
+      <div class="lang-note-box" style="background: rgba(26,24,24,0.04); border-color: rgba(26,24,24,0.15); color: rgba(26,24,24,0.75);">
+        (Note: If spoken voice audio is unavailable for a specific language, BridgeeAI automatically defaults to high-speed text captions so no worshipper is left out.)
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FLEXIBLE PLANS FOR GROWING MINISTRIES -->
+  <section class="section section-dark" id="pricing">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--aqua-400);">Ministry Stewardship</div>
+        <h2 class="section-title">Flexible Plans for Growing Ministries</h2>
+        <p class="section-lead">
+          Affordable, transparent plans designed for churches of all sizes—from community fellowships to multi-site campuses.
+        </p>
+      </div>
+
+      <div class="ministry-plans-grid">
+        
+        <!-- Plan 1 -->
+        <div class="ministry-plan-card">
+          <div>
+            <h3 class="pricing-plan-name">Single Service / Guest Speaker</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$29</span>
+              <span class="pricing-period">/ single event</span>
+            </div>
+            <div class="pricing-for">Ideal for special conferences, revivals, and visiting preachers.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Up to 3 hours</strong> continuous service broadcast</li>
+              <li><span class="check">✓</span> Up to <strong>100 concurrent listeners</strong></li>
+              <li><span class="check">✓</span> Instant pew QR code join</li>
+              <li><span class="check">✓</span> Real-time scripture & sermon captions</li>
+              <li><span class="check">✓</span> 20+ African & Global language feeds</li>
+            </ul>
+          </div>
+          <a href="/host/console/CHURCH-LIVE" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Get Event Pass
+          </a>
+        </div>
+
+        <!-- Plan 2 (Featured) -->
+        <div class="ministry-plan-card featured" style="transform: scale(1.03); z-index: 2;">
+          <div class="pricing-badge" style="background: var(--aqua-400); color: #121A16;">Best for Churches</div>
+          <div>
+            <h3 class="pricing-plan-name">Monthly Ministry Plan</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$39</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-for">Designed for weekly services, mid-week Bible studies, and Sunday school classes with full glossary upload rights.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>15 Hours</strong> monthly sermon translation (~$2.60/hr)</li>
+              <li><span class="check">✓</span> Up to <strong>250 concurrent worshippers</strong></li>
+              <li><span class="check">✓</span> <strong>Captions + Voice Earbud Audio</strong></li>
+              <li><span class="check">✓</span> Slide (.PPTX) & scripture glossary uploads</li>
+              <li><span class="check">✓</span> OBS / vMix livestream transparent overlays</li>
+              <li><span class="check">✓</span> Sanctuary venue projector view (/venue)</li>
+            </ul>
+          </div>
+          <a href="/host/console/CHURCH-LIVE" class="btn-pill btn-pill-primary" style="width: 100%; text-align: center; background: var(--aqua-400); color: #121A16; font-weight: 700;">
+            Start 14-Day Free Trial
+          </a>
+        </div>
+
+        <!-- Plan 3 -->
+        <div class="ministry-plan-card">
+          <div>
+            <h3 class="pricing-plan-name">Multi-Campus & Cathedral</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$149</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-for">For large multi-site churches needing dedicated support, unlimited concurrent listeners, and custom broadcast overlay feeds.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>60+ Hours</strong> monthly translation capacity</li>
+              <li><span class="check">✓</span> Up to <strong>1,500 concurrent worshippers</strong></li>
+              <li><span class="check">✓</span> Multi-campus concurrent room streams</li>
+              <li><span class="check">✓</span> Custom church branding & branded QR codes</li>
+              <li><span class="check">✓</span> Dedicated Sunday morning technical support</li>
+              <li><span class="check">✓</span> Downloadable translated sermon transcripts</li>
+            </ul>
+          </div>
+          <button onclick="openChurchDemoModal()" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Inquire Cathedral Plan
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Pastoral & Technical Clarity</div>
+        <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+      </div>
+
+      <div class="faq-accordion">
+        
+        <!-- Question 1 -->
+        <div class="faq-item open">
+          <div class="faq-question">
+            <span>Do church members need to download an app or create an account?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            No. Members simply scan a QR code on the pew card or projector screen to join instantly in their phone’s web browser.
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Will translated audio disrupt the quiet sanctuary environment?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            No. Members listen to translated audio using their own personal earbuds or headphones connected to their mobile devices.
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Does BridgeeAI work if our church Wi-Fi is slow or overcrowded?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. BridgeeAI features an automatic low-bandwidth mode that prioritizes ultra-light text captions (&lt;2 KB/s) when network speeds drop.
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can we display captions on our secondary sanctuary screens?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. BridgeeAI provides a dedicated venue link (/venue) designed for large projectors, stage monitors, and overflow rooms.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. FINAL CALL TO ACTION -->
+  <section class="final-cta-section" id="cta" style="background: radial-gradient(circle at center top, #1F2826 0%, #0F1614 100%);">
+    <div class="container final-cta-content">
+      <div class="hero-tag" style="background: rgba(122, 217, 210, 0.15); border-color: rgba(122, 217, 210, 0.4); color: var(--aqua-400); margin-bottom: 24px;">
+        Empower Your Multicultural Congregation
+      </div>
+      
+      <h2 class="hero-heading" style="color: var(--bone-50); margin-bottom: 20px;">
+        Welcome every worshipper in the language of their heart this Sunday.
+      </h2>
+      
+      <p class="hero-subtitle" style="color: rgba(255, 252, 244, 0.85); margin-bottom: 38px;">
+        Create a live session in under 60 seconds and make your ministry accessible to everyone in the room.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/host/console/CHURCH-LIVE" class="btn-pill btn-pill-primary" id="btnFinalCreateChurch" style="background: var(--aqua-400); color: #0E1A16; font-weight: 700; padding: 14px 32px;">
+          Create a Worship Session
+        </a>
+        <button onclick="openChurchDemoModal()" class="btn-pill btn-pill-secondary" id="btnFinalDemoChurch" style="color: var(--bone-50); border-color: rgba(255,252,244,0.35); padding: 14px 30px;">
+          Schedule a Church Demo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-row">
+        <div class="footer-brand-summary">
+          <div class="footer-brand-title">
+            <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px;">B</div>
+            <span>BridgeeAI</span>
+          </div>
+          <div class="footer-tagline">
+            BridgeeAI: Speak once. Be understood everywhere.
+          </div>
+          <p style="font-size: 13px; line-height: 1.5; color: rgba(255,252,244,0.6);">
+            Unifying multilingual church congregations through real-time sermon captions and translated personal audio streams.
+          </p>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bone-50); margin-bottom: 14px;">
+            Quick Links
+          </div>
+          <div class="footer-quick-links-group">
+            <a href="#how-it-works" class="footer-quick-link">How It Works</a>
+            <a href="#languages" class="footer-quick-link">Supported Languages</a>
+            <a href="#broadcast" class="footer-quick-link">Production Overlays</a>
+            <a href="#pricing" class="footer-quick-link">Pricing</a>
+            <a href="#faq" class="footer-quick-link">FAQ</a>
+            <a href="mailto:faith@bridgee.ai" class="footer-quick-link">Contact</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>
+          Copyright: © 2026 BridgeeAI Inc. All rights reserved.
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <a href="/join/CHURCH-LIVE" style="color: inherit; text-decoration: none;">Join CHURCH-LIVE</a>
+          <a href="/venue/CHURCH-LIVE" style="color: inherit; text-decoration: none;">Sanctuary Venue View</a>
+          <a href="/overlay/CHURCH-LIVE" style="color: inherit; text-decoration: none;">Church OBS Overlay</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: SCHEDULE CHURCH DEMO -->
+  <div class="modal-overlay" id="churchDemoModal" onclick="if(event.target===this) closeChurchDemoModal()">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeChurchDemoModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--aqua-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Ministry Consultation</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Schedule a Church Demo</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        See how BridgeeAI connects your multicultural members without requiring any soundboard rewiring or attendee apps.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Thank you, Pastor! A BridgeeAI church specialist will contact you to set up your free Sunday trial.'); closeChurchDemoModal();">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Pastor / Leader Name</label>
+          <input type="text" required placeholder="Pastor David Adeleke" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Church Email</label>
+          <input type="email" required placeholder="office@gracefellowship.org" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Congregation Size & Primary Languages</label>
+          <input type="text" placeholder="e.g. 350 members, Spanish & Yorùbá" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--slate-850); padding: 12px;">
+          Schedule Free Sunday Trial
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE SCRIPTS -->
+  <script>
+    // FAQ Accordion click toggles
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    function openChurchDemoModal() {
+      document.getElementById('churchDemoModal').classList.add('active');
+    }
+    function closeChurchDemoModal() {
+      document.getElementById('churchDemoModal').classList.remove('active');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeChurchDemoModal();
+    });
+  </script>
+</body>
+</html>

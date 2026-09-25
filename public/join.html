@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BridgeeAI — Instant Join</title>
+  <meta name="description" content="Join live multilingual communication session instantly on mobile web. No app download or account required.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/join.css">
+</head>
+<body>
+  <main class="join-container" id="app">
+    <!-- Header -->
+    <header class="pwa-header">
+      <div class="brand-wrap">
+        <div class="brand-mark">B</div>
+        <span class="brand-title">BridgeeAI</span>
+      </div>
+      <div class="live-pulse" id="headerLiveStatus">
+        <span class="live-pulse-dot"></span>
+        <span id="sessionStatusText">LIVE</span>
+      </div>
+    </header>
+
+    <!-- State 1: Active Session Found -->
+    <section id="activeSessionView" style="display: none;">
+      <!-- Session Context Card -->
+      <div class="session-info-card" id="sessionCard">
+        <div class="session-meta-row">
+          <span class="session-template-tag" id="sessionTemplate">CONFERENCE</span>
+          <span class="room-token-badge" id="sessionRoomToken">TOKEN: ...</span>
+        </div>
+        <h1 class="session-title" id="sessionTitle">Loading Session...</h1>
+        <div class="session-speaker">
+          <span>Presented by <strong id="sessionHost">...</strong></span>
+        </div>
+      </div>
+
+      <!-- Language Selection Section -->
+      <section class="language-section">
+        <h2 class="section-headline">Select Your Preferred Language</h2>
+        <p class="section-subtext">Choose the language you wish to follow. Audio availability is determined automatically.</p>
+
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="languageSearch" class="search-input" placeholder="Search languages (e.g. Français, Yoruba, Spanish)..." autocomplete="off">
+        </div>
+
+        <!-- Language Items -->
+        <div class="language-list" id="languageList" role="listbox" aria-label="Available languages">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Delivery Mode Selection Section -->
+      <section class="mode-section">
+        <h2 class="section-headline" style="font-size: 20px; margin-bottom: 4px;">Choose How to Follow</h2>
+        <p class="section-subtext" style="margin-bottom: 12px;">You can change your mode anytime during the live session.</p>
+
+        <!-- TTS Fallback Warning Banner -->
+        <div class="fallback-alert" id="ttsFallbackAlert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="ttsFallbackText">Audio unavailable for this language. Switched to Read Mode.</span>
+        </div>
+
+        <div class="mode-grid">
+          <!-- Read Mode -->
+          <div class="mode-card selected" id="modeRead" data-mode="read">
+            <span class="mode-icon">📖</span>
+            <span class="mode-title">Read</span>
+            <span class="mode-badge badge-low-bw">&lt; 2 KB/s</span>
+          </div>
+
+          <!-- Listen Mode -->
+          <div class="mode-card" id="modeListen" data-mode="listen">
+            <span class="mode-icon">🎧</span>
+            <span class="mode-title">Listen</span>
+            <span class="mode-badge">AI Voice</span>
+          </div>
+
+          <!-- Read + Listen Mode -->
+          <div class="mode-card" id="modeReadListen" data-mode="read_listen">
+            <span class="mode-icon">✨</span>
+            <span class="mode-title">Read + Listen</span>
+            <span class="mode-badge">Sync Audio</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Primary Action CTA -->
+      <div class="action-container">
+        <button class="btn-pill btn-pill-primary" id="enterSessionBtn" style="width: 100%;">
+          <span>Enter Session</span>
+          <span class="arrow-icon">↗</span>
+        </button>
+        <p class="trust-foot-note">No app download or account required • Instant browser access</p>
+      </div>
+    </section>
+
+    <!-- State 2: Missing or Invalid Room Token -->
+    <section id="manualTokenView" style="display: none;">
+      <div class="manual-token-card">
+        <h2 class="section-headline" style="margin-bottom: 8px;">Join a Live Session</h2>
+        <p class="section-subtext" style="margin-bottom: 20px;">
+          Enter the session room token provided by your presenter or select an active demonstration session below.
+        </p>
+
+        <form id="tokenForm">
+          <div class="token-input-group">
+            <input type="text" id="manualTokenInput" class="token-code-input" placeholder="ROOM-ID" maxlength="16" required autocomplete="off">
+            <button type="submit" class="btn-pill btn-pill-primary" style="padding: 12px 20px;">Join ↗</button>
+          </div>
+        </form>
+
+        <div id="tokenErrorMsg" style="display:none; color: var(--danger-500); font-size: 13px; margin-bottom: 12px;"></div>
+
+        <div style="margin-top: 24px;">
+          <span style="font-size: 12px; color: rgba(255, 252, 244, 0.5); text-transform: uppercase; letter-spacing: 0.05em;">Try Active Demo Sessions:</span>
+          <div class="quick-tokens-list" id="quickTokensList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- State 3: Loading Skeleton -->
+    <div id="loadingView" style="text-align: center; margin: auto; padding: 40px 0;">
+      <div class="live-pulse-dot" style="margin: 0 auto 16px; width: 14px; height: 14px;"></div>
+      <p style="font-size: 14px; color: rgba(255, 252, 244, 0.6);">Connecting to BridgeeAI Room Gateway...</p>
+    </div>
+  </main>
+
+  <script src="/js/join.js" type="module"></script>
+</body>
+</html>

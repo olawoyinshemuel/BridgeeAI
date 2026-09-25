@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — Production OBS / vMix Overlay</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/overlay.css">
+</head>
+<body class="bg-transparent">
+
+  <!-- Broadcast Safe Area Guide (Action 90% / Title 80%) -->
+  <div id="safeAreaGuide" class="safe-area-guide"></div>
+
+  <!-- AV Operator Quick Config Floating Button -->
+  <div id="operatorToolbar" class="operator-toolbar">
+    <button id="toolbarToggleBtn" class="toolbar-toggle-btn" title="Configure Overlay Settings">
+      <span>⚙️ OBS / vMix Settings</span>
+    </button>
+    
+    <div id="settingsDrawer" class="settings-drawer">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,252,244,0.1); padding-bottom: 8px;">
+        <strong style="font-size: 14px;">Overlay Configuration</strong>
+        <span id="closeDrawerBtn" style="cursor: pointer; opacity: 0.7; font-size: 16px;">✕</span>
+      </div>
+
+      <div class="drawer-row">
+        <label class="drawer-label">Target Language</label>
+        <select id="settingLang" class="drawer-select">
+          <option value="fr-FR">Français (French)</option>
+          <option value="es-ES">Español (Spanish)</option>
+          <option value="yo-NG">Yorùbá</option>
+          <option value="ha-NG">Hausa</option>
+          <option value="ig-NG">Asụsụ Igbo</option>
+          <option value="sw-KE">Kiswahili</option>
+          <option value="de-DE">Deutsch (German)</option>
+          <option value="ja-JP">日本語 (Japanese)</option>
+          <option value="zh-CN">简体中文 (Chinese)</option>
+          <option value="ar-SA">العربية (Arabic)</option>
+          <option value="pt-BR">Português (Portuguese)</option>
+        </select>
+      </div>
+
+      <div class="drawer-row">
+        <label class="drawer-label">Display Mode</label>
+        <select id="settingMode" class="drawer-select">
+          <option value="dual">Dual Language (Original + Translated)</option>
+          <option value="translated">Translated Only</option>
+          <option value="original">Original Only (Captions)</option>
+        </select>
+      </div>
+
+      <div class="drawer-row">
+        <label class="drawer-label">Graphic Preset</label>
+        <select id="settingPreset" class="drawer-select">
+          <option value="broadcast">Broadcast (Lower-Third Banner)</option>
+          <option value="minimal">Minimal (Floating Shadow Subtitles)</option>
+          <option value="conference">Conference (Elevated Glass Card)</option>
+          <option value="church">Church (Reverent Gold Banner)</option>
+        </select>
+      </div>
+
+      <div class="drawer-row">
+        <label class="drawer-label">Screen Position</label>
+        <select id="settingPosition" class="drawer-select">
+          <option value="bottom">Bottom (Standard Lower-Third)</option>
+          <option value="top">Top (Header Banner)</option>
+          <option value="middle">Middle (Center Stage)</option>
+        </select>
+      </div>
+
+      <div class="drawer-row">
+        <label class="drawer-label">Font Scale</label>
+        <select id="settingSize" class="drawer-select">
+          <option value="small">Small (22px)</option>
+          <option value="medium" selected>Medium (28px)</option>
+          <option value="large">Large (38px)</option>
+          <option value="xlarge">Extra Large (48px)</option>
+        </select>
+      </div>
+
+      <div class="drawer-row">
+        <label class="drawer-label">Background Key</label>
+        <select id="settingBg" class="drawer-select">
+          <option value="transparent" selected>Transparent (Direct Alpha Channel)</option>
+          <option value="semidark">Semi-Dark Shaded</option>
+          <option value="solidblack">Solid Black Box</option>
+          <option value="greenscreen">Chroma Green (#00FF00)</option>
+          <option value="bluescreen">Chroma Blue (#0000FF)</option>
+        </select>
+      </div>
+
+      <div class="drawer-row">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+          <input type="checkbox" id="settingSafeArea"> Show Broadcast Safe Area (80/90%)
+        </label>
+      </div>
+
+      <button id="copyObsBtn" class="copy-obs-url-btn">
+        📋 Copy Clean OBS Browser URL
+      </button>
+      <div id="copyToast" style="display: none; font-size: 11px; color: var(--aqua-400); text-align: center;">
+        ✓ URL copied! Paste into OBS Browser Source
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Subtitle Overlay Viewport -->
+  <main id="overlayViewport" class="overlay-viewport pos-bottom preset-broadcast">
+    <div class="caption-stage">
+      <div class="caption-card">
+        
+        <!-- Metadata Header: Speaker Name & Language Tag -->
+        <div id="captionMetaHeader" class="caption-meta-header">
+          <div class="speaker-pill">
+            <span class="live-dot"></span>
+            <span id="speakerNameDisplay">LIVE SPEAKER</span>
+          </div>
+          <div id="langBadgeDisplay" class="lang-target-badge">
+            FRANÇAIS
+          </div>
+        </div>
+
+        <!-- Original Source Text (Shown in Dual mode) -->
+        <div id="captionOriginal" class="caption-original">
+          Awaiting live speech from presenter...
+        </div>
+
+        <!-- Main Translated Sentence (or Partial stream) -->
+        <div id="captionTranslated" class="caption-translated size-medium">
+          <span class="partial-text">Connecting to real-time session stream</span><span class="partial-cursor"></span>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Extract Room ID from pathname: /overlay/:roomId
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const roomId = (pathParts[1] || 'TECH-2026').toUpperCase();
+
+    // Parse URL Search Parameters for initial operator overrides
+    const params = new URLSearchParams(window.location.search);
+    let currentLang = params.get('lang') || 'fr-FR';
+    let currentMode = params.get('mode') || 'dual';
+    let currentPreset = params.get('preset') || 'broadcast';
+    let currentPos = params.get('position') || 'bottom';
+    let currentSize = params.get('size') || 'medium';
+    let currentBg = params.get('bg') || 'transparent';
+    let showSafeArea = params.get('safeArea') === '1' || params.get('safeArea') === 'true';
+    let isCleanMode = params.get('clean') === '1' || params.get('clean') === 'true';
+
+    if (isCleanMode) {
+      document.body.classList.add('clean-mode');
+    }
+
+    const langNames = {
+      'fr-FR': 'FRANÇAIS',
+      'es-ES': 'ESPAÑOL',
+      'yo-NG': 'YORÙBÁ',
+      'ha-NG': 'HAUSA',
+      'ig-NG': 'ASỤSỤ IGBO',
+      'sw-KE': 'KISWAHILI',
+      'de-DE': 'DEUTSCH',
+      'ja-JP': '日本語',
+      'zh-CN': '简体中文',
+      'ar-SA': 'العربية',
+      'pt-BR': 'PORTUGUÊS'
+    };
+
+    // DOM Elements
+    const viewport = document.getElementById('overlayViewport');
+    const originalEl = document.getElementById('captionOriginal');
+    const translatedEl = document.getElementById('captionTranslated');
+    const speakerEl = document.getElementById('speakerNameDisplay');
+    const langBadgeEl = document.getElementById('langBadgeDisplay');
+    const safeAreaGuide = document.getElementById('safeAreaGuide');
+    const toolbar = document.getElementById('operatorToolbar');
+    const drawer = document.getElementById('settingsDrawer');
+    const toggleBtn = document.getElementById('toolbarToggleBtn');
+    const closeBtn = document.getElementById('closeDrawerBtn');
+
+    // Controls Elements
+    const selLang = document.getElementById('settingLang');
+    const selMode = document.getElementById('settingMode');
+    const selPreset = document.getElementById('settingPreset');
+    const selPos = document.getElementById('settingPosition');
+    const selSize = document.getElementById('settingSize');
+    const selBg = document.getElementById('settingBg');
+    const chkSafe = document.getElementById('settingSafeArea');
+    const btnCopy = document.getElementById('copyObsBtn');
+    const toast = document.getElementById('copyToast');
+
+    // Initialize UI form fields with current states
+    selLang.value = currentLang;
+    selMode.value = currentMode;
+    selPreset.value = currentPreset;
+    selPos.value = currentPos;
+    selSize.value = currentSize;
+    selBg.value = currentBg;
+    chkSafe.checked = showSafeArea;
+
+    function applySettings() {
+      // 1. Background Keying
+      document.body.className = `bg-${currentBg} ${isCleanMode ? 'clean-mode' : ''}`;
+
+      // 2. Position & Preset Classes
+      viewport.className = `overlay-viewport pos-${currentPos} preset-${currentPreset}`;
+
+      // 3. Font Scale
+      translatedEl.className = `caption-translated size-${currentSize}`;
+
+      // 4. Safe Area Visibility
+      if (showSafeArea) {
+        safeAreaGuide.classList.add('visible');
+      } else {
+        safeAreaGuide.classList.remove('visible');
+      }
+
+      // 5. Mode visibility
+      if (currentMode === 'translated') {
+        originalEl.style.display = 'none';
+        translatedEl.style.display = 'block';
+      } else if (currentMode === 'original') {
+        originalEl.style.display = 'none';
+        translatedEl.style.display = 'block';
+      } else {
+        originalEl.style.display = 'block';
+        translatedEl.style.display = 'block';
+      }
+
+      // 6. Language Tag
+      langBadgeEl.textContent = langNames[currentLang] || currentLang;
+    }
+
+    applySettings();
+
+    // Fetch Session Title & Speaker Info
+    fetch(`/api/sessions/${roomId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.session) {
+          speakerEl.textContent = `${data.session.hostName} · ${data.session.title}`;
+        }
+      })
+      .catch(() => {});
+
+    // WebSocket Real-Time Connection
+    let ws = null;
+    let reconnectTimeout = null;
+
+    function connectOverlayStream() {
+      if (ws) {
+        ws.close();
+      }
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/live?roomId=${roomId}&lang=${currentLang}&mode=overlay`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log(`[OBS Overlay] Connected to room: ${roomId}, lang: ${currentLang}`);
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+
+          if (msg.type === 'CAPTION_PARTIAL') {
+            // Live typing partial words from speaker
+            if (currentMode === 'original') {
+              translatedEl.innerHTML = `<span class="partial-text">${msg.partialText}</span><span class="partial-cursor"></span>`;
+            } else {
+              translatedEl.innerHTML = `<span class="partial-text">${msg.partialText} ...</span><span class="partial-cursor"></span>`;
+            }
+          } else if (msg.type === 'CAPTION_FINAL') {
+            // Finalized translated sentence arrives
+            if (currentMode === 'dual') {
+              originalEl.textContent = msg.originalText;
+              translatedEl.textContent = msg.translatedText;
+            } else if (currentMode === 'original') {
+              originalEl.textContent = '';
+              translatedEl.textContent = msg.originalText;
+            } else {
+              // translated only
+              originalEl.textContent = '';
+              translatedEl.textContent = msg.translatedText;
+            }
+
+            // Subtle CSS animation pulse
+            translatedEl.style.opacity = '0.4';
+            setTimeout(() => { translatedEl.style.opacity = '1'; }, 60);
+
+          } else if (msg.type === 'STREAM_STATUS') {
+            if (msg.isStreaming === false) {
+              originalEl.textContent = 'Session in standby';
+              translatedEl.textContent = 'Waiting for host audio...';
+            } else if (msg.isMuted) {
+              originalEl.textContent = 'Host audio muted';
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing overlay message:', e);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('[OBS Overlay] Disconnected, retrying in 2.5s...');
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = setTimeout(connectOverlayStream, 2500);
+      };
+    }
+
+    connectOverlayStream();
+
+    // Event Listeners for Operator Controls
+    toggleBtn.addEventListener('click', () => {
+      drawer.classList.toggle('open');
+    });
+
+    closeBtn.addEventListener('click', () => {
+      drawer.classList.remove('open');
+    });
+
+    selLang.addEventListener('change', (e) => {
+      currentLang = e.target.value;
+      applySettings();
+      connectOverlayStream(); // Re-subscribe with new language target
+    });
+
+    selMode.addEventListener('change', (e) => {
+      currentMode = e.target.value;
+      applySettings();
+    });
+
+    selPreset.addEventListener('change', (e) => {
+      currentPreset = e.target.value;
+      applySettings();
+    });
+
+    selPos.addEventListener('change', (e) => {
+      currentPos = e.target.value;
+      applySettings();
+    });
+
+    selSize.addEventListener('change', (e) => {
+      currentSize = e.target.value;
+      applySettings();
+    });
+
+    selBg.addEventListener('change', (e) => {
+      currentBg = e.target.value;
+      applySettings();
+    });
+
+    chkSafe.addEventListener('change', (e) => {
+      showSafeArea = e.target.checked;
+      applySettings();
+    });
+
+    // Copy Clean OBS URL to clipboard
+    btnCopy.addEventListener('click', () => {
+      const cleanUrl = `${window.location.origin}/overlay/${roomId}?lang=${currentLang}&mode=${currentMode}&preset=${currentPreset}&position=${currentPos}&size=${currentSize}&bg=${currentBg}&clean=1`;
+      navigator.clipboard.writeText(cleanUrl).then(() => {
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+      });
+    });
+
+    // Auto-fade toolbar on idle (clean broadcast view)
+    let idleTimer = null;
+    window.addEventListener('mousemove', () => {
+      if (!isCleanMode) {
+        toolbar.style.opacity = '1';
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          if (!drawer.classList.contains('open')) {
+            toolbar.style.opacity = '0';
+          }
+        }, 3500);
+      }
+    });
+  </script>
+</body>
+</html>

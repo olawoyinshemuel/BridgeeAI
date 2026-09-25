@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BridgeeAI — Live Session</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <style>
+    .live-container {
+      max-width: 540px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 20px 24px;
+      position: relative;
+    }
+    .live-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--ink-border);
+      margin-bottom: 24px;
+    }
+    .lang-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(123, 132, 220, 0.15);
+      border: 1px solid var(--violet-500);
+      color: var(--bone-50);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .session-badge-top {
+      font-size: 12px;
+      color: rgba(255, 252, 244, 0.5);
+    }
+    .transcript-canvas {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 20px;
+      padding-bottom: 24px;
+    }
+    .history-text {
+      color: rgba(255, 252, 244, 0.4);
+      font-size: 18px;
+      line-height: 1.5;
+      transition: all 0.3s ease;
+    }
+    .live-caption-box {
+      background: rgba(35, 33, 33, 0.65);
+      border: 1px solid var(--ink-border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .active-caption {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      line-height: 1.35;
+      color: var(--bone-50);
+      transition: font-size 0.2s ease;
+    }
+    .active-caption.large {
+      font-size: 34px;
+    }
+    .active-caption.xlarge {
+      font-size: 40px;
+    }
+    .caption-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 252, 244, 0.08);
+      font-size: 12px;
+      color: rgba(255, 252, 244, 0.5);
+    }
+    .audio-stream-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--aqua-400);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .utility-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      background: var(--ink-surface);
+      border: 1px solid var(--ink-border);
+      border-radius: var(--radius-pill);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      margin-top: auto;
+    }
+    .util-btn {
+      background: none;
+      border: none;
+      color: var(--bone-50);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .util-btn:hover {
+      background: rgba(255, 252, 244, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="live-container">
+    <header class="live-top-bar">
+      <div class="live-pulse">
+        <span class="live-pulse-dot"></span>
+        <span id="liveStatus">CONNECTED</span>
+      </div>
+      <a id="langSwitchBtn" href="#" class="lang-pill-btn" title="Tap to change language or mode">
+        <span id="currentLangLabel">French (Français)</span>
+        <span style="font-size: 10px; opacity: 0.7;">⚙</span>
+      </a>
+    </header>
+
+    <div class="session-badge-top" id="sessionHeaderInfo">
+      Session: <strong id="sessionTitleDisplay" style="color: var(--bone-50);">...</strong>
+    </div>
+
+    <!-- Live Caption Reading Canvas -->
+    <main class="transcript-canvas">
+      <div class="history-text" id="historyCaption">
+        Welcome everyone to today's gathering. We are exploring the impact of intelligent communication systems.
+      </d      <div class="live-caption-box">
+        <div class="active-caption" id="mainCaption">
+          Bienvenue à tous à notre rencontre d'aujourd'hui.
+        </div>
+        <div class="caption-meta">
+          <div class="audio-stream-indicator" id="audioIndicator">
+            <span>●</span>
+            <span id="audioStatusText">SYNCHRONIZED AUDIO READY</span>
+          </div>
+          <span id="modeDisplayBadge" style="text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold-400);">READ + LISTEN</span>
+        </div>
+      </div>
+
+      <!-- Real Voice Demo Mic Test Card -->
+      <div style="margin-top: 14px; padding: 12px 16px; background: rgba(30, 28, 38, 0.9); border: 1px solid var(--ink-border); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.05em;">Live Demo Voice Test</div>
+          <div id="demoMicStatus" style="font-size: 12px; color: rgba(255,252,244,0.7); margin-top: 2px;">
+            Tap mic to speak your own voice and see real-time translation
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button id="btnDemoMic" class="btn-pill btn-pill-primary" style="background: var(--aqua-400); color: #0E1A16; font-weight: 700; padding: 8px 14px; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; border: none;">
+            <span id="demoMicIcon">🎙️</span>
+            <span id="demoMicLabel">Speak with Mic</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Utility Bar -->
+    <footer class="utility-bar">
+      <button class="util-btn" id="fontSizeBtn" title="Toggle Text Size">
+        <span>A / A+</span>
+      </button>
+
+      <div style="font-size: 12px; color: rgba(255, 252, 244, 0.4);" id="netBadge">
+        Low latency (&lt;2 KB/s)
+      </div>
+
+      <a id="exitSessionBtn" href="#" class="util-btn" style="color: var(--rose-400); text-decoration: none;">
+        <span>Exit ✕</span>
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    const roomId = window.location.pathname.split('/').filter(Boolean)[1] || 'TECH-2026';
+    const params = new URLSearchParams(window.location.search);
+    const langCode = params.get('lang') || 'fr-FR';
+    const mode = params.get('mode') || 'read_listen';
+
+    const langNames = {
+      'fr-FR': 'Français (French)',
+      'es-ES': 'Español (Spanish)',
+      'yo-NG': 'Yorùbá (Yoruba)',
+      'ha-NG': 'Hausa (Hausa)',
+      'ig-NG': 'Asụsụ Igbo (Igbo)',
+      'de-DE': 'Deutsch (German)',
+      'ja-JP': '日本語 (Japanese)',
+      'zh-CN': '简体中文 (Chinese)',
+      'ar-SA': 'العربية (Arabic)',
+      'pt-BR': 'Português (Portuguese)',
+      'sw-KE': 'Kiswahili (Swahili)'
+    };
+
+    const sampleCaptions = {
+      'fr-FR': "Bienvenue à tous à notre rencontre d'aujourd'hui. Nous explorons les technologies inclusives.",
+      'es-ES': "Bienvenidos a todos a nuestra reunión de hoy. Exploramos tecnologías inclusivas.",
+      'yo-NG': "Ẹ káàbọ̀ sí ìpàdé wa lónìí. A ń ṣe àwárí àwọn ìmọ̀-ẹ̀rọ àkópọ̀.",
+      'ha-NG': "Barka da zuwa taronmu na yau. Muna binciken fasahar hada kai.",
+      'ig-NG': "Nnọọ na nzukọ anyị taa. Anyị na-enyocha teknụzụ nsonye.",
+      'de-DE': "Herzlich willkommen zu unserem heutigen Treffen. Wir erforschen inklusive Technologien.",
+      'ja-JP': "本日の集まりへようこそ。私たちはインクルーシブな技術を探求しています。",
+      'zh-CN': "欢迎大家参加今天的会议。我们正在探索包容性智能技术。",
+      'ar-SA': "مرحبًا بالجميع في لقاء اليوم. نحن نستكشف التقنيات الشاملة.",
+      'pt-BR': "Bem-vindos a todos ao nosso encontro de hoje. Exploramos tecnologias inclusivas.",
+      'sw-KE': "Karibuni wote kwenye mkutano wetu wa leo. Tunachunguza teknolojia jumuishi."
+    };
+
+    document.getElementById('currentLangLabel').textContent = langNames[langCode] || langCode;
+    document.getElementById('langSwitchBtn').href = `/join/${roomId}`;
+    document.getElementById('exitSessionBtn').href = `/join/${roomId}`;
+
+    if (sampleCaptions[langCode]) {
+      document.getElementById('mainCaption').textContent = sampleCaptions[langCode];
+    }
+
+    const modeLabels = {
+      'read': 'READ ONLY',
+      'listen': 'LISTEN ONLY',
+      'read_listen': 'READ + LISTEN'
+    };
+    document.getElementById('modeDisplayBadge').textContent = modeLabels[mode] || mode.toUpperCase();
+
+    if (mode === 'read') {
+      document.getElementById('audioIndicator').style.display = 'none';
+    }
+
+    // Speech Synthesis for Audio Earbuds Listening
+    function playTranslatedSpeech(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang || 'fr-FR';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        const indicator = document.getElementById('audioStatusText');
+        if (indicator) {
+          indicator.textContent = 'TRANSLATED AUDIO PLAYING 🎧';
+          indicator.style.color = '#2ECC71';
+        }
+
+        utterance.onend = () => {
+          if (indicator) {
+            indicator.textContent = 'SYNCHRONIZED AUDIO READY';
+            indicator.style.color = 'var(--aqua-400)';
+          }
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn('Speech synthesis error:', e);
+      }
+    }
+
+    // Font size toggler
+    const fontSizes = ['', 'large', 'xlarge'];
+    let fontIdx = 0;
+    document.getElementById('fontSizeBtn').addEventListener('click', () => {
+      fontIdx = (fontIdx + 1) % fontSizes.length;
+      const caption = document.getElementById('mainCaption');
+      caption.className = `active-caption ${fontSizes[fontIdx]}`;
+    });
+
+    // Fetch session title
+    fetch(`/api/sessions/${roomId}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          document.getElementById('sessionTitleDisplay').textContent = d.session.title;
+        }
+      });
+
+    // Real-Time Multilingual Live Caption WebSocket Connection
+    let liveWs = null;
+    function connectLiveStream() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/live?roomId=${roomId}&lang=${langCode}&mode=${mode}`;
+      
+      liveWs = new WebSocket(wsUrl);
+
+      liveWs.onopen = () => {
+        const statusDot = document.querySelector('.live-pulse-dot');
+        if (statusDot) statusDot.style.background = 'var(--aqua-400)';
+        document.getElementById('liveStatus').textContent = 'CONNECTED';
+      };
+
+      liveWs.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          
+          if (msg.type === 'CAPTION_PARTIAL') {
+            const mainCap = document.getElementById('mainCaption');
+            mainCap.innerHTML = `<span style="font-style: italic; opacity: 0.7;">${msg.partialText} ...</span>`;
+          } else if (msg.type === 'CAPTION_FINAL') {
+            const mainCap = document.getElementById('mainCaption');
+            const historyCap = document.getElementById('historyCaption');
+
+            // Shift previous sentence into history
+            if (mainCap.textContent.trim()) {
+              historyCap.textContent = mainCap.textContent;
+            }
+
+            // Display new translated final sentence with brief highlight
+            mainCap.textContent = msg.translatedText;
+            mainCap.style.transition = 'opacity 0.2s ease';
+            mainCap.style.opacity = '0.5';
+            setTimeout(() => { mainCap.style.opacity = '1'; }, 50);
+
+            // Play voice in earbuds if mode has audio
+            if (mode === 'listen' || mode === 'read_listen') {
+              playTranslatedSpeech(msg.translatedText, langCode);
+            }
+
+          } else if (msg.type === 'STREAM_STATUS') {
+            const statusLabel = document.getElementById('liveStatus');
+            if (msg.isStreaming === false) {
+              statusLabel.textContent = 'STANDBY';
+            } else if (msg.isMuted) {
+              statusLabel.textContent = 'MIC MUTED';
+            } else if (msg.isPaused) {
+              statusLabel.textContent = 'SESSION PAUSED';
+            } else {
+              statusLabel.textContent = 'LIVE';
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing live caption payload:', e);
+        }
+      };
+
+      liveWs.onclose = () => {
+        const statusDot = document.querySelector('.live-pulse-dot');
+        if (statusDot) statusDot.style.background = 'var(--warning-500)';
+        document.getElementById('liveStatus').textContent = 'RECONNECTING...';
+        setTimeout(connectLiveStream, 2500);
+      };
+    }
+
+    connectLiveStream();
+
+    // Attendee Demo Real-Voice Recognition
+    let demoRecognizer = null;
+    let isDemoRecording = false;
+
+    const btnDemoMic = document.getElementById('btnDemoMic');
+    const demoMicStatus = document.getElementById('demoMicStatus');
+    const demoMicIcon = document.getElementById('demoMicIcon');
+    const demoMicLabel = document.getElementById('demoMicLabel');
+
+    if (btnDemoMic) {
+      btnDemoMic.addEventListener('click', () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert('Speech recognition is not natively supported in this browser. Please test in Chrome, Edge, or Safari.');
+          return;
+        }
+
+        if (isDemoRecording) {
+          if (demoRecognizer) demoRecognizer.stop();
+          return;
+        }
+
+        try {
+          demoRecognizer = new SpeechRecognition();
+          demoRecognizer.continuous = false;
+          demoRecognizer.interimResults = true;
+          demoRecognizer.lang = 'en-US';
+
+          demoRecognizer.onstart = () => {
+            isDemoRecording = true;
+            demoMicStatus.textContent = 'Listening to your voice... Speak now!';
+            demoMicStatus.style.color = '#2ECC71';
+            demoMicLabel.textContent = 'Stop Speaking';
+            btnDemoMic.style.background = '#E50914';
+            btnDemoMic.style.color = '#FFFFFF';
+          };
+
+          demoRecognizer.onresult = (e) => {
+            let interim = '';
+            for (let i = e.resultIndex; i < e.results.length; ++i) {
+              const transcript = e.results[i][0].transcript;
+              if (e.results[i].isFinal) {
+                const spokenText = transcript.trim();
+                if (spokenText) {
+                  demoMicStatus.textContent = `Translating: "${spokenText}"`;
+                  demoMicStatus.style.color = 'var(--gold-400)';
+                  
+                  if (liveWs && liveWs.readyState === WebSocket.OPEN) {
+                    liveWs.send(JSON.stringify({
+                      type: 'DEMO_SPEECH_FINAL',
+                      text: spokenText,
+                      roomId
+                    }));
+                  }
+                }
+              } else {
+                interim += transcript;
+              }
+            }
+            if (interim) {
+              const mainCap = document.getElementById('mainCaption');
+              mainCap.innerHTML = `<span style="font-style: italic; opacity: 0.7;">${interim} ...</span>`;
+            }
+          };
+
+          demoRecognizer.onerror = (e) => {
+            console.warn('Demo recognizer error:', e.error);
+            demoMicStatus.textContent = `Mic error: ${e.error}. Tap to retry.`;
+            demoMicStatus.style.color = 'var(--warning-500)';
+          };
+
+          demoRecognizer.onend = () => {
+            isDemoRecording = false;
+            demoMicLabel.textContent = 'Speak with Mic';
+            btnDemoMic.style.background = 'var(--aqua-400)';
+            btnDemoMic.style.color = '#0E1A16';
+            setTimeout(() => {
+              demoMicStatus.textContent = 'Tap mic to speak your own voice and see real-time translation';
+              demoMicStatus.style.color = 'rgba(255,252,244,0.7)';
+            }, 3000);
+          };
+
+          demoRecognizer.start();
+        } catch (err) {
+          console.warn('Could not start demo recognizer:', err);
+          alert('Microphone error: ' + err.message);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — Session Access & Link Generation</title>
+  <meta name="description" content="Access and share your live session links: Participant QR Code, Auditorium Stage Displays, and OBS Broadcast Overlays.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <style>
+    .preview-page {
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 10%, rgba(123, 132, 220, 0.08) 0%, #0E0D12 80%);
+      color: var(--bone-50);
+      padding-bottom: 80px;
+    }
+
+    .preview-header {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      background: rgba(14, 13, 18, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .preview-container {
+      max-width: 960px;
+      margin: 36px auto 0;
+      padding: 0 24px;
+    }
+
+    /* Step Progress Indicator */
+    .setup-progress-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      background: rgba(24, 23, 30, 0.7);
+      border: 1px solid rgba(255, 252, 244, 0.08);
+      border-radius: var(--radius-pill);
+      padding: 8px 24px;
+    }
+
+    .step-track-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255, 252, 244, 0.45);
+    }
+
+    .step-track-item.done {
+      color: #2ECC71;
+    }
+
+    .step-track-item.active {
+      color: var(--bone-50);
+      font-weight: 700;
+    }
+
+    .step-num-bubble {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 252, 244, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .step-track-item.done .step-num-bubble {
+      background: #2ECC71;
+      color: #0E0D12;
+      font-weight: 800;
+    }
+
+    .step-track-item.active .step-num-bubble {
+      background: var(--violet-500);
+      color: #FFFFFF;
+      font-weight: 800;
+    }
+
+    /* Main Showcase Box */
+    .session-overview-card {
+      background: rgba(24, 23, 30, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.6);
+      margin-bottom: 32px;
+    }
+
+    .session-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .session-room-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(14, 13, 18, 0.9);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      border-radius: 8px;
+      padding: 6px 14px;
+    }
+
+    .room-code-val {
+      font-family: monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--aqua-400);
+      letter-spacing: 0.05em;
+    }
+
+    /* 3 Essential Links Grid */
+    .links-cards-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 820px) {
+      .links-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Participant QR Showcase */
+    .qr-hero-card {
+      background: rgba(30, 28, 36, 0.9);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .qr-visual-wrap {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin: 18px 0;
+    }
+
+    .qr-img-frame {
+      background: #FFFFFF;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      width: 160px;
+      height: 160px;
+      flex-shrink: 0;
+    }
+
+    .qr-img-frame img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .qr-meta-copy {
+      flex: 1;
+    }
+
+    /* Production Switcher & Stage Display Cards */
+    .asset-link-card {
+      background: rgba(30, 28, 36, 0.9);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .asset-link-card:hover {
+      border-color: var(--violet-500);
+      transform: translateY(-2px);
+    }
+
+    .asset-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .asset-card-desc {
+      font-size: 12px;
+      color: rgba(255, 252, 244, 0.65);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .url-copy-strip {
+      display: flex;
+      align-items: center;
+      background: rgba(14, 13, 18, 0.8);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      border-radius: 6px;
+      padding: 6px 10px;
+      gap: 8px;
+    }
+
+    .url-text-code {
+      flex: 1;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--bone-50);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .copy-pill-btn {
+      background: rgba(255, 252, 244, 0.1);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      color: #FFFFFF;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .copy-pill-btn:hover {
+      background: var(--aqua-400);
+      color: #0E0D12;
+      border-color: var(--aqua-400);
+    }
+
+    .open-view-btn {
+      color: var(--aqua-400);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .open-view-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Primary Action: Step 4 Start Live Stream */
+    .launch-action-bar {
+      background: linear-gradient(135deg, rgba(35, 33, 44, 0.95), rgba(20, 19, 26, 0.98));
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .launch-cta-btn {
+      background: var(--slate-850);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 252, 244, 0.25);
+      border-radius: var(--radius-pill);
+      padding: 14px 32px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .launch-cta-btn:hover {
+      background: #3D394C;
+      border-color: var(--aqua-400);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 245, 212, 0.2);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #2ECC71;
+      color: #0E0D12;
+      padding: 12px 22px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="preview-page">
+
+  <!-- Header -->
+  <header class="preview-header">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="/" class="brand-link">
+        <div class="brand-symbol">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="/session/new" style="font-size: 13px; color: rgba(255,252,244,0.7); text-decoration: none;">+ New Session</a>
+        <a id="navConsoleBtn" href="#" class="btn-pill btn-pill-primary" style="padding: 7px 16px; font-size: 12px; background: var(--slate-850);">
+          Launch Console 🎙
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="preview-container">
+    
+    <!-- Progress Indicator -->
+    <div class="setup-progress-bar">
+      <div class="step-track-item done">
+        <div class="step-num-bubble">✓</div>
+        <span>1. Host Auth</span>
+      </div>
+      <span style="color: rgba(255,252,244,0.2);">→</span>
+      <div class="step-track-item done">
+        <div class="step-num-bubble">✓</div>
+        <span>2. Session Setup</span>
+      </div>
+      <span style="color: rgba(255,252,244,0.2);">→</span>
+      <div class="step-track-item active">
+        <div class="step-num-bubble">3</div>
+        <span>3. QR & Links</span>
+      </div>
+      <span style="color: rgba(255,252,244,0.2);">→</span>
+      <div class="step-track-item">
+        <div class="step-num-bubble">4</div>
+        <span>4. Live Console</span>
+      </div>
+    </div>
+
+    <!-- Main Session Overview Card -->
+    <div class="session-overview-card">
+      
+      <!-- Top Title Row -->
+      <div class="session-header-row">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span id="sessionCategoryBadge" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 99px; background: rgba(213, 174, 104, 0.2); color: var(--gold-400);">
+              CONFERENCE
+            </span>
+            <span style="font-size: 12px; color: #2ECC71; display: inline-flex; align-items: center; gap: 6px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #2ECC71;"></span>
+              Room Ready & Armed
+            </span>
+          </div>
+          <h1 id="previewTitle" style="font-family: var(--font-serif); font-size: 32px; font-weight: 600; color: #FFFFFF; margin-bottom: 6px;">
+            Loading Session...
+          </h1>
+          <p id="previewPresenter" style="font-size: 14px; color: rgba(255,252,244,0.65);">
+            Presenter: ...
+          </p>
+        </div>
+
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: rgba(255,252,244,0.5); text-transform: uppercase; margin-bottom: 4px;">Audience Room Code</div>
+          <div class="session-room-badge">
+            <span class="room-code-val" id="previewRoomCode">...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links & Asset Generation Grid (Step 3) -->
+      <div class="links-cards-grid">
+        
+        <!-- Asset 1: Participant QR Code & Short Link -->
+        <div class="qr-hero-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-size: 11px; font-weight: 700; color: #2ECC71; text-transform: uppercase; letter-spacing: 0.08em;">
+                Asset 01 · Audience Join
+              </div>
+              <span style="font-size: 11px; color: rgba(255,252,244,0.5);">Zero App Required</span>
+            </div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #FFFFFF; margin-top: 6px;">
+              Participant QR Code & Short Link
+            </h3>
+            <p style="font-size: 13px; color: rgba(255,252,244,0.7); margin-top: 4px;">
+              Share on presentation slides, bulletins, or badges for instant mobile translation.
+            </p>
+          </div>
+
+          <div class="qr-visual-wrap">
+            <div class="qr-img-frame">
+              <img id="qrImageElement" src="" alt="Session QR Code">
+            </div>
+            <div class="qr-meta-copy">
+              <div style="font-size: 12px; font-weight: 600; color: rgba(255,252,244,0.7); margin-bottom: 6px;">Short Link URL</div>
+              <div class="url-copy-strip" style="margin-bottom: 12px;">
+                <span class="url-text-code" id="joinShortLink">bridgee.ai/join/...</span>
+                <button class="copy-pill-btn" onclick="copyText('joinShortLink')">Copy</button>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a id="btnSimulateJoin" href="#" target="_blank" class="open-view-btn" style="color: #2ECC71;">
+                  Open Attendee PWA 📱 ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size: 11px; color: rgba(255,252,244,0.5); border-top: 1px solid rgba(255,252,244,0.08); padding-top: 10px;">
+            ✓ Works on any mobile browser (Safari, Chrome, Firefox) without login.
+          </div>
+        </div>
+
+        <!-- Production Stage Displays & OBS Broadcast Overlays -->
+        <div>
+          <!-- Asset 2: Stage Display Link (/venue/ROOM-ID) -->
+          <div class="asset-link-card">
+            <div style="font-size: 11px; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">
+              Asset 02 · In-Venue Production
+            </div>
+            <h3 class="asset-card-title">
+              <span>🖥️ Stage Display Link (/venue)</span>
+            </h3>
+            <p class="asset-card-desc">
+              For venue projectors, auditorium side IMAG screens, and balcony LED walls.
+            </p>
+            <div class="url-copy-strip">
+              <span class="url-text-code" id="venueDisplayLink">bridgee.ai/venue/...</span>
+              <button class="copy-pill-btn" onclick="copyText('venueDisplayLink')">Copy</button>
+            </div>
+            <a id="btnOpenVenue" href="#" target="_blank" class="open-view-btn">
+              Open Stage Display View 📽 ↗
+            </a>
+          </div>
+
+          <!-- Asset 3: OBS / Broadcast Overlay Link (/overlay/ROOM-ID) -->
+          <div class="asset-link-card">
+            <div style="font-size: 11px; font-weight: 700; color: var(--violet-500); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">
+              Asset 03 · Livestream & Broadcast
+            </div>
+            <h3 class="asset-card-title">
+              <span>📡 OBS / Broadcast Overlay Link (/overlay)</span>
+            </h3>
+            <p class="asset-card-desc">
+              Add as a transparent Browser Source into OBS Studio, vMix, or Wirecast switchers.
+            </p>
+            <div class="url-copy-strip">
+              <span class="url-text-code" id="overlayDisplayLink">bridgee.ai/overlay/...</span>
+              <button class="copy-pill-btn" onclick="copyText('overlayDisplayLink')">Copy</button>
+            </div>
+            <a id="btnOpenOverlay" href="#" target="_blank" class="open-view-btn">
+              Open Overlay Studio 🎛️ ↗
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Step 4: Launch Console Bar -->
+      <div class="launch-action-bar">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--aqua-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">
+            Step 4: Launch Console
+          </div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #FFFFFF; margin-bottom: 4px;">
+            Ready to Speak to Your Audience?
+          </h3>
+          <p style="font-size: 13px; color: rgba(255,252,244,0.7); max-width: 500px;">
+            Click below to request microphone access, establish real-time WebSocket streaming, and begin speech translation.
+          </p>
+        </div>
+
+        <a id="btnStartLiveStream" href="#" class="launch-cta-btn">
+          <span>Start Live Stream & Launch Console 🎙</span>
+          <span style="font-size: 18px;">→</span>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast">Link copied to clipboard!</div>
+
+  <script>
+    // Extract room id from URL path (/session/:roomId/preview) or search param (?room=...)
+    let currentRoomId = '';
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    if (pathParts.length >= 2 && pathParts[0] === 'session' && pathParts[1] !== 'preview') {
+      currentRoomId = pathParts[1];
+    } else if (pathParts.length >= 3 && pathParts[0] === 'host' && pathParts[1] === 'preview') {
+      currentRoomId = pathParts[2];
+    } else {
+      const params = new URLSearchParams(window.location.search);
+      currentRoomId = params.get('room') || 'TECH-2026';
+    }
+
+    async function initSessionAssets() {
+      try {
+        const [sessRes, qrRes] = await Promise.all([
+          fetch(`/api/sessions/${currentRoomId}`),
+          fetch(`/api/sessions/${currentRoomId}/qr`)
+        ]);
+
+        const sessData = await sessRes.json();
+        const qrData = await qrRes.json();
+
+        if (sessData.success) {
+          const s = sessData.session;
+          document.getElementById('previewTitle').textContent = s.title;
+          document.getElementById('previewPresenter').textContent = `Presenter: ${s.hostName || 'Event Host'}`;
+          document.getElementById('previewRoomCode').textContent = s.roomId;
+          document.getElementById('sessionCategoryBadge').textContent = s.template || 'CONFERENCE';
+        }
+
+        const host = window.location.host;
+        const protocol = window.location.protocol;
+        const joinFullUrl = `${protocol}//${host}/join/${currentRoomId}`;
+        const venueFullUrl = `${protocol}//${host}/venue/${currentRoomId}`;
+        const overlayFullUrl = `${protocol}//${host}/overlay/${currentRoomId}`;
+        const consoleFullUrl = `/host/console/${currentRoomId}`;
+
+        // QR image
+        if (qrData.success) {
+          document.getElementById('qrImageElement').src = qrData.qrDataUrl;
+        }
+
+        // Set URLs
+        document.getElementById('joinShortLink').textContent = joinFullUrl;
+        document.getElementById('venueDisplayLink').textContent = venueFullUrl;
+        document.getElementById('overlayDisplayLink').textContent = overlayFullUrl;
+
+        document.getElementById('btnSimulateJoin').href = `/join/${currentRoomId}`;
+        document.getElementById('btnOpenVenue').href = `/venue/${currentRoomId}`;
+        document.getElementById('btnOpenOverlay').href = `/overlay/${currentRoomId}`;
+
+        // Step 4 Primary Action Button
+        document.getElementById('btnStartLiveStream').href = `${consoleFullUrl}?autostart=true`;
+        document.getElementById('navConsoleBtn').href = consoleFullUrl;
+
+      } catch (err) {
+        console.error('Failed to load session preview:', err);
+      }
+    }
+
+    function copyText(elementId) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = `Copied: ${text}`;
+        toast.classList.add('active');
+        setTimeout(() => toast.classList.remove('active'), 2500);
+      });
+    }
+
+    initSessionAssets();
+  </script>
+</body>
+</html>

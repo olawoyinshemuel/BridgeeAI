@@ -1,0 +1,344 @@
+/* BridgeeAI — Production OBS / vMix Browser Overlay Stylesheet */
+/* Optimized for transparent alpha blending, broadcast safe margins, and chroma-keying */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Background Options (Transparent by default for direct OBS alpha channel) */
+body.bg-transparent {
+  background: transparent !important;
+}
+
+body.bg-semidark {
+  background: rgba(18, 22, 20, 0.45) !important;
+}
+
+body.bg-solidblack {
+  background: #000000 !important;
+}
+
+body.bg-greenscreen {
+  background: #00FF00 !important; /* Pure Chroma Green #00FF00 */
+}
+
+body.bg-bluescreen {
+  background: #0000FF !important; /* Pure Chroma Blue #0000FF */
+}
+
+/* Overlay Viewport Canvas */
+.overlay-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+/* Broadcast Safe Area Margins (Action Safe 90% / Title Safe 80%) */
+.safe-area-guide {
+  position: absolute;
+  inset: 5%;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+  display: none;
+  z-index: 999;
+}
+
+.safe-area-guide.visible {
+  display: block;
+}
+
+/* Positions */
+.overlay-viewport.pos-bottom {
+  justify-content: flex-end;
+  padding: 0 4vw 4.5vh;
+}
+
+.overlay-viewport.pos-top {
+  justify-content: flex-start;
+  padding: 4.5vh 4vw 0;
+}
+
+.overlay-viewport.pos-middle {
+  justify-content: center;
+  padding: 0 4vw;
+}
+
+/* Subtitle Stage Container */
+.caption-stage {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Preset 1: Broadcast (Lower-Third Banner) */
+.preset-broadcast .caption-card {
+  background: linear-gradient(90deg, rgba(20, 18, 18, 0.94) 0%, rgba(26, 24, 24, 0.88) 75%, rgba(26, 24, 24, 0.6) 100%);
+  border-left: 5px solid #7B84DC; /* Violet-500 accent */
+  border-radius: 4px 14px 14px 4px;
+  padding: 20px 28px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Preset 2: Minimal (Floating Subtitle with Strong Text Shadow) */
+.preset-minimal .caption-card {
+  background: transparent;
+  padding: 10px 0;
+  text-align: center;
+}
+
+.preset-minimal .caption-translated {
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.95),
+    0 4px 12px rgba(0, 0, 0, 0.9),
+    0 0 2px rgba(0, 0, 0, 1),
+    0 0 8px rgba(0, 0, 0, 0.85);
+}
+
+.preset-minimal .caption-original {
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.95),
+    0 0 2px rgba(0, 0, 0, 1);
+}
+
+/* Preset 3: Conference (Sleek Glass Card with Pill Metadata) */
+.preset-conference .caption-card {
+  background: rgba(26, 24, 24, 0.88);
+  border: 1px solid rgba(255, 252, 244, 0.15);
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Preset 4: Church (Warm, Reverent Dark Backdrop with Gold Accent) */
+.preset-church .caption-card {
+  background: rgba(18, 26, 22, 0.92);
+  border-left: 4px solid #D5AE68; /* Gold-400 */
+  border-radius: 8px;
+  padding: 22px 30px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Metadata (Speaker name, Language pill, Live Indicator) */
+.caption-meta-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.speaker-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFCF4;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D7798B; /* Rose pulse */
+  box-shadow: 0 0 10px #D7798B;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.lang-target-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(123, 132, 220, 0.22);
+  border: 1px solid rgba(123, 132, 220, 0.45);
+  border-radius: 999px;
+  color: #E8E9FF;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Dual-Language Typography */
+.caption-original {
+  font-size: 0.65em;
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(255, 252, 244, 0.65);
+  margin-bottom: 6px;
+  font-style: italic;
+  transition: all 0.2s ease;
+}
+
+.caption-translated {
+  color: #FFFCF4;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  word-break: break-word;
+}
+
+/* Font Scales */
+.size-small { font-size: 22px; }
+.size-medium { font-size: 28px; }
+.size-large { font-size: 38px; }
+.size-xlarge { font-size: 48px; }
+
+/* Partial Streaming Text (Italic & glowing indicator) */
+.partial-text {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.partial-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: #7AD9D2;
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* AV Operator On-Screen Floating Control Panel (Hover/Click to open) */
+.operator-toolbar {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 1000;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.operator-toolbar:hover,
+body:not(.clean-mode) .operator-toolbar {
+  opacity: 1;
+}
+
+.toolbar-toggle-btn {
+  background: rgba(26, 24, 24, 0.85);
+  border: 1px solid rgba(255, 252, 244, 0.2);
+  color: #FFFCF4;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+}
+
+.toolbar-toggle-btn:hover {
+  background: rgba(35, 33, 33, 0.95);
+  border-color: #7B84DC;
+}
+
+/* Drawer Dialog for Settings */
+.settings-drawer {
+  position: absolute;
+  top: 60px;
+  right: 18px;
+  width: 340px;
+  background: rgba(26, 24, 24, 0.95);
+  border: 1px solid rgba(255, 252, 244, 0.15);
+  border-radius: 14px;
+  padding: 20px;
+  color: #FFFCF4;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: auto;
+  z-index: 1001;
+}
+
+.settings-drawer.open {
+  display: flex;
+}
+
+.drawer-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.drawer-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 252, 244, 0.6);
+}
+
+.drawer-select, .drawer-input {
+  background: rgba(255, 252, 244, 0.08);
+  border: 1px solid rgba(255, 252, 244, 0.15);
+  color: #FFFCF4;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.drawer-select:focus, .drawer-input:focus {
+  border-color: #7B84DC;
+}
+
+.copy-obs-url-btn {
+  background: #7B84DC;
+  border: none;
+  color: #FFFFFF;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.copy-obs-url-btn:hover {
+  background: #6C76D0;
+}

@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    actor Participant as Participant
+    participant ClientApp as Mobile PWA
+    participant Server as WS Gateway / Routing Engine
+    participant CapabilityDB as Language Capability System
+
+    %% Participant Language Selection
+    Participant->>ClientApp: Select Target Language (e.g., Regional Language) & "Listen" Mode
+    ClientApp->>Server: WS Message: Request Language Change (Target: Language, Mode: Listen)
+    Server->>CapabilityDB: Check Language Capability Profile (STT, Translation, TTS)
+    
+    alt Condition: TTS Capability Status = "Unavailable" or "Limited"
+        CapabilityDB-->>Server: TTS Unsupported for Language
+        Server-->>ClientApp: WS Event: Mode Downgraded to "Read-Only" (Reason: TTS Unavailable)
+        ClientApp-->>Participant: Display Toast UI: "Audio unavailable for this language. Switched to Read Mode."
+        ClientApp->>ClientApp: Auto-toggle UI Controls to Read Mode
+    else Condition: Network Data Rate Drops (< 3G / High Packet Loss)
+        Server->>ClientApp: Monitor Heartbeat & Packet Loss (> 15% Loss / Latency > 3.5s)
+        Server-->>ClientApp: WS Event: Adaptive Downgrade to Text Payload Only
+        ClientApp-->>Participant: Mute Audio Stream & Maintain Real-Time Live Text Subtitles
+    end
+
+    %% Recovery
+    opt Connection Stabilizes / Language Switched
+        Participant->>ClientApp: Switches to Supported Audio Language (e.g., Français)
+        ClientApp->>Server: WS Message: Request Language Change (Target: French, Mode: Read + Listen)
+        CapabilityDB-->>Server: TTS Supported
+        Server-->>ClientApp: Push Synchronized Audio + Text Payload
+        ClientApp-->>Participant: Resume Audio Playback
+    end

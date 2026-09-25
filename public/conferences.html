@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI for Conferences & Summits — Real-Time Multilingual Keynotes</title>
+  <meta name="description" content="Make every keynote clear to every attendee in the room. BridgeeAI delivers global summits and conferences with real-time text captions and translated audio sent directly to attendee smartphones.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <style>
+    /* Conferences & Summits Dedicated Styles */
+    .conference-hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+      background-color: #0E0D10;
+      color: var(--bone-50);
+      overflow: hidden;
+      padding: 90px 0 70px;
+    }
+
+    .conference-hero-bg-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .conference-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center right;
+      filter: contrast(1.08) brightness(0.82);
+    }
+
+    .conference-hero-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(14, 13, 16, 0.98) 0%,
+        rgba(14, 13, 16, 0.94) 42%,
+        rgba(14, 13, 16, 0.72) 68%,
+        rgba(14, 13, 16, 0.45) 88%,
+        rgba(14, 13, 16, 0.6) 100%
+      );
+      pointer-events: none;
+    }
+
+    .conference-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      text-align: left;
+    }
+
+    .conference-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(213, 174, 104, 0.15);
+      border: 1px solid rgba(213, 174, 104, 0.35);
+      color: var(--gold-400);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .conference-headline {
+      font-family: var(--font-serif);
+      font-size: clamp(38px, 5.2vw, 62px);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      font-weight: 500;
+      color: #FFFFFF;
+      margin-bottom: 22px;
+    }
+
+    .conference-subtitle {
+      font-size: clamp(16px, 1.8vw, 19px);
+      line-height: 1.6;
+      color: rgba(255, 252, 244, 0.88);
+      max-width: 640px;
+      margin-bottom: 34px;
+    }
+
+    /* Stage Demo Two-Panel Architecture */
+    .stage-demo-stage {
+      background: #151418;
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      margin-top: 48px;
+    }
+
+    .demo-stage-header {
+      background: #1B1A20;
+      border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .stage-demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      min-height: 520px;
+    }
+
+    .speaker-stage-panel {
+      padding: 34px 28px;
+      background: radial-gradient(circle at top left, rgba(123, 132, 220, 0.15), transparent 70%), #1B1A20;
+      border-right: 1px solid rgba(255, 252, 244, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .attendees-mobile-panel {
+      padding: 30px 24px;
+      background: rgba(26, 25, 30, 0.94);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .delegate-phone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .delegate-phone-card {
+      background: rgba(35, 33, 40, 0.95);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .delegate-phone-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold-400);
+      background: rgba(45, 42, 52, 0.98);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .delegate-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .delegate-meta {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 252, 244, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .delegate-lang-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-400);
+      margin-bottom: 6px;
+    }
+
+    .delegate-caption-text {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--bone-50);
+      margin-bottom: 10px;
+      min-height: 60px;
+      transition: opacity 0.3s ease;
+    }
+
+    .listener-stream-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(255, 252, 244, 0.55);
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 252, 244, 0.08);
+    }
+
+    .summit-callout-toast {
+      background: rgba(123, 132, 220, 0.12);
+      border: 1px dashed rgba(123, 132, 220, 0.45);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--violet-100);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Keynote sentence selector pill controls */
+    .keynote-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .keynote-pill {
+      background: rgba(255, 252, 244, 0.08);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      color: var(--bone-50);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .keynote-pill:hover, .keynote-pill.active {
+      background: var(--gold-400);
+      color: #121010;
+      border-color: var(--gold-400);
+    }
+
+    /* Language matrix grid */
+    .lang-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .lang-card {
+      background: rgba(30, 28, 35, 0.7);
+      border: 1px solid rgba(255, 252, 244, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .lang-card:hover {
+      border-color: var(--gold-400);
+      background: rgba(40, 36, 48, 0.9);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 960px) {
+      .stage-demo-grid {
+        grid-template-columns: 1fr;
+      }
+      .delegate-phone-grid {
+        grid-template-columns: 1fr;
+      }
+      .conference-hero {
+        padding: 60px 0 80px;
+      }
+    }
+  </style>
+</head>
+<body class="landing-body">
+
+  <!-- 1. TOP NAVIGATION BAR -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand-link" id="navLogo">
+        <div class="brand-symbol">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <!-- Solutions Dropdown -->
+          <li class="nav-item">
+            <a href="#solutions" class="nav-link" id="navSolutionsLink">
+              Solutions
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <div class="nav-dropdown" id="solutionsDropdown">
+              <a href="/conferences" class="dropdown-item" style="background: rgba(213, 174, 104, 0.12);">
+                <div class="dropdown-icon" style="color: var(--gold-400);">🎙️</div>
+                <div>
+                  <div class="dropdown-title">Conferences & Summits</div>
+                  <div class="dropdown-desc">Keynotes, summits & breakout rooms</div>
+                </div>
+              </a>
+              <a href="/education" class="dropdown-item">
+                <div class="dropdown-icon">🎓</div>
+                <div>
+                  <div class="dropdown-title">Education</div>
+                  <div class="dropdown-desc">Lectures, training & classrooms</div>
+                </div>
+              </a>
+              <a href="/church" class="dropdown-item">
+                <div class="dropdown-icon">⛪</div>
+                <div>
+                  <div class="dropdown-title">Church & Faith</div>
+                  <div class="dropdown-desc">Sermons, fellowship & worship</div>
+                </div>
+              </a>
+              <a href="/events" class="dropdown-item">
+                <div class="dropdown-icon">🏛️</div>
+                <div>
+                  <div class="dropdown-title">Events</div>
+                  <div class="dropdown-desc">Civic forums, exhibitions & broadcasts</div>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li class="nav-item"><a href="#languages" class="nav-link">Supported Languages</a></li>
+          <li class="nav-item"><a href="#broadcast" class="nav-link">Production Overlays (OBS / vMix)</a></li>
+          <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/auth" class="btn-signin" id="btnSignInNav" onclick="event.preventDefault(); openSignInModal();">Sign In</a>
+        <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnCreateSessionNav" style="background: var(--slate-850); padding: 9px 20px; font-size: 13px;">
+          Create a Session
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION (TOP OF PAGE) -->
+  <section class="conference-hero" id="hero">
+    <!-- Visual Image: Summit Keynote Stage with Diverse Delegates with Earpieces -->
+    <div class="conference-hero-bg-wrap">
+      <img 
+        src="/assets/conference_summit.jpg" 
+        alt="International conference keynote stage with female speaker and global delegates listening with earpieces"
+        class="conference-hero-img"
+      >
+      <div class="conference-hero-scrim"></div>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 2; width: 100%;">
+      <div class="conference-hero-content">
+        
+        <!-- Small Top Tag -->
+        <div class="conference-tag">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--gold-400); box-shadow: 0 0 8px var(--gold-400);"></span>
+          REAL-TIME INTERNATIONAL CONFERENCE TRANSLATION
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="conference-headline">
+          Make every keynote clear to every attendee in the room.
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="conference-subtitle">
+          Deliver global summits, keynotes, and panel discussions with real-time text captions and translated spoken audio sent straight to attendees' personal smartphones.
+        </p>
+
+        <!-- Main Action Buttons -->
+        <div class="hero-cta-cinematic-row" style="margin-bottom: 28px;">
+          <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnCreateConferenceHero" style="background: var(--gold-400); color: #141210; font-weight: 700; padding: 14px 28px;">
+            Create a Conference Session <span class="arrow-icon">→</span>
+          </a>
+          <a href="#stage-demo" class="btn-book-demo" id="btnWatchProductionDemo" onclick="runStageDemoAuto();">
+            Watch Production Demo (1 Min)
+          </a>
+        </div>
+
+        <!-- Quick Highlights -->
+        <div class="hero-highlights" style="justify-content: flex-start; color: rgba(255,252,244,0.9); font-size: 13px; gap: 20px;">
+          <span>✓ Zero app download or account creation for attendees</span>
+          <span>✓ Replaces expensive hardware rentals and translation booth setups</span>
+          <span>✓ Sub-second translation speed keeps audience engagement synchronized</span>
+        </div>
+
+      </div>
+
+      <!-- INTERACTIVE STAGE VISUAL DEMO -->
+      <div class="stage-demo-stage" id="stage-demo">
+        <div class="demo-stage-header">
+          <div class="demo-header-dots">
+            <span class="demo-dot red"></span>
+            <span class="demo-dot yellow"></span>
+            <span class="demo-dot green"></span>
+          </div>
+          <div class="demo-stage-title" style="color: var(--bone-50); font-weight: 600;">
+            <span style="color: #4ade80;">●</span> Live Summit Keynote Simulator · Room: TECH-2026
+          </div>
+          <div style="font-size: 12px; color: var(--gold-400); font-weight: 600; display: flex; align-items: center; gap: 10px;">
+            <span>Latency: 0.32s · Sync Active</span>
+            <button onclick="toggleDemoSpeech()" id="btnDemoPlayPause" style="background: rgba(213, 174, 104, 0.2); border: 1px solid var(--gold-400); color: var(--gold-400); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer;">
+              ▶ Next Sentence
+            </button>
+          </div>
+        </div>
+
+        <div class="stage-demo-grid">
+          
+          <!-- Left Panel: Keynote speaker presenting on stage in English [Live Audio Waveform] -->
+          <div class="speaker-stage-panel">
+            <div>
+              <div class="speaker-live-badge" style="background: rgba(213, 174, 104, 0.2); border-color: var(--gold-400); color: var(--gold-400);">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--gold-400); animation: pulse-glow 1.5s infinite;"></span>
+                MAIN STAGE PODIUM STREAM (ENGLISH)
+              </div>
+
+              <div class="speaker-profile-wrap">
+                <div class="speaker-avatar" style="background: linear-gradient(135deg, #D5AE68, #7B84DC);">🎙️</div>
+                <div>
+                  <div class="speaker-name-title">Dr. Elena Rostova</div>
+                  <div class="speaker-role">Keynote Speaker · Global AI & Ethics Summit 2026</div>
+                </div>
+              </div>
+
+              <div class="speaker-audio-box" style="background: rgba(20, 19, 24, 0.85); border: 1px solid rgba(255,252,244,0.1);">
+                <div class="audio-box-label">
+                  <span>Podium Speech Input</span>
+                  <span style="color: var(--gold-400);">16kHz PCM Stream</span>
+                </div>
+
+                <!-- Animated Audio Waveform -->
+                <div class="audio-equalizer-bars" id="keynoteWaveform">
+                  <span style="height: 55%;"></span>
+                  <span style="height: 90%;"></span>
+                  <span style="height: 100%;"></span>
+                  <span style="height: 75%;"></span>
+                  <span style="height: 85%;"></span>
+                  <span style="height: 60%;"></span>
+                  <span style="height: 95%;"></span>
+                  <span style="height: 70%;"></span>
+                  <span style="height: 80%;"></span>
+                  <span style="height: 50%;"></span>
+                </div>
+
+                <div class="spoken-quote" id="keynoteSpokenQuote">
+                  "The future of distributed artificial intelligence relies on open collaboration, ethical governance, and cross-border innovation."
+                </div>
+
+                <!-- Keynote topic pills -->
+                <div class="keynote-controls">
+                  <button class="keynote-pill active" onclick="setDemoIndex(0)">1. AI & Ethics</button>
+                  <button class="keynote-pill" onclick="setDemoIndex(1)">2. Climate Models</button>
+                  <button class="keynote-pill" onclick="setDemoIndex(2)">3. Global Unity</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="speaker-meta-footer" style="padding-top: 18px; border-top: 1px solid rgba(255,252,244,0.08);">
+              <a href="/host/console/TECH-2026" style="color: var(--gold-400); font-weight: 600; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                Open Podium Console 🎙 →
+              </a>
+              <a href="/join/TECH-2026" style="color: var(--bone-50); font-weight: 600; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                Delegate Badge QR 📱
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Panel: Simulated attendee mobile screens receiving live translations -->
+          <div class="attendees-mobile-panel">
+            <div class="listeners-side-header" style="margin-bottom: 12px; font-size: 11px; font-weight: 700; color: rgba(255,252,244,0.6); letter-spacing: 0.08em; display: flex; justify-content: space-between;">
+              <span>DELEGATE SMARTPHONE CHANNELS (SYNCHRONIZED LIVE TRANSLATION)</span>
+              <span style="color: var(--gold-400);">No App Required</span>
+            </div>
+
+            <div class="delegate-phone-grid">
+              
+              <!-- Attendee 01 (Tokyo): Japanese — Mode: Read (Captions) -->
+              <div class="delegate-phone-card">
+                <div class="delegate-header">
+                  <div class="delegate-meta"><span>📱 Attendee 01</span> · Tokyo 🇯🇵</div>
+                  <span class="listener-mode-badge mode-read-only" style="background: rgba(122, 217, 210, 0.15); color: var(--aqua-400); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">Read (Captions)</span>
+                </div>
+                <div class="delegate-lang-title">日本語 (Japanese)</div>
+                <p class="delegate-caption-text" id="captionJapanese">
+                  "分散型人工知能の未来は、オープンな協力、倫理的ガバナンス、そして国境を越えた革新にかかっています。"
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Live Stage Subtitles</span>
+                  <span style="color: var(--violet-500); font-weight: 600;">● 280ms</span>
+                </div>
+              </div>
+
+              <!-- Attendee 02 (Geneva): Français — Mode: Listen (Voice in Earbuds) -->
+              <div class="delegate-phone-card">
+                <div class="delegate-header">
+                  <div class="delegate-meta"><span>📱 Attendee 02</span> · Geneva 🇨🇭</div>
+                  <span class="listener-mode-badge mode-listen-only" style="background: rgba(213, 174, 104, 0.15); color: var(--gold-400); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">Listen (Earbuds)</span>
+                </div>
+                <div class="delegate-lang-title">Français (French)</div>
+                <p class="delegate-caption-text" id="captionFrench">
+                  "L'avenir de l'intelligence artificielle distribuée repose sur la collaboration ouverte, la gouvernance éthique et l'innovation transfrontalière."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Earbuds Voice Stream</span>
+                  <div class="audio-pulse-bars-mini" style="display: flex; gap: 3px; align-items: flex-end; height: 12px;">
+                    <span style="width: 3px; background: var(--gold-400); height: 100%; border-radius: 1px;"></span>
+                    <span style="width: 3px; background: var(--gold-400); height: 60%; border-radius: 1px;"></span>
+                    <span style="width: 3px; background: var(--gold-400); height: 85%; border-radius: 1px;"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Attendee 03 (Dubai): Arabic — Mode: Read + Listen (Synchronized) -->
+              <div class="delegate-phone-card">
+                <div class="delegate-header">
+                  <div class="delegate-meta"><span>📱 Attendee 03</span> · Dubai 🇦🇪</div>
+                  <span class="listener-mode-badge mode-read-listen" style="background: rgba(123, 132, 220, 0.2); color: var(--violet-100); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">Read + Listen</span>
+                </div>
+                <div class="delegate-lang-title">العربية (Arabic)</div>
+                <p class="delegate-caption-text" id="captionArabic" dir="rtl" style="text-align: right; font-family: sans-serif;">
+                  "إن مستقبل الذكاء الاصطناعي الموزع يعتمد على التعاون المفتوح والحوكمة الأخلاقية والابتكار عبر الحدود."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Synchronized Sync</span>
+                  <span style="color: var(--gold-400); font-weight: 600;">🎧 + 📝 100%</span>
+                </div>
+              </div>
+
+              <!-- Attendee 04 (Berlin): Deutsch — Mode: Read (Text-First Mode) -->
+              <div class="delegate-phone-card">
+                <div class="delegate-header">
+                  <div class="delegate-meta"><span>📱 Attendee 04</span> · Berlin 🇩🇪</div>
+                  <span class="listener-mode-badge mode-read-only" style="background: rgba(89, 184, 137, 0.15); color: var(--success-500); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">Text-First</span>
+                </div>
+                <div class="delegate-lang-title">Deutsch (German)</div>
+                <p class="delegate-caption-text" id="captionGerman">
+                  "Die Zukunft der verteilten künstlichen Intelligenz basiert auf offener Zusammenarbeit, ethischer Führung und grenzüberschreitender Innovation."
+                </p>
+                <div class="listener-stream-indicator">
+                  <span>Low-Bandwidth Mode</span>
+                  <span style="color: var(--aqua-400); font-weight: 600;">&lt; 1.4 KB/s</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Callout Toast -->
+            <div class="summit-callout-toast">
+              <span style="font-size: 18px;">💡</span>
+              <span><strong>Callout Toast:</strong> Attendees can switch target languages instantly during keynotes and Q&A sessions.</span>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. CONFERENCE IMPACT METRICS -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Global & Regional Languages Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Under 1.2s</div>
+          <div class="stat-label">Real-Time End-to-End Latency</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">100% Web-Based (Zero equipment distribution or return logistics)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 2 KB/s</div>
+          <div class="stat-label">Bandwidth Footprint (Engineered to perform on crowded event Wi-Fi)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORTED LANGUAGES MATRIX SECTION -->
+  <section class="section section-dark" id="languages">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--gold-400);">Universal Reach</div>
+        <h2 class="section-title">20+ Global & Regional Languages Supported</h2>
+        <p class="section-lead">
+          Connect international summits with synchronized captions and synthetic voice across major global tongues and regional African & Asian dialects.
+        </p>
+      </div>
+
+      <div class="lang-matrix-grid">
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">English (Source)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">International Podium</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(213, 174, 104, 0.2); color: var(--gold-400); font-weight: 700;">16kHz Input</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">日本語 (Japanese)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Tokyo & East Asia</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Français (French)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Geneva, Paris & Francophone</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">العربية (Arabic)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Dubai & Middle East</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Deutsch (German)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Berlin, Zurich & Vienna</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Español (Spanish)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Madrid & Latin America</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">简体中文 (Chinese)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Simplified Han Script</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Português (Portuguese)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Lisbon & São Paulo</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">Text + Voice</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Yorùbá (Yoruba)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">West Africa Regional</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500);">Text First</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Hausa</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Northern Nigeria & Sahel</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500);">Text First</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Asụsụ Igbo</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">Southeastern Nigeria</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500);">Text First</span>
+        </div>
+        <div class="lang-card">
+          <div>
+            <div style="font-weight: 700; color: var(--bone-50);">Kiswahili (Swahili)</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.6);">East African Community</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500);">Text First</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. THE PROBLEM AT INTERNATIONAL SUMMITS -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Summit Bottleneck</div>
+        <h2 class="section-title">Language barriers shouldn't slow down global ideas.</h2>
+        <p class="section-lead">
+          Hosting international summits brings together world-class minds, but traditional interpretation workflows create operational bottlenecks:
+        </p>
+      </div>
+
+      <div class="problem-split-grid">
+        
+        <!-- Traditional Interpretation Friction -->
+        <div class="problem-card">
+          <span class="problem-card-badge">Legacy Event Workflows</span>
+          <h3 class="problem-card-title">Traditional conference translation creates severe operational overhead:</h3>
+          <ul class="problem-list">
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Traditional translation booths and headsets</strong> cost thousands of dollars per day and require complex logistics.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Audio delays and lag</strong> cause non-native listeners to react late to jokes, slides, and key takeaways.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Hardware hand-outs and returns</strong> cause long queues at registration desks and lost equipment fees.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Multilingual panel discussions</strong> become clumsy when speakers must pause after every sentence for consecutive interpretation.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- The BridgeeAI Summit Advantage -->
+        <div class="solution-card">
+          <div>
+            <span class="solution-card-badge" style="background: rgba(213, 174, 104, 0.2); color: var(--gold-400);">Instant Scale</span>
+            <div class="solution-statement">
+              "BridgeeAI eliminates the friction. One presenter speaks naturally, and every attendee engages instantly on their own device."
+            </div>
+            <p class="solution-lead-desc">
+              Delegates simply scan the stage QR code or tap their NFC badge to read or listen in real time without waiting, without lines at the info desk, and without bulky plastic receivers.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            <a href="/host/console/TECH-2026" class="btn-pill btn-pill-primary" style="background: var(--gold-400); color: #141210; font-weight: 700; padding: 11px 24px; font-size: 14px;">
+              Launch Keynote Console →
+            </a>
+            <span style="font-size: 13px; color: rgba(255,252,244,0.65);">Supports up to 1,000+ simultaneous delegates</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HOW IT WORKS IN 3 SIMPLE STEPS -->
+  <section class="section section-dark" id="how-it-works">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--gold-400);">Frictionless Architecture</div>
+        <h2 class="section-title">How It Works in 3 Simple Steps</h2>
+        <p class="section-lead">
+          From podium microphone to delegate earbuds in under two seconds.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-badge">STEP 01</div>
+          <h3 class="step-title">The Speaker Delivers Their Presentation</h3>
+          <p class="step-desc">
+            Presenters talk into standard podium, handheld, or lapel microphones. No artificial pauses or altered cadence required.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Natural, uninterrupted keynote pacing</li>
+            <li>✓ Connects to venue soundboard or staging laptop</li>
+            <li>✓ Zero additional stage hardware</li>
+          </ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" style="border-color: rgba(213, 174, 104, 0.4);">
+          <div class="step-badge" style="color: var(--gold-400);">STEP 02</div>
+          <h3 class="step-title">BridgeeAI Ingests & Translates Live Speech</h3>
+          <p class="step-desc">
+            Our real-time neural pipeline transcribes speech, applies pre-uploaded speaker decks and technical glossaries, and generates target translations instantly.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Technical jargon & speaker acronyms recognized</li>
+            <li>✓ Sub-second parallel language pipeline</li>
+            <li>✓ Dual text captions & synthesized voice</li>
+          </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--aqua-400);">STEP 03</div>
+          <h3 class="step-title">Attendees Experience the Content</h3>
+          <p class="step-desc">
+            Attendees scan a QR code printed on badges, programs, or stage displays, select their preferred language, and choose:
+          </p>
+          <ul class="step-sublist">
+            <li><strong>Read:</strong> Watch live translated captions on screen.</li>
+            <li><strong>Listen:</strong> Hear translated voice audio through personal earbuds.</li>
+            <li><strong>Read + Listen:</strong> View captions and hear synchronized voice translation together.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. BUILT FOR EVENT PRODUCERS & STAGE AV TEAMS -->
+  <section class="section" id="broadcast">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Production AV Integration</div>
+        <h2 class="section-title">Built for Event Producers & Stage AV Teams</h2>
+        <p class="section-lead">
+          Integrates directly with existing production workflows. BridgeeAI plugs directly into high-end venue audio-visual and broadcast environments:
+        </p>
+      </div>
+
+      <div class="av-workflow-grid">
+        
+        <!-- Workflow 1 -->
+        <div class="av-workflow-card">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">📱</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px; color: var(--ink-950);">Personal Smartphone Listening</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.78); margin-bottom: 20px;">
+              Attendees plug their own earbuds into their mobile devices to listen without venue noise bleed or feedback loops.
+            </p>
+          </div>
+          <a href="/join/TECH-2026" class="dest-link">Test Delegate PWA →</a>
+        </div>
+
+        <!-- Workflow 2 -->
+        <div class="av-workflow-card" style="border-color: rgba(213, 174, 104, 0.4);">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">🖥️</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px; color: var(--ink-950);">Auditorium & LED Stage Displays (/venue)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.78); margin-bottom: 20px;">
+              Output full-screen, high-legibility translated captions to stage side-screens, balcony displays, or overflow halls.
+            </p>
+          </div>
+          <a href="/venue/TECH-2026" class="dest-link">Open Auditorium Display View →</a>
+        </div>
+
+        <!-- Workflow 3 -->
+        <div class="av-workflow-card">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">📡</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px; color: var(--ink-950);">Livestream & Broadcast Overlays (/overlay)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.78); margin-bottom: 20px;">
+              Send transparent lower-third caption bars directly into OBS Studio, vMix, Wirecast, or hardware switcher workflows.
+            </p>
+          </div>
+          <a href="/overlay/TECH-2026" class="dest-link">Launch Broadcast Overlay Studio →</a>
+        </div>
+
+      </div>
+
+      <!-- Large Screen Stage LED Transcription Visual Showcase -->
+      <div style="margin-top: 48px; border-radius: var(--radius-lg); overflow: hidden; position: relative; border: 1px solid rgba(26, 24, 24, 0.12); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);">
+        <img 
+          src="/assets/venue_led_screen.jpg" 
+          alt="Live keynote speech transcription displayed on large stage LED screen in conference auditorium" 
+          style="width: 100%; height: auto; max-height: 520px; object-fit: cover; display: block;"
+        >
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 28px 36px; background: linear-gradient(180deg, transparent 0%, rgba(14, 13, 16, 0.95) 50%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-400); margin-bottom: 4px;">Auditorium Stage LED Projection Mode (/venue)</div>
+            <div style="font-family: var(--font-serif); font-size: 22px; font-weight: 600; color: #FFFFFF;">Crystal-Clear Live Speech Transcription for Keynote Stages & Side IMAG Monitors</div>
+          </div>
+          <a href="/venue/TECH-2026" class="btn-pill btn-pill-primary" style="background: var(--gold-400); color: #141210; font-weight: 700; text-decoration: none; padding: 11px 22px; font-size: 13px;">
+            Open Live Stage LED View 📽
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 7. CUSTOM TECHNICAL GLOSSARIES FOR HIGH PRECISION -->
+  <section class="section section-dark" id="glossary">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--violet-500);">Pre-Event Intelligence</div>
+        <h2 class="section-title">Custom Technical Glossaries for High Precision</h2>
+        <p class="section-lead">
+          Train the AI on your speakers, brands, and acronyms. Global summits involve specialized vocabulary, industry jargon, and brand names that general AI tools often mistranslate. BridgeeAI lets AV operators prime the system before the curtain rises:
+        </p>
+      </div>
+
+      <div class="context-feature-grid">
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">📊</div>
+          <h3 class="font-serif" style="font-size: 22px; color: var(--bone-50); margin-bottom: 10px;">Slide Decks & Briefs</h3>
+          <p style="font-size: 14px; line-height: 1.6; opacity: 0.85;">
+            Drag and drop speaker slide decks (.PPTX, .PDF) and presenter briefs.
+          </p>
+        </div>
+
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">🔤</div>
+          <h3 class="font-serif" style="font-size: 22px; color: var(--bone-50); margin-bottom: 10px;">Names, Brands & Acronyms</h3>
+          <p style="font-size: 14px; line-height: 1.6; opacity: 0.85;">
+            Add lists of speaker names, panel topics, acronyms, and industry-specific vocabulary.
+          </p>
+        </div>
+
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">⚡</div>
+          <h3 class="font-serif" style="font-size: 22px; color: var(--bone-50); margin-bottom: 10px;">Enforced Accuracy</h3>
+          <p style="font-size: 14px; line-height: 1.6; opacity: 0.85;">
+            BridgeeAI enforces exact vocabulary accuracy across all target languages throughout the broadcast.
+          </p>
+        </div>
+      </div>
+
+      <div class="context-benefit-banner" style="margin-top: 32px; border-color: rgba(213, 174, 104, 0.4); background: rgba(213, 174, 104, 0.1); border-radius: var(--radius-sm); padding: 16px 20px; font-size: 14px; color: var(--gold-400);">
+        ✨ <strong>AV teams can pre-load conference decks in under 60 seconds to guarantee 99%+ terminology accuracy on stage.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. ENTERPRISE RELIABILITY ON CROWDED NETWORKS -->
+  <section class="section" id="reliability">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Zero Failure Engineering</div>
+        <h2 class="section-title">Enterprise Reliability on Crowded Networks</h2>
+        <p class="section-lead">
+          Engineered for zero session failure. High-density convention halls put heavy strain on cellular towers and venue Wi-Fi. BridgeeAI is built with dynamic network adaptation:
+        </p>
+      </div>
+
+      <div class="network-cards-grid">
+        
+        <!-- High-Speed Dual Stream -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(89, 184, 137, 0.15); color: var(--success-500);">
+            ⚡
+          </div>
+          <h3 class="network-title">High-Speed Dual Stream (4G / 5G / Wi-Fi)</h3>
+          <p class="network-desc">
+            Delivers full synthetic voice streaming and real-time captions concurrently when bandwidth is optimal.
+          </p>
+        </div>
+
+        <!-- Text-First Fallback -->
+        <div class="network-card" style="border-color: rgba(213, 174, 104, 0.4);">
+          <div class="network-card-icon" style="background: rgba(213, 174, 104, 0.15); color: var(--gold-400);">
+            📡
+          </div>
+          <h3 class="network-title">Text-First Fallback (2G / 3G / Congested Networks)</h3>
+          <p class="network-desc">
+            Automatically pauses audio synthesis and prioritizes ultra-lightweight text payloads (&lt;2 KB/s) if venue Wi-Fi becomes congested.
+          </p>
+        </div>
+
+        <!-- Instant Reconnection -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(123, 132, 220, 0.15); color: var(--violet-500);">
+            🔄
+          </div>
+          <h3 class="network-title">Instant Auto-Reconnection</h3>
+          <p class="network-desc">
+            If an attendee temporarily drops signal while moving between breakout rooms, the system automatically reconnects without losing chosen language preferences.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FLEXIBLE PRICING FOR SINGLE EVENTS & ANNUAL SUMMITS -->
+  <section class="section section-dark" id="pricing">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--gold-400);">Event Economics</div>
+        <h2 class="section-title">Flexible Pricing for Single Events & Annual Summits</h2>
+        <p class="section-lead">
+          Save 85%+ compared to traditional interpretation booths and equipment rentals ($1,500–$3,500/day).
+        </p>
+      </div>
+
+      <div class="ministry-plans-grid">
+        
+        <!-- Plan 1 -->
+        <div class="ministry-plan-card">
+          <div>
+            <h3 class="pricing-plan-name">Single Event Pass</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$149</span>
+              <span class="pricing-period">/ single event</span>
+            </div>
+            <div class="pricing-for">Perfect for one-off summits, product launches, or regional conferences needing instant QR access.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Up to 8 hours</strong> continuous summit broadcast</li>
+              <li><span class="check">✓</span> Up to <strong>500 concurrent attendees</strong></li>
+              <li><span class="check">✓</span> Real-time text captions & voice audio</li>
+              <li><span class="check">✓</span> Instant badge QR code join</li>
+              <li><span class="check">✓</span> 20+ Global & Regional languages</li>
+            </ul>
+          </div>
+          <a href="/session/new?template=Conference" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Get Event Pass
+          </a>
+        </div>
+
+        <!-- Plan 2 (Featured) -->
+        <div class="ministry-plan-card featured" style="transform: scale(1.03); z-index: 2;">
+          <div class="pricing-badge" style="background: var(--gold-400); color: #141210;">Best for Event Organizers</div>
+          <div>
+            <h3 class="pricing-plan-name">Annual Event Series Plan</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$299</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-for">Designed for conference organizers and event agencies running recurring international summits with full glossary rights.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>150 Hours</strong> live summit translation / month</li>
+              <li><span class="check">✓</span> Up to <strong>2,500 concurrent attendees</strong> per stage</li>
+              <li><span class="check">✓</span> Slide (.PPTX) & technical glossary uploads</li>
+              <li><span class="check">✓</span> OBS / vMix broadcast transparent overlays</li>
+              <li><span class="check">✓</span> Stage venue LED & side IMAG screen views</li>
+              <li><span class="check">✓</span> Post-session multi-language transcript downloads</li>
+            </ul>
+          </div>
+          <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" style="width: 100%; text-align: center; background: var(--gold-400); color: #141210; font-weight: 700;">
+            Start 14-Day Free Trial
+          </a>
+        </div>
+
+        <!-- Plan 3 -->
+        <div class="ministry-plan-card">
+          <div>
+            <h3 class="pricing-plan-name">Enterprise Custom Deployment</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">Custom</span>
+            </div>
+            <div class="pricing-for">Tailored for global convention centers, enterprise networks, and institutional deployments requiring dedicated SLA support and unlimited concurrency.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Unlimited concurrent attendees</strong></li>
+              <li><span class="check">✓</span> Multi-stage concurrent room management</li>
+              <li><span class="check">✓</span> Dedicated sub-second translation cluster</li>
+              <li><span class="check">✓</span> Dedicated SLA & on-site/remote AV operator</li>
+              <li><span class="check">✓</span> Custom model terminology fine-tuning</li>
+              <li><span class="check">✓</span> Enterprise SOC2 & data privacy compliance</li>
+            </ul>
+          </div>
+          <button onclick="openConferenceDemoModal()" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Talk to an AV Specialist
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Production & Operations</div>
+        <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+      </div>
+
+      <div class="faq-accordion">
+        
+        <!-- Question 1 -->
+        <div class="faq-item open">
+          <div class="faq-question">
+            <span>Do attendees need to download an app or create an account?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            No. Attendees simply scan a QR code on event signage or programs to join instantly in their phone’s web browser.
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>How does translated audio listening work in crowded auditoriums?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Attendees use their own personal earbuds or headphones connected to their mobile devices.
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can we send live translated captions to online remote viewers?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. BridgeeAI provides transparent browser overlay links (/overlay) compatible with OBS Studio, vMix, and live broadcast software.
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What happens if a speaker has a strong regional accent or uses niche jargon?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Pre-uploading presentation slides and custom glossaries in the setup console primes the speech engine for precise recognition.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. FINAL CALL TO ACTION -->
+  <section class="final-cta-section" id="cta" style="background: radial-gradient(circle at center top, #2C2618 0%, #100E14 100%);">
+    <div class="container final-cta-content">
+      <div class="hero-tag" style="background: rgba(213, 174, 104, 0.15); border-color: rgba(213, 174, 104, 0.4); color: var(--gold-400); margin-bottom: 24px;">
+        Empower Your Global Audience
+      </div>
+      
+      <h2 class="hero-heading" style="color: var(--bone-50); margin-bottom: 20px;">
+        Scale your international summit without hardware complexity.
+      </h2>
+      
+      <p class="hero-subtitle" style="color: rgba(255, 252, 244, 0.85); margin-bottom: 38px;">
+        Create a live session in under 60 seconds and give your entire global audience a front-row experience.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/session/new?template=Conference" class="btn-pill btn-pill-primary" id="btnFinalCreateConference" style="background: var(--gold-400); color: #141210; font-weight: 700; padding: 14px 32px;">
+          Create a Conference Session
+        </a>
+        <button onclick="openConferenceDemoModal()" class="btn-pill btn-pill-secondary" id="btnFinalDemoConference" style="color: var(--bone-50); border-color: rgba(255,252,244,0.35); padding: 14px 30px;">
+          Talk to an AV Specialist
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-row">
+        <div class="footer-brand-summary">
+          <div class="footer-brand-title">
+            <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px;">B</div>
+            <span>BridgeeAI</span>
+          </div>
+          <div class="footer-tagline">
+            BridgeeAI: Speak once. Be understood everywhere.
+          </div>
+          <p style="font-size: 13px; line-height: 1.5; color: rgba(255,252,244,0.6);">
+            Powering international summits, keynotes, and breakout rooms with sub-second multilingual speech translation.
+          </p>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bone-50); margin-bottom: 14px;">
+            Quick Links
+          </div>
+          <div class="footer-quick-links-group">
+            <a href="#how-it-works" class="footer-quick-link">How It Works</a>
+            <a href="#languages" class="footer-quick-link">Supported Languages</a>
+            <a href="#broadcast" class="footer-quick-link">Production Overlays</a>
+            <a href="#pricing" class="footer-quick-link">Pricing</a>
+            <a href="#faq" class="footer-quick-link">FAQ</a>
+            <a href="mailto:events@bridgee.ai" class="footer-quick-link">Contact</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>
+          Copyright: © 2026 BridgeeAI Inc. All rights reserved.
+        </div>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <a href="/join/TECH-2026" style="color: inherit; text-decoration: none;">Join TECH-2026</a>
+          <a href="/venue/TECH-2026" style="color: inherit; text-decoration: none;">Auditorium Venue View</a>
+          <a href="/overlay/TECH-2026" style="color: inherit; text-decoration: none;">Conference OBS Overlay</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: TALK TO AN AV SPECIALIST -->
+  <div class="modal-overlay" id="conferenceDemoModal" onclick="if(event.target===this) closeConferenceDemoModal()">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeConferenceDemoModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Summit AV Consultation</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Talk to an AV Specialist</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Connect with our production engineers to review your stage audio board, OBS setup, or convention hall Wi-Fi architecture.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Thank you! A senior conference AV solutions architect will contact you within 24 hours.'); closeConferenceDemoModal();">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Your Name</label>
+          <input type="text" required placeholder="Elena Rostova" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Work Email</label>
+          <input type="email" required placeholder="elena@globalsummit.org" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Summit Scale & Stage Count</label>
+          <input type="text" placeholder="e.g. 1,200 delegates, 3 concurrent stages" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--slate-850); padding: 12px;">
+          Schedule AV Consultation
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SIGN IN -->
+  <div class="modal-overlay" id="signInModal" onclick="if(event.target===this) closeSignInModal()">
+    <div class="modal-card" style="max-width: 440px;">
+      <button class="modal-close-btn" onclick="closeSignInModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">BridgeeAI Portal</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Sign In to Console</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Access your live conference rooms, glossaries, and broadcast outputs.
+      </p>
+
+      <form onsubmit="event.preventDefault(); window.location.href='/host/console/TECH-2026';">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Work Email</label>
+          <input type="email" required placeholder="producer@summit.org" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Room Code (Optional)</label>
+          <input type="text" placeholder="e.g. TECH-2026" value="TECH-2026" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--slate-850); padding: 12px;">
+          Continue to Host Console →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE SCRIPTS -->
+  <script>
+    // Demo Keynote Quotes & Parallel Translations
+    const demoSentences = [
+      {
+        en: '"The future of distributed artificial intelligence relies on open collaboration, ethical governance, and cross-border innovation."',
+        ja: '"分散型人工知能の未来は、オープンな協力、倫理的ガバナンス、そして国境を越えた革新にかかっています。"',
+        fr: '"L\'avenir de l\'intelligence artificielle distribuée repose sur la collaboration ouverte, la gouvernance éthique et l\'innovation transfrontalière."',
+        ar: '"إن مستقبل الذكاء الاصطناعي الموزع يعتمد على التعاون المفتوح والحوكمة الأخلاقية والابتكار عبر الحدود."',
+        de: '"Die Zukunft der verteilten künstlichen Intelligenz basiert auf offener Zusammenarbeit, ethischer Führung und grenzüberschreitender Innovation."'
+      },
+      {
+        en: '"Our climate resilience models demonstrate that synchronized global investments can accelerate carbon neutrality by 2040."',
+        ja: '"私たちの気候レジリエンスモデルは、世界的な同期投資により2040年までにカーボンニュートラルを加速できることを示しています。"',
+        fr: '"Nos modèles de résilience climatique démontrent que des investissements mondiaux synchronisés peuvent accélérer la neutralité carbone d\'ici 2040."',
+        ar: '"توضح نماذج المرونة المناخية لدينا أن الاستثمارات العالمية المتزامنة يمكن أن تسارع تحقيق الحياد الكربوني بحلول عام 2040."',
+        de: '"Unsere Klimaresilienzmodelle zeigen, dass synchronisierte globale Investitionen die Klimaneutralität bis 2040 beschleunigen können."'
+      },
+      {
+        en: '"Today we unveil the next generation of multilingual neural interfaces designed to unite every stage across the world."',
+        ja: '"本日、世界中のあらゆるステージを結ぶために設計された次世代の多言語ニューラルインターフェースを発表します。"',
+        fr: '"Aujourd\'hui, nous dévoilons la prochaine génération d\'interfaces neuronales multilingues conçues pour unir chaque scène du monde entier."',
+        ar: '"اليوم نكشف عن الجيل القادم من الواجهات العصبية متعددة اللغات المصممة لتوحيد كل منصة في جميع أنحاء العالم."',
+        de: '"Heute stellen wir die nächste Generation mehrsprachiger neuronaler Schnittstellen vor, die jede Bühne weltweit vereinen."'
+      }
+    ];
+
+    let currentDemoIndex = 0;
+    let demoInterval = null;
+
+    function setDemoIndex(index) {
+      currentDemoIndex = index % demoSentences.length;
+      const data = demoSentences[currentDemoIndex];
+
+      // Update pills
+      document.querySelectorAll('.keynote-pill').forEach((pill, i) => {
+        pill.classList.toggle('active', i === currentDemoIndex);
+      });
+
+      // Update text with soft fade
+      const spokenEl = document.getElementById('keynoteSpokenQuote');
+      spokenEl.style.opacity = '0.5';
+      setTimeout(() => {
+        spokenEl.textContent = data.en;
+        document.getElementById('captionJapanese').textContent = data.ja;
+        document.getElementById('captionFrench').textContent = data.fr;
+        document.getElementById('captionArabic').textContent = data.ar;
+        document.getElementById('captionGerman').textContent = data.de;
+        spokenEl.style.opacity = '1';
+      }, 150);
+
+      // Randomize waveform heights slightly for live effect
+      const bars = document.querySelectorAll('#keynoteWaveform span');
+      bars.forEach(b => {
+        const h = Math.floor(40 + Math.random() * 60);
+        b.style.height = `${h}%`;
+      });
+    }
+
+    function toggleDemoSpeech() {
+      setDemoIndex((currentDemoIndex + 1) % demoSentences.length);
+    }
+
+    function runStageDemoAuto() {
+      const demoEl = document.getElementById('stage-demo');
+      demoEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      toggleDemoSpeech();
+    }
+
+    // Auto-advance demo every 6 seconds
+    demoInterval = setInterval(() => {
+      toggleDemoSpeech();
+    }, 6000);
+
+    // FAQ Accordion click toggles
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    function openConferenceDemoModal() {
+      document.getElementById('conferenceDemoModal').classList.add('active');
+    }
+    function closeConferenceDemoModal() {
+      document.getElementById('conferenceDemoModal').classList.remove('active');
+    }
+
+    function openSignInModal() {
+      document.getElementById('signInModal').classList.add('active');
+    }
+    function closeSignInModal() {
+      document.getElementById('signInModal').classList.remove('active');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeConferenceDemoModal();
+        closeSignInModal();
+      }
+    });
+  </script>
+</body>
+</html>

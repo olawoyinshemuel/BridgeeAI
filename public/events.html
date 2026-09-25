@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI for Events & Hybrid — Real-Time Event & Exhibition Captioning</title>
+  <meta name="description" content="Make every product launch and live gathering fully accessible. Connect in-person attendees and remote viewers with real-time, multi-language captions and voice streams.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <style>
+    /* Dedicated Hybrid Events & Exhibition Styles */
+    .events-hero {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      background-color: #0c0b10;
+      color: var(--bone-50);
+      overflow: hidden;
+      padding: 80px 0 50px;
+    }
+
+    .events-hero-bg-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .events-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: contrast(1.1) brightness(0.65);
+    }
+
+    .events-hero-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(12, 11, 16, 0.98) 0%,
+        rgba(12, 11, 16, 0.92) 45%,
+        rgba(12, 11, 16, 0.70) 70%,
+        rgba(12, 11, 16, 0.45) 100%
+      );
+      pointer-events: none;
+    }
+
+    .events-hero-scrim-vertical {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(12, 11, 16, 0.2) 0%, rgba(12, 11, 16, 0.95) 95%);
+      pointer-events: none;
+    }
+
+    .events-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      text-align: left;
+    }
+
+    .events-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(46, 204, 113, 0.15);
+      border: 1px solid rgba(46, 204, 113, 0.35);
+      color: #2ECC71;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .events-headline {
+      font-family: var(--font-serif);
+      font-size: clamp(38px, 5.2vw, 62px);
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      font-weight: 500;
+      color: #FFFFFF;
+      margin-bottom: 22px;
+    }
+
+    .events-subtitle {
+      font-size: clamp(16px, 1.8vw, 19px);
+      line-height: 1.6;
+      color: rgba(255, 252, 244, 0.88);
+      max-width: 640px;
+      margin-bottom: 34px;
+    }
+
+    /* Interactive Livestream & Production Showcase Container */
+    .stream-demo-wrap {
+      background: #141318;
+      border: 1px solid rgba(255, 252, 244, 0.14);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      margin-top: 40px;
+    }
+
+    .stream-window-header {
+      padding: 12px 20px;
+      background: #1C1B22;
+      border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stream-viewport-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    .stream-video-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      filter: brightness(0.92);
+    }
+
+    /* Simulated Stream UI elements (YouTube/Twitch UI indicators) */
+    .stream-top-bar {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .stream-live-pill {
+      background: #E50914;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.5);
+    }
+
+    .stream-live-pill::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FFF;
+      animation: pulse-glow 1.2s infinite;
+    }
+
+    .stream-viewers-count {
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Floating QR Code in Corner of Stream */
+    .stream-qr-preview-badge {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(18, 17, 24, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 252, 244, 0.2);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      max-width: 250px;
+      pointer-events: auto;
+      text-decoration: none;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stream-qr-preview-badge:hover {
+      transform: translateY(-2px);
+      border-color: #2ECC71;
+    }
+
+    .stream-qr-img {
+      width: 52px;
+      height: 52px;
+      background: #FFFFFF;
+      padding: 3px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .stream-qr-text {
+      font-size: 11px;
+      line-height: 1.35;
+      color: rgba(255, 252, 244, 0.95);
+      font-weight: 500;
+    }
+
+    .stream-qr-text strong {
+      color: #2ECC71;
+      display: block;
+      font-weight: 700;
+    }
+
+    /* Dynamic Live Overlay Effect Layer */
+    .stream-overlay-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    /* Style 1: Lower-Third Banner (Default) */
+    .overlay-style-banner {
+      width: 100%;
+      background: linear-gradient(180deg, rgba(10, 9, 13, 0.4) 0%, rgba(10, 9, 13, 0.92) 25%, rgba(10, 9, 13, 0.98) 100%);
+      border-top: 2px solid #2ECC71;
+      padding: 22px 36px 26px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Style 2: Transparent 2-Line */
+    .overlay-style-transparent {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 40px 36px !important;
+      box-shadow: none !important;
+    }
+
+    .overlay-style-transparent .overlay-text-stream {
+      font-size: 26px !important;
+      font-weight: 700 !important;
+      color: #FFFFFF !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.8), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important;
+      line-height: 1.35 !important;
+      background: transparent !important;
+      display: inline !important;
+      padding: 0 !important;
+    }
+
+    /* Style 3: High-Contrast Box */
+    .overlay-style-box {
+      margin: 0 auto 30px 36px;
+      max-width: 85%;
+      background: rgba(10, 10, 14, 0.96) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      border-left: 5px solid #00F5D4 !important;
+      border-radius: 8px !important;
+      padding: 16px 24px !important;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .overlay-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .overlay-lang-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(46, 204, 113, 0.2);
+      border: 1px solid #2ECC71;
+      color: #2ECC71;
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .overlay-source-tag {
+      font-size: 11px;
+      color: rgba(255, 252, 244, 0.65);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .overlay-text-stream {
+      font-size: 21px;
+      line-height: 1.45;
+      font-weight: 500;
+      color: #FFFFFF;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Interactive Control Strip Below Video */
+    .stream-control-strip {
+      background: #18171E;
+      border-top: 1px solid rgba(255, 252, 244, 0.08);
+      padding: 20px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .control-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255, 252, 244, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .btn-toggle-option {
+      background: rgba(35, 33, 42, 0.9);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      color: rgba(255, 252, 244, 0.85);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-toggle-option:hover {
+      background: rgba(50, 48, 60, 0.95);
+      color: #FFFFFF;
+      border-color: rgba(255, 252, 244, 0.35);
+    }
+
+    .btn-toggle-option.active {
+      background: #2ECC71;
+      color: #0E0D12;
+      border-color: #2ECC71;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.35);
+    }
+
+    .btn-toggle-style.active {
+      background: #7B84DC;
+      color: #FFFFFF;
+      border-color: #7B84DC;
+      box-shadow: 0 0 12px rgba(123, 132, 220, 0.4);
+    }
+
+    .nav-dropdown.active {
+      display: flex !important;
+    }
+  </style>
+</head>
+<body class="landing-body">
+
+  <!-- 1. TOP NAVIGATION BAR -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand-link" id="navLogo">
+        <div class="brand-symbol">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <!-- Solutions Dropdown -->
+          <li class="nav-item">
+            <a href="#solutions" class="nav-link" id="navSolutionsLink">
+              Solutions
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <div class="nav-dropdown" id="solutionsDropdown">
+              <a href="/events" class="dropdown-item" style="background: rgba(46, 204, 113, 0.12);">
+                <div class="dropdown-icon" style="color: #2ECC71;">🎪</div>
+                <div>
+                  <div class="dropdown-title">Events & Hybrid</div>
+                  <div class="dropdown-desc">Trade shows, product launches & hybrid livestreams</div>
+                </div>
+              </a>
+              <a href="/conferences" class="dropdown-item">
+                <div class="dropdown-icon" style="color: var(--gold-400);">🎙️</div>
+                <div>
+                  <div class="dropdown-title">Conferences & Summits</div>
+                  <div class="dropdown-desc">Keynotes, summits & breakout rooms</div>
+                </div>
+              </a>
+              <a href="/education" class="dropdown-item">
+                <div class="dropdown-icon" style="color: var(--violet-500);">🎓</div>
+                <div>
+                  <div class="dropdown-title">Education</div>
+                  <div class="dropdown-desc">Lectures, research seminars & campuses</div>
+                </div>
+              </a>
+              <a href="/church" class="dropdown-item">
+                <div class="dropdown-icon" style="color: var(--gold-400);">⛪</div>
+                <div>
+                  <div class="dropdown-title">Church & Faith</div>
+                  <div class="dropdown-desc">Include every worshipper in native tongue</div>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li class="nav-item"><a href="#languages" class="nav-link">Supported Languages</a></li>
+          <li class="nav-item"><a href="#producers" class="nav-link">Production Overlays (OBS / vMix)</a></li>
+          <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/auth" class="btn-signin" id="btnSignInNav" style="text-decoration: none;">Sign In</a>
+        <a href="/auth" class="btn-pill btn-pill-primary" id="btnCreateSessionNav" style="background: var(--slate-850); padding: 9px 20px; font-size: 13px;">
+          Create a Session
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION (TOP OF PAGE) -->
+  <section class="events-hero" id="hero">
+    <!-- Visual Image: Hybrid Tech Product Launch Stage with Broadcast Camera & Attendees -->
+    <div class="events-hero-bg-wrap">
+      <img 
+        src="/assets/hybrid_event_keynote.jpg" 
+        alt="Hybrid tech product launch stage with female keynote speaker and live broadcast camera"
+        class="events-hero-img"
+      >
+      <div class="events-hero-scrim"></div>
+      <div class="events-hero-scrim-vertical"></div>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 2; width: 100%;">
+      <div class="events-hero-content">
+        
+        <!-- Small Top Tag -->
+        <div class="events-tag">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #2ECC71; box-shadow: 0 0 8px #2ECC71;"></span>
+          REAL-TIME HYBRID EVENT & EXHIBITION CAPTIONING
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="events-headline">
+          Make every product launch and live gathering fully accessible.
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="events-subtitle">
+          Connect in-person attendees and remote viewers with real-time, multi-language captions and voice streams for trade shows, exhibitions, town halls, and hybrid livestreams.
+        </p>
+
+        <!-- Main Buttons -->
+        <div class="hero-cta-cinematic-row" style="margin-bottom: 28px;">
+          <a href="/auth" class="btn-pill btn-pill-primary" id="btnCreateEventHero" style="background: #2ECC71; color: #0C0B10; font-weight: 700; padding: 14px 28px;">
+            Create an Event Session <span class="arrow-icon">→</span>
+          </a>
+          <a href="#interactive-demo" class="btn-book-demo" id="btnWatchLivestreamDemo">
+            Watch Livestream Demo (1 Min)
+          </a>
+        </div>
+
+        <!-- Quick Highlights -->
+        <div class="hero-highlights" style="justify-content: flex-start; color: rgba(255,252,244,0.85); font-size: 13px;">
+          <span>✓ Instant scan-and-read access for high-traffic physical crowds</span>
+          <span>✓ Works seamlessly across venue projectors, mobile phones, and online streams</span>
+          <span>✓ Zero app download or registration required for attendees</span>
+        </div>
+
+      </div>
+
+      <!-- 3. INTERACTIVE LIVESTREAM & VENUE DEMO (VISUAL COMPONENT) -->
+      <div class="stream-demo-wrap" id="interactive-demo">
+        <div class="stream-window-header">
+          <div class="demo-header-dots">
+            <span class="demo-dot red"></span>
+            <span class="demo-dot yellow"></span>
+            <span class="demo-dot green"></span>
+          </div>
+          <div class="demo-stage-title" style="color: var(--bone-50);">
+            <span>●</span> Live Stream & Production Overlay Showcase · Stream ID: LAUNCH-2026
+          </div>
+          <div style="font-size: 12px; color: #2ECC71; font-weight: 600;">
+            1080p60 · RTMP Sync Active
+          </div>
+        </div>
+
+        <!-- Embedded Media Container: Simulated YouTube / Twitch Live Event Stream -->
+        <div class="stream-viewport-container">
+          <img 
+            src="/assets/hybrid_event_keynote.jpg" 
+            alt="Live Product Launch Keynote broadcast feed"
+            class="stream-video-bg"
+          >
+
+          <!-- Top Stream Bar -->
+          <div class="stream-top-bar">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <span class="stream-live-pill">LIVE</span>
+              <span class="stream-viewers-count">👥 4,820 Viewers</span>
+              <span class="stream-viewers-count" style="color: #2ECC71;">📶 60 FPS</span>
+            </div>
+          </div>
+
+          <!-- Mobile QR Preview Code: Floating QR code positioned at corner of stream -->
+          <a href="/join/LAUNCH-2026" class="stream-qr-preview-badge" title="Open mobile listener experience">
+            <!-- Simulated Crisp SVG QR Code -->
+            <svg class="stream-qr-img" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" fill="white"/>
+              <!-- Finder Top Left -->
+              <rect x="10" y="10" width="28" height="28" fill="#141210" rx="3"/>
+              <rect x="16" y="16" width="16" height="16" fill="white"/>
+              <rect x="20" y="20" width="8" height="8" fill="#141210"/>
+              <!-- Finder Top Right -->
+              <rect x="62" y="10" width="28" height="28" fill="#141210" rx="3"/>
+              <rect x="68" y="16" width="16" height="16" fill="white"/>
+              <rect x="72" y="20" width="8" height="8" fill="#141210"/>
+              <!-- Finder Bottom Left -->
+              <rect x="10" y="62" width="28" height="28" fill="#141210" rx="3"/>
+              <rect x="16" y="68" width="16" height="16" fill="white"/>
+              <rect x="20" y="72" width="8" height="8" fill="#141210"/>
+              <!-- Data modules -->
+              <rect x="44" y="14" width="8" height="8" fill="#141210"/>
+              <rect x="44" y="28" width="8" height="8" fill="#141210"/>
+              <rect x="14" y="44" width="8" height="8" fill="#141210"/>
+              <rect x="28" y="44" width="8" height="8" fill="#141210"/>
+              <rect x="44" y="44" width="12" height="12" fill="#2ECC71"/>
+              <rect x="62" y="44" width="8" height="8" fill="#141210"/>
+              <rect x="78" y="44" width="8" height="8" fill="#141210"/>
+              <rect x="44" y="62" width="8" height="8" fill="#141210"/>
+              <rect x="44" y="78" width="8" height="8" fill="#141210"/>
+              <rect x="62" y="62" width="12" height="8" fill="#141210"/>
+              <rect x="78" y="72" width="12" height="14" fill="#141210"/>
+            </svg>
+            <div class="stream-qr-text">
+              <strong>Scan with Phone</strong>
+              Scan with your phone to listen in your native language.
+            </div>
+          </a>
+
+          <!-- Live Overlay Effect: Clean semi-transparent caption bar (/overlay/ROOM-ID) -->
+          <div class="stream-overlay-layer">
+            <div id="streamCaptionOverlay" class="overlay-style-banner">
+              <div class="overlay-meta-row">
+                <span class="overlay-lang-badge" id="overlayCurrentLang">Français (French)</span>
+                <span class="overlay-source-tag">Stage Mic Ingest · Latency: 290ms · OBS Lower-Third Source</span>
+              </div>
+              <div class="overlay-text-stream" id="streamCaptionText">
+                "…nous sommes ravis d'annoncer la prochaine génération de nos produits en direct…"
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Control Strip Below Video -->
+        <div class="stream-control-strip">
+          <!-- Toggle Display Language -->
+          <div class="control-group">
+            <span class="control-label">Toggle Display Language:</span>
+            <button class="btn-toggle-option" onclick="setStreamLanguage('en')">English</button>
+            <button class="btn-toggle-option active" onclick="setStreamLanguage('fr')">Français</button>
+            <button class="btn-toggle-option" onclick="setStreamLanguage('es')">Español</button>
+            <button class="btn-toggle-option" onclick="setStreamLanguage('yo')">Yorùbá</button>
+            <button class="btn-toggle-option" onclick="setStreamLanguage('ar')">Arabic</button>
+          </div>
+
+          <!-- Toggle Display Style -->
+          <div class="control-group">
+            <span class="control-label">Toggle Display Style:</span>
+            <button class="btn-toggle-option btn-toggle-style active" onclick="setStreamStyle('banner')">Lower-Third Banner</button>
+            <button class="btn-toggle-option btn-toggle-style" onclick="setStreamStyle('transparent')">Transparent 2-Line</button>
+            <button class="btn-toggle-option btn-toggle-style" onclick="setStreamStyle('box')">High-Contrast Box</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. EVENT IMPACT METRICS -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Global & Regional Languages Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 1.2s</div>
+          <div class="stat-label">Real-Time End-to-End Latency</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">100% Web-Based (No app store downloads or registration desks)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 2 KB/s</div>
+          <div class="stat-label">Bandwidth Footprint (Engineered for congested event venue Wi-Fi and mobile data)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. THE CHALLENGE AT LIVE & HYBRID EVENTS -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Hybrid Accessibility Hurdle</div>
+        <h2 class="section-title">Physical crowds and online viewers shouldn't be left behind.</h2>
+        <p class="section-lead">
+          Managing high-traffic exhibitions, town halls, and hybrid streams presents unique operational hurdles:
+        </p>
+      </div>
+
+      <div class="problem-split-grid">
+        
+        <!-- The Operational Bottlenecks -->
+        <div class="problem-card">
+          <span class="problem-card-badge">Traditional Hybrid Bottlenecks</span>
+          <h3 class="problem-card-title">Legacy event translation fails modern hybrid audiences:</h3>
+          <ul class="problem-list">
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Noisy venue environments</strong> make it difficult for physical attendees to hear key speakers clearly.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Global stream viewers</strong> on YouTube or Twitch turn off broadcasts if live multi-language captions aren't available.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Traditional translation equipment</strong> creates registration queues and high logistics costs for event planners.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Complex broadcast setups</strong> require hours of configuration to get multi-language subtitles onto live video feeds.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- The BridgeeAI Hybrid Advantage -->
+        <div class="solution-card">
+          <div>
+            <span class="solution-card-badge" style="background: rgba(46, 204, 113, 0.2); color: #2ECC71;">Unified Distribution</span>
+            <div class="solution-statement">
+              "BridgeeAI simplifies hybrid accessibility. One live speech feed powers physical venue screens, attendee mobile devices, and remote broadcast streams simultaneously."
+            </div>
+            <p class="solution-lead-desc">
+              Whether a visitor is standing in a crowded convention center hall or streaming from home across continents, they receive synchronized, crystal-clear captions and synthesized voice in real time.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            <a href="/host/console/LAUNCH-2026" class="btn-pill btn-pill-primary" style="background: #2ECC71; color: #0C0B10; font-weight: 700; padding: 11px 24px; font-size: 14px;">
+              Launch Live Stream Console →
+            </a>
+            <span style="font-size: 13px; color: rgba(255,252,244,0.65);">Broadcast overlays plug directly into OBS & vMix</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. HOW IT WORKS FOR HYBRID & ON-SITE EVENTS -->
+  <section class="section section-dark" id="how-it-works">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: #2ECC71;">Zero-Friction Ingest & Broadcast</div>
+        <h2 class="section-title">How It Works for Hybrid & On-Site Events</h2>
+        <p class="section-lead">
+          Connect your stage audio once. Deliver multi-channel subtitles to every screen.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-badge">STEP 01</div>
+          <h3 class="step-title">Plug Into Your Audio Feed</h3>
+          <p class="step-desc">
+            Connect BridgeeAI to your stage microphone, sound console, or broadcast encoder feed.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Accepts line-in, Dante, USB mixer, or OBS audio tap</li>
+            <li>✓ Built-in noise gating filters ambient hall chatter</li>
+            <li>✓ Low CPU overhead on production laptops</li>
+          </ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" style="border-color: rgba(46, 204, 113, 0.4);">
+          <div class="step-badge" style="color: #2ECC71;">STEP 02</div>
+          <h3 class="step-title">Push Multi-Channel Subtitles Everywhere</h3>
+          <p class="step-desc">
+            BridgeeAI processes the audio in real time, generating instantaneous translated captions and synthetic audio.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Sub-second neural translation engine</li>
+            <li>✓ Parallel multi-language generation</li>
+            <li>✓ Pre-primed product & sponsor glossaries</li>
+          </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: #7B84DC;">STEP 03</div>
+          <h3 class="step-title">Engage Audience on Every Screen</h3>
+          <p class="step-desc">
+            Audience members engage in the format that best fits their viewing setup:
+          </p>
+          <ul class="step-sublist">
+            <li><strong>Physical Venue Attendees:</strong> Scan a QR code printed on banners or stage displays to read or listen on their phones.</li>
+            <li><strong>Stage & Projector Displays (/venue):</strong> Display large, high-legibility captions on LED walls and side screens.</li>
+            <li><strong>Online Livestream Viewers (/overlay):</strong> View transparent, multi-language caption overlays directly on YouTube, Twitch, or custom web streams via OBS or vMix.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. PURPOSE-BUILT FOR EVENT PRODUCERS & STREAMING ENGINEERS -->
+  <section class="section" id="producers">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Production Switcher Integration</div>
+        <h2 class="section-title">Purpose-Built for Event Producers & Streaming Engineers</h2>
+        <p class="section-lead">
+          Plugs directly into your existing video switcher. BridgeeAI works natively with your production stack:
+        </p>
+      </div>
+
+      <div class="av-workflow-grid">
+        
+        <!-- Workflow 1: OBS & vMix -->
+        <div class="av-workflow-card" style="border-color: rgba(46, 204, 113, 0.4);">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">🎛️</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">OBS Studio & vMix Integration</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.72); margin-bottom: 20px;">
+              Add BridgeeAI as a simple Browser Source URL (<code>/overlay/ROOM-ID</code>). Custom styling controls allow you to adjust font size, line count, background opacity, and text alignment.
+            </p>
+          </div>
+          <a href="/overlay/LAUNCH-2026" class="dest-link">Test Live Overlay Studio →</a>
+        </div>
+
+        <!-- Workflow 2: YouTube & Social Sync -->
+        <div class="av-workflow-card">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">📺</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">YouTube & Social Stream Sync</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.72); margin-bottom: 20px;">
+              Provide a universal caption layer for YouTube Live, LinkedIn Live, Facebook, or custom RTMP event platforms.
+            </p>
+          </div>
+          <a href="/join/LAUNCH-2026" class="dest-link">Preview Mobile Join Link →</a>
+        </div>
+
+        <!-- Workflow 3: Custom Brand Glossaries -->
+        <div class="av-workflow-card">
+          <div>
+            <div style="font-size: 36px; margin-bottom: 16px;">🏷️</div>
+            <h3 class="font-serif" style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Custom Brand & Partner Glossaries</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(26,24,24,0.72); margin-bottom: 20px;">
+              Upload sponsor names, product brand terms, and speaker bios prior to the event to ensure 100% accurate translation of non-standard vocabulary.
+            </p>
+          </div>
+          <a href="/host/console/LAUNCH-2026" class="dest-link">Manage Room Glossaries →</a>
+        </div>
+
+      </div>
+
+      <!-- Large Screen Stage LED Display Feature -->
+      <div style="margin-top: 48px; border-radius: var(--radius-lg); overflow: hidden; position: relative; border: 1px solid rgba(26, 24, 24, 0.12); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);">
+        <img 
+          src="/assets/venue_led_screen.jpg" 
+          alt="Large stage LED wall displaying live conference and product launch speech transcription" 
+          style="width: 100%; height: auto; max-height: 480px; object-fit: cover; display: block;"
+        >
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 32px; background: linear-gradient(180deg, transparent 0%, rgba(12, 11, 16, 0.95) 50%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #2ECC71; margin-bottom: 4px;">Exhibition Stage LED Display Mode (/venue)</div>
+            <div style="font-family: var(--font-serif); font-size: 22px; font-weight: 600; color: #FFFFFF;">Ultra-Legible Live Subtitles for Trade Show Booths, Arena Screens & Overflow Halls</div>
+          </div>
+          <a href="/venue/LAUNCH-2026" class="btn-pill btn-pill-primary" style="background: #2ECC71; color: #0C0B10; font-weight: 700; text-decoration: none; padding: 11px 22px; font-size: 13px;">
+            Open Stage Display View 📽
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 8. NETWORK RESILIENCE FOR HIGH-DENSITY CROWDS -->
+  <section class="section section-dark" id="resilience">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: #2ECC71;">Crowded Venue Architecture</div>
+        <h2 class="section-title">Network Resilience for High-Density Crowds</h2>
+        <p class="section-lead">
+          Engineered for zero stream interruption. Crowded exhibition halls and venue Wi-Fi networks put extreme pressure on connectivity. BridgeeAI features built-in adaptive fallback:
+        </p>
+      </div>
+
+      <div class="network-cards-grid">
+        
+        <!-- Dual Mode -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(46, 204, 113, 0.15); color: #2ECC71;">
+            ⚡
+          </div>
+          <h3 class="network-title">High-Speed Dual Mode (4G / 5G / High-Speed Wi-Fi)</h3>
+          <p class="network-desc">
+            Delivers synchronized audio streaming and live captions concurrently when network throughput is optimal.
+          </p>
+        </div>
+
+        <!-- Bandwidth Fallback -->
+        <div class="network-card" style="border-color: rgba(46, 204, 113, 0.4);">
+          <div class="network-card-icon" style="background: rgba(46, 204, 113, 0.15); color: #2ECC71;">
+            📡
+          </div>
+          <h3 class="network-title">Bandwidth-Prioritized Text Fallback (2G / 3G / Congested)</h3>
+          <p class="network-desc">
+            Automatically pauses audio synthesis and prioritizes lightweight text payloads (&lt;2 KB/s) so mobile readers never lose their live caption feed.
+          </p>
+        </div>
+
+        <!-- Automatic Reconnection -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(123, 132, 220, 0.15); color: #7B84DC;">
+            🔄
+          </div>
+          <h3 class="network-title">Automatic Session Reconnection</h3>
+          <p class="network-desc">
+            Re-establishes WebSocket streaming instantly if a mobile user briefly loses cellular connection while moving through a venue.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FLEXIBLE PLANS FOR EVENTS OF ANY SCALE -->
+  <section class="section section-dark" id="pricing">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: #2ECC71;">Fair Hybrid Economics</div>
+        <h2 class="section-title">Flexible Plans for Events of Any Scale</h2>
+        <p class="section-lead">
+          Save 80%+ compared to legacy hardware interpreter booths with transparent, high-concurrency event plans.
+        </p>
+      </div>
+
+      <div class="pricing-grid">
+        
+        <!-- Plan 1 -->
+        <div class="pricing-card">
+          <div>
+            <h3 class="pricing-plan-name">Single Hybrid Event Pass</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$149</span>
+              <span class="pricing-period">/ single event</span>
+            </div>
+            <div class="pricing-for">Designed for one-off product launches, trade show booths, or corporate town halls needing broadcast overlays and QR access.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Up to 8 hours</strong> continuous live stream broadcast</li>
+              <li><span class="check">✓</span> Up to <strong>500 concurrent mobile & stream users</strong></li>
+              <li><span class="check">✓</span> Transparent OBS / vMix overlay browser source</li>
+              <li><span class="check">✓</span> Instant badge & stage QR code join</li>
+              <li><span class="check">✓</span> 20+ Global & Regional languages</li>
+            </ul>
+          </div>
+          <a href="/session/new?template=Event" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3); margin-top: auto;">
+            Get Event Pass
+          </a>
+        </div>
+
+        <!-- Plan 2 (Featured) -->
+        <div class="pricing-card featured" style="transform: scale(1.03); z-index: 2; border-color: #2ECC71;">
+          <div class="pricing-badge" style="background: #2ECC71; color: #0C0B10;">Most Popular for Producers</div>
+          <div>
+            <h3 class="pricing-plan-name">Event Series & Agency Plan</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$299</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-for">Ideal for event management agencies and production teams running recurring hybrid broadcasts with custom glossaries and dedicated overlay styling.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>150 Hours</strong> hybrid streaming per month</li>
+              <li><span class="check">✓</span> Up to <strong>2,500 concurrent viewers</strong></li>
+              <li><span class="check">✓</span> Brand glossary & sponsor term uploads</li>
+              <li><span class="check">✓</span> Custom CSS & lower-third overlay styling</li>
+              <li><span class="check">✓</span> Venue LED & side IMAG display views</li>
+              <li><span class="check">✓</span> Downloadable multilingual session transcripts</li>
+            </ul>
+          </div>
+          <a href="/session/new?template=Event" class="btn-pill btn-pill-primary" style="width: 100%; text-align: center; background: #2ECC71; color: #0C0B10; font-weight: 700; margin-top: auto;">
+            Start 14-Day Free Trial
+          </a>
+        </div>
+
+        <!-- Plan 3 -->
+        <div class="pricing-card">
+          <div>
+            <h3 class="pricing-plan-name">Enterprise Custom Deployment</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">Custom</span>
+            </div>
+            <div class="pricing-for">Tailored for large convention centers, global brand networks, and high-concurrency stadium events requiring dedicated SLA support and unlimited viewer bandwidth.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Unlimited concurrent viewers</strong></li>
+              <li><span class="check">✓</span> Multi-hall simultaneous room routing</li>
+              <li><span class="check">✓</span> Dedicated high-throughput edge cluster</li>
+              <li><span class="check">✓</span> Dedicated on-site or remote streaming engineer</li>
+              <li><span class="check">✓</span> Custom brand model fine-tuning</li>
+              <li><span class="check">✓</span> Enterprise SLA & SOC2 security compliance</li>
+            </ul>
+          </div>
+          <button onclick="openEventDemoModal()" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3); margin-top: auto;">
+            Request Event Demo
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+  <section class="section section-dark" id="faq">
+    <div class="container container-narrow">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: #2ECC71;">Production Guidance</div>
+        <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+      </div>
+
+      <div class="faq-accordion">
+        
+        <!-- Question 1 -->
+        <div class="faq-item open">
+          <div class="faq-question">
+            <span>Can I use BridgeeAI as a transparent overlay on YouTube Live or vMix?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. BridgeeAI provides a transparent browser source URL (/overlay) designed specifically for OBS Studio, vMix, Wirecast, and broadcast switchers.
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Do physical event attendees need to install an app?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            No. Attendees simply scan a QR code displayed on venue signage or stage screens to open live captions directly in their mobile browser.
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>How does BridgeeAI handle noisy exhibition halls?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Feeding audio directly from the speaker's microphone or mixing console ensures clear audio input, bypassing ambient crowd noise.
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can we customize the visual style of the captions on our stream?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. You can customize font sizes, colors, background box opacity, line wrapping, and screen positioning directly from the overlay setup console.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. FINAL CALL TO ACTION -->
+  <section class="final-cta-section" id="cta" style="background: radial-gradient(circle at center top, #1A3828 0%, #0C0B10 100%);">
+    <div class="container final-cta-content">
+      <div class="hero-tag" style="background: rgba(46, 204, 113, 0.15); border-color: rgba(46, 204, 113, 0.4); color: #2ECC71; margin-bottom: 24px;">
+        Accessible Broadcasts Everywhere
+      </div>
+      
+      <h2 class="hero-heading" style="color: var(--bone-50); margin-bottom: 20px;">
+        Make your next live or hybrid event accessible to everyone, everywhere.
+      </h2>
+      
+      <p class="hero-subtitle" style="color: rgba(255, 252, 244, 0.85); margin-bottom: 38px;">
+        Create a live session in under 60 seconds and deliver real-time multi-language captions across every screen and stream.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/host/console/LAUNCH-2026" class="btn-pill btn-pill-primary" id="btnFinalCreateEvent" style="background: #2ECC71; color: #0C0B10; font-weight: 700; padding: 14px 32px;">
+          Create an Event Session
+        </a>
+        <button onclick="openEventDemoModal()" class="btn-pill btn-pill-secondary" id="btnFinalDemoEvent" style="color: var(--bone-50); border-color: rgba(255,252,244,0.35); padding: 14px 30px;">
+          Request Event Demo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-row">
+        <div class="footer-brand-summary">
+          <div class="footer-brand-title">
+            <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px;">B</div>
+            <span>BridgeeAI</span>
+          </div>
+          <div class="footer-tagline">
+            BridgeeAI: Speak once. Be understood everywhere.
+          </div>
+          <p style="font-size: 13px; line-height: 1.5; color: rgba(255,252,244,0.6);">
+            Empowering trade shows, product launches, conventions, and hybrid livestreams with real-time multilingual subtitles and synthetic voice audio.
+          </p>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bone-50); margin-bottom: 14px;">
+            Quick Links
+          </div>
+          <div class="footer-quick-links-group">
+            <a href="#how-it-works" class="footer-quick-link">How It Works</a>
+            <a href="#languages" class="footer-quick-link">Supported Languages</a>
+            <a href="#producers" class="footer-quick-link">Production Overlays</a>
+            <a href="#pricing" class="footer-quick-link">Pricing</a>
+            <a href="#faq" class="footer-quick-link">FAQ</a>
+            <a href="mailto:events@bridgee.ai" class="footer-quick-link">Contact</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>
+          Copyright: © 2026 BridgeeAI Inc. All rights reserved.
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <a href="/join/LAUNCH-2026" style="color: inherit; text-decoration: none;">Join LAUNCH-2026</a>
+          <a href="/venue/LAUNCH-2026" style="color: inherit; text-decoration: none;">Venue Screen View</a>
+          <a href="/overlay/LAUNCH-2026" style="color: inherit; text-decoration: none;">OBS Stream Overlay</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: REQUEST EVENT DEMO -->
+  <div class="modal-overlay" id="eventDemoModal" onclick="if(event.target===this) closeEventDemoModal()">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeEventDemoModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: #2ECC71; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Production Consultation</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Request Event Demo</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Let our broadcast streaming engineers demonstrate live OBS caption integration and high-traffic Wi-Fi optimization.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Thank you! A streaming specialist will contact you within 24 hours to schedule your custom broadcast demo.'); closeEventDemoModal();">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Your Name</label>
+          <input type="text" required placeholder="Marcus Vance" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Work Email</label>
+          <input type="email" required placeholder="marcus@producer.events" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Event Format & Projected Audience</label>
+          <input type="text" placeholder="e.g. Hybrid product launch, 2,000 online + 400 in person" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: #2ECC71; color: #0C0B10; font-weight: 700; padding: 12px;">
+          Submit Demo Request →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SIGN IN -->
+  <div class="modal-overlay" id="signInModal" onclick="if(event.target===this) closeSignInModal()">
+    <div class="modal-card" style="max-width: 440px;">
+      <button class="modal-close-btn" onclick="closeSignInModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: #2ECC71; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Producer Portal</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Sign In to Console</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Access your live hybrid event sessions, OBS overlay links, and audience metrics.
+      </p>
+
+      <form onsubmit="event.preventDefault(); window.location.href='/host/console/LAUNCH-2026';">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Work Email</label>
+          <input type="email" required placeholder="producer@events.com" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Event Room Code</label>
+          <input type="text" placeholder="e.g. LAUNCH-2026" value="LAUNCH-2026" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: #2ECC71; color: #0C0B10; font-weight: 700; padding: 12px;">
+          Continue to Event Console →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE SCRIPTS -->
+  <script>
+    // FAQ Accordion click toggles
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    // Modal helpers
+    function openEventDemoModal() {
+      document.getElementById('eventDemoModal').classList.add('active');
+    }
+    function closeEventDemoModal() {
+      document.getElementById('eventDemoModal').classList.remove('active');
+    }
+
+    function openSignInModal() {
+      document.getElementById('signInModal').classList.add('active');
+    }
+    function closeSignInModal() {
+      document.getElementById('signInModal').classList.remove('active');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeEventDemoModal();
+        closeSignInModal();
+      }
+    });
+
+    // Interactive Stream Overlay Showcase Logic
+    const streamTranslations = {
+      en: {
+        label: "English",
+        text: "“…we are thrilled to announce the next generation of our flagship product line live on stage…”"
+      },
+      fr: {
+        label: "Français (French)",
+        text: "“…nous sommes ravis d'annoncer la prochaine génération de nos produits en direct…”"
+      },
+      es: {
+        label: "Español (Spanish)",
+        text: "“…estamos encantados de anunciar la próxima generación de nuestra línea de productos en vivo…”"
+      },
+      yo: {
+        label: "Yorùbá",
+        text: "“…inú wa dùn púpọ̀ láti kéde ìran tí ń bọ̀ ti àwọn ohun èlò wa lórí ìpele ní tààràtà…”"
+      },
+      ar: {
+        label: "العربية (Arabic)",
+        text: "“…يسعدنا للغاية الإعلان عن الجيل التالي من خط منتجاتنا الرائد مباشرة على المسرح اليوم…”"
+      }
+    };
+
+    let currentStreamLang = 'fr';
+    let currentStreamStyle = 'banner';
+
+    function setStreamLanguage(langKey) {
+      if (!streamTranslations[langKey]) return;
+      currentStreamLang = langKey;
+
+      const data = streamTranslations[langKey];
+      const langBadge = document.getElementById('overlayCurrentLang');
+      const captionText = document.getElementById('streamCaptionText');
+
+      // Subtle fade animation
+      captionText.style.opacity = '0.3';
+      setTimeout(() => {
+        langBadge.textContent = data.label;
+        captionText.textContent = data.text;
+        captionText.style.opacity = '1';
+      }, 150);
+
+      // Update active button state
+      const buttons = document.querySelectorAll('.stream-control-strip .control-group:first-child .btn-toggle-option');
+      buttons.forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        if (
+          (langKey === 'en' && text.includes('english')) ||
+          (langKey === 'fr' && text.includes('français')) ||
+          (langKey === 'es' && text.includes('español')) ||
+          (langKey === 'yo' && text.includes('yorùbá')) ||
+          (langKey === 'ar' && text.includes('arabic'))
+        ) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    function setStreamStyle(styleKey) {
+      currentStreamStyle = styleKey;
+      const overlayEl = document.getElementById('streamCaptionOverlay');
+
+      overlayEl.className = '';
+      if (styleKey === 'banner') {
+        overlayEl.className = 'overlay-style-banner';
+      } else if (styleKey === 'transparent') {
+        overlayEl.className = 'overlay-style-transparent';
+      } else if (styleKey === 'box') {
+        overlayEl.className = 'overlay-style-box';
+      }
+
+      // Update style buttons
+      const styleButtons = document.querySelectorAll('.btn-toggle-style');
+      styleButtons.forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        if (
+          (styleKey === 'banner' && text.includes('banner')) ||
+          (styleKey === 'transparent' && text.includes('transparent')) ||
+          (styleKey === 'box' && text.includes('box'))
+        ) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // Solutions dropdown click/tap toggle
+    const solutionsLink = document.getElementById('navSolutionsLink');
+    const solutionsDropdown = document.getElementById('solutionsDropdown');
+    if (solutionsLink && solutionsDropdown) {
+      solutionsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        solutionsDropdown.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!solutionsLink.contains(e.target) && !solutionsDropdown.contains(e.target)) {
+          solutionsDropdown.classList.remove('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

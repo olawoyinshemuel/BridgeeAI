@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — Venue Display Screen</title>
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/venue.css">
+</head>
+<body class="theme-greenish">
+
+  <div class="venue-container">
+    
+    <!-- Top Header Bar -->
+    <header class="venue-header">
+      <div class="venue-brand">
+        <div class="venue-brand-logo">B</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--venue-aqua);">
+            Live Stage Translation
+          </div>
+          <h1 id="venueSessionTitle" class="venue-session-title">
+            Global AI & Ethics Summit 2026
+          </h1>
+        </div>
+      </div>
+
+      <div class="venue-status-cluster">
+        <div class="venue-live-pill">
+          <span class="venue-live-dot"></span>
+          <span id="venueStatusText">LIVE ON STAGE</span>
+        </div>
+        <div id="venueLangTag" class="venue-lang-tag">
+          FRANÇAIS (FRENCH)
+        </div>
+      </div>
+    </header>
+
+    <!-- Center Stage: High-Legibility Two-Tier Captions -->
+    <main class="venue-body">
+      
+      <!-- Standard Single / Staggered Caption Mode -->
+      <div id="venueStandardStage" style="display: flex; flex-direction: column; gap: 24px;">
+        <!-- Previous Sentence (Dimmed context) -->
+        <div id="venueCaptionHistory" class="venue-caption-history">
+          Awaiting keynote speech...
+        </div>
+
+        <!-- Current Active Live Sentence -->
+        <div id="venueCaptionMain" class="venue-caption-main">
+          Bienvenue à tous au Sommet mondial sur l'IA et l'éthique 2026.
+        </div>
+      </div>
+
+      <!-- Optional Dual Language Split Mode (Original vs Translated) -->
+      <div id="venueDualStage" class="venue-dual-split">
+        <div class="venue-split-col">
+          <div class="venue-split-header">
+            <span>🎙 Source Speech (English)</span>
+          </div>
+          <div id="venueDualSource" class="venue-split-text" style="color: rgba(255,252,244,0.8);">
+            Welcome everyone to the Global AI and Ethics Summit 2026.
+          </div>
+        </div>
+        <div class="venue-split-col" style="border-color: var(--venue-accent);">
+          <div class="venue-split-header" style="color: var(--venue-accent);">
+            <span id="venueDualLangHeader">🌐 Live Translation (Français)</span>
+          </div>
+          <div id="venueDualTarget" class="venue-split-text" style="color: var(--venue-text);">
+            Bienvenue à tous au Sommet mondial sur l'IA et l'éthique 2026.
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Bar: Metadata & Corner QR Join Card for Attendees -->
+    <footer class="venue-footer">
+      <div class="venue-meta-left">
+        <div>Speaker: <strong id="venueHostName" style="color: var(--venue-text);">Dr. Elena Rostova</strong></div>
+        <div style="font-size: 13px; opacity: 0.8;">
+          Audio Cadence: <strong>250ms chunks</strong> · Bandwidth: <strong>&lt; 2 KB/s Adaptive</strong>
+        </div>
+      </div>
+
+      <!-- In-Hall QR Onboarding Card -->
+      <div id="venueQrCard" class="venue-qr-card">
+        <img id="venueQrImg" src="" alt="Scan QR to Join on Mobile" class="venue-qr-img">
+        <div class="venue-qr-info">
+          <div class="venue-qr-title">Follow on Your Phone</div>
+          <div class="venue-qr-sub">Scan to choose your preferred language & audio mode.</div>
+          <div id="venueRoomBadge" class="venue-room-code-badge">ROOM: TECH-2026</div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Floating Autohiding Operator Toolbar -->
+    <div id="venueToolbar" class="venue-operator-toolbar">
+      <button id="btnToggleFs" class="venue-tool-btn" title="Toggle Fullscreen">
+        ⛶ Fullscreen <span class="key-hint">F</span>
+      </button>
+      <button id="btnToggleDual" class="venue-tool-btn" title="Toggle Dual Language Split">
+        ⚏ Dual Split <span class="key-hint">D</span>
+      </button>
+      <button id="btnToggleQr" class="venue-tool-btn" title="Toggle QR Code">
+        🏷 QR Card <span class="key-hint">Q</span>
+      </button>
+      <button id="btnCycleLang" class="venue-tool-btn" title="Cycle Target Language">
+        🌐 Lang <span class="key-hint">L</span>
+      </button>
+      <button id="btnCycleTheme" class="venue-tool-btn" title="Cycle Theme (Green, OLED, Light)">
+        🎨 Theme <span class="key-hint">T</span>
+      </button>
+      <button id="btnFontInc" class="venue-tool-btn" title="Increase Font Size">A+</button>
+      <button id="btnFontDec" class="venue-tool-btn" title="Decrease Font Size">A-</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Extract Room ID from pathname: /venue/:roomId
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const roomId = (pathParts[1] || 'TECH-2026').toUpperCase();
+
+    // URL parameters
+    const params = new URLSearchParams(window.location.search);
+    let currentLang = params.get('lang') || 'fr-FR';
+    let isDual = params.get('dual') === '1' || params.get('dual') === 'true';
+    let showQr = params.get('qr') !== '0';
+    let themeIndex = 0; // 0: greenish, 1: oled, 2: light
+    const themes = ['theme-greenish', 'theme-oled', 'theme-light'];
+
+    const langNames = {
+      'fr-FR': 'FRANÇAIS',
+      'es-ES': 'ESPAÑOL',
+      'yo-NG': 'YORÙBÁ',
+      'ha-NG': 'HAUSA',
+      'ig-NG': 'ASỤSỤ IGBO',
+      'sw-KE': 'KISWAHILI',
+      'de-DE': 'DEUTSCH',
+      'ja-JP': '日本語',
+      'zh-CN': '简体中文',
+      'ar-SA': 'العربية',
+      'pt-BR': 'PORTUGUÊS'
+    };
+
+    const langCodes = Object.keys(langNames);
+
+    // DOM Elements
+    const titleEl = document.getElementById('venueSessionTitle');
+    const hostEl = document.getElementById('venueHostName');
+    const langTagEl = document.getElementById('venueLangTag');
+    const statusTextEl = document.getElementById('venueStatusText');
+    const historyEl = document.getElementById('venueCaptionHistory');
+    const mainEl = document.getElementById('venueCaptionMain');
+    const dualSourceEl = document.getElementById('venueDualSource');
+    const dualTargetEl = document.getElementById('venueDualTarget');
+    const dualLangHeaderEl = document.getElementById('venueDualLangHeader');
+    const standardStage = document.getElementById('venueStandardStage');
+    const dualStage = document.getElementById('venueDualStage');
+    const qrCard = document.getElementById('venueQrCard');
+    const qrImg = document.getElementById('venueQrImg');
+    const roomBadge = document.getElementById('venueRoomBadge');
+    const toolbar = document.getElementById('venueToolbar');
+
+    roomBadge.textContent = `ROOM: ${roomId}`;
+    langTagEl.textContent = langNames[currentLang] || currentLang;
+
+    // Apply Dual Mode
+    function updateLayoutMode() {
+      if (isDual) {
+        standardStage.style.display = 'none';
+        dualStage.classList.add('visible');
+        dualLangHeaderEl.textContent = `🌐 Live Translation (${langNames[currentLang] || currentLang})`;
+      } else {
+        standardStage.style.display = 'flex';
+        dualStage.classList.remove('visible');
+      }
+    }
+    updateLayoutMode();
+
+    if (!showQr) {
+      qrCard.style.display = 'none';
+    }
+
+    // Fetch Session Details and QR Code
+    fetch(`/api/sessions/${roomId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.session) {
+          titleEl.textContent = data.session.title;
+          hostEl.textContent = data.session.hostName;
+        }
+      })
+      .catch(() => {});
+
+    fetch(`/api/sessions/${roomId}/qr`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.qrDataUrl) {
+          qrImg.src = data.qrDataUrl;
+        }
+      })
+      .catch(() => {});
+
+    // WebSocket Connection
+    let ws = null;
+    let reconnectTimeout = null;
+
+    function connectVenueStream() {
+      if (ws) ws.close();
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/live?roomId=${roomId}&lang=${currentLang}&mode=venue`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log(`[Venue Display] Connected to room: ${roomId}, lang: ${currentLang}`);
+        statusTextEl.textContent = 'LIVE ON STAGE';
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+
+          if (msg.type === 'CAPTION_PARTIAL') {
+            mainEl.innerHTML = `<span style="opacity: 0.7; font-style: italic;">${msg.partialText} ...</span>`;
+            if (isDual) {
+              dualTargetEl.innerHTML = `<span style="opacity: 0.7; font-style: italic;">${msg.partialText} ...</span>`;
+            }
+          } else if (msg.type === 'CAPTION_FINAL') {
+            // Shift current into history
+            if (mainEl.textContent.trim()) {
+              historyEl.textContent = mainEl.textContent;
+            }
+
+            mainEl.textContent = msg.translatedText;
+            mainEl.style.opacity = '0.3';
+            setTimeout(() => { mainEl.style.opacity = '1'; }, 50);
+
+            if (isDual) {
+              dualSourceEl.textContent = msg.originalText;
+              dualTargetEl.textContent = msg.translatedText;
+            }
+          } else if (msg.type === 'STREAM_STATUS') {
+            if (msg.isStreaming === false) {
+              statusTextEl.textContent = 'STANDBY';
+            } else if (msg.isMuted) {
+              statusTextEl.textContent = 'MIC MUTED';
+            } else if (msg.isPaused) {
+              statusTextEl.textContent = 'SESSION PAUSED';
+            } else {
+              statusTextEl.textContent = 'LIVE ON STAGE';
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing venue message:', e);
+        }
+      };
+
+      ws.onclose = () => {
+        statusTextEl.textContent = 'RECONNECTING...';
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = setTimeout(connectVenueStream, 2500);
+      };
+    }
+
+    connectVenueStream();
+
+    // Keyboard Shortcuts and Toolbar Controls
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function cycleTheme() {
+      themeIndex = (themeIndex + 1) % themes.length;
+      document.body.className = themes[themeIndex];
+    }
+
+    function cycleLanguage() {
+      const currentIdx = langCodes.indexOf(currentLang);
+      const nextIdx = (currentIdx + 1) % langCodes.length;
+      currentLang = langCodes[nextIdx];
+      langTagEl.textContent = langNames[currentLang];
+      if (isDual) {
+        dualLangHeaderEl.textContent = `🌐 Live Translation (${langNames[currentLang]})`;
+      }
+      connectVenueStream();
+    }
+
+    let fontScale = 1;
+    function adjustFont(delta) {
+      fontScale = Math.max(0.7, Math.min(1.5, fontScale + delta));
+      mainEl.style.fontSize = `calc(clamp(36px, 5.2vw, 68px) * ${fontScale})`;
+      historyEl.style.fontSize = `calc(clamp(24px, 3.2vw, 42px) * ${fontScale})`;
+    }
+
+    document.getElementById('btnToggleFs').addEventListener('click', toggleFullscreen);
+    document.getElementById('btnToggleDual').addEventListener('click', () => {
+      isDual = !isDual;
+      updateLayoutMode();
+    });
+    document.getElementById('btnToggleQr').addEventListener('click', () => {
+      showQr = !showQr;
+      qrCard.style.display = showQr ? 'flex' : 'none';
+    });
+    document.getElementById('btnCycleLang').addEventListener('click', cycleLanguage);
+    document.getElementById('btnCycleTheme').addEventListener('click', cycleTheme);
+    document.getElementById('btnFontInc').addEventListener('click', () => adjustFont(0.1));
+    document.getElementById('btnFontDec').addEventListener('click', () => adjustFont(-0.1));
+
+    // Keyboard listener
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      if (key === 'f') toggleFullscreen();
+      else if (key === 'd') { isDual = !isDual; updateLayoutMode(); }
+      else if (key === 'q') { showQr = !showQr; qrCard.style.display = showQr ? 'flex' : 'none'; }
+      else if (key === 'l') cycleLanguage();
+      else if (key === 't') cycleTheme();
+      else if (key === '+' || key === '=') adjustFont(0.1);
+      else if (key === '-' || key === '_') adjustFont(-0.1);
+    });
+
+    // Autohide operator toolbar after 3 seconds of idle
+    let idleTimer = null;
+    window.addEventListener('mousemove', () => {
+      toolbar.style.opacity = '1';
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        toolbar.style.opacity = '0';
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

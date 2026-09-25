@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — Live Host Audio Console</title>
+  <meta name="description" content="BridgeeAI Host Audio Streaming Console — 250ms raw audio ingestion via WebSockets.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/host-console.css">
+</head>
+<body>
+  <div class="console-wrapper">
+    <!-- Top Status Rail -->
+    <header class="top-status-rail">
+      <div class="rail-left">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; background: #FFFFFF; color: var(--ink-950); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: bold; font-size: 18px;">B</div>
+          <span style="font-weight: 700; font-size: 16px;">BridgeeAI Host</span>
+        </div>
+        <div class="live-pulse" id="wsConnPulse">
+          <span class="live-pulse-dot" id="wsConnDot"></span>
+          <span id="wsConnLabel">DISCONNECTED</span>
+        </div>
+        <h1 class="rail-session-title" id="railSessionTitle">Loading Session...</h1>
+      </div>
+
+      <div class="rail-center">
+        <div class="timer-box" id="elapsedTimer">00:00:00</div>
+        <div class="chunk-cadence-badge" id="cadenceBadge">
+          <span>●</span>
+          <span>INGESTION: 250ms CHUNKS</span>
+        </div>
+        <span class="room-token-badge" id="railRoomToken" style="font-size: 14px; padding: 4px 10px;">ROOM: ...</span>
+      </div>
+    </header>
+
+    <!-- Main Split Canvas -->
+    <main class="console-grid">
+      <!-- Left Panel: Live Audio Ingestion Stream -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span style="color: var(--rose-400);">●</span> Live Microphone Ingestion
+          </h2>
+          <span style="font-size: 12px; color: rgba(255,252,244,0.5);" id="audioFormatLabel">PCM 16kHz Mono</span>
+        </div>
+
+        <!-- Waveform Canvas -->
+        <div class="waveform-box">
+          <div class="waveform-overlay-label">
+            <span style="display:inline-block; width:6px; height:6px; background:var(--rose-400); border-radius:50%;"></span>
+            <span>Real-Time Waveform (60 FPS)</span>
+          </div>
+          <canvas id="waveformCanvas" class="waveform-canvas" width="680" height="140"></canvas>
+        </div>
+
+        <!-- dBFS Volume Meter -->
+        <div class="meter-row">
+          <span style="font-size: 11px; text-transform: uppercase; color: rgba(255,252,244,0.5);">Input Level</span>
+          <div class="meter-track">
+            <div class="meter-fill" id="meterFill"></div>
+          </div>
+          <span class="meter-val" id="meterDbVal">-∞ dB</span>
+        </div>
+
+        <!-- Live 250ms Chunks Activity Stream -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,252,244,0.5);">
+            WebSocket Binary Payload Log (250ms)
+          </span>
+          <span style="font-size: 11px; color: var(--aqua-400);" id="streamStateSummary">Standby</span>
+        </div>
+        <div class="chunks-log-box" id="chunksLogBox" style="max-height: 85px; margin-bottom: 16px;">
+          <div class="log-entry">Waiting to start audio streaming...</div>
+        </div>
+
+        <!-- Live Speech-to-Text Transcript Feed -->
+        <div style="padding-top: 14px; border-top: 1px solid var(--ink-border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold-400);">
+              Live Source Speech Transcript (STT)
+            </span>
+            <span id="sttStatusBadge" style="font-size: 11px; color: var(--aqua-400);">VAD Active</span>
+          </div>
+          <div class="transcript-feed-box" id="hostTranscriptFeed" style="background: rgba(18, 26, 22, 0.7); border: 1px solid var(--ink-border); border-radius: var(--radius-md); padding: 12px; min-height: 110px; max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+            <div id="partialLiveText" style="font-size: 14px; color: rgba(255, 252, 244, 0.6); font-style: italic;">
+              Speak into microphone — real voice recognition is active and will transcribe here...
+            </div>
+          </div>
+
+          <!-- Quick Test & Manual Speech Input Bar -->
+          <div style="margin-top: 10px; display: flex; gap: 8px;">
+            <input 
+              type="text" 
+              id="manualSpeechInput" 
+              placeholder="Type or speak custom words to broadcast live..." 
+              style="flex: 1; background: rgba(14, 13, 18, 0.85); border: 1px solid var(--ink-border); border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #FFF; outline: none;"
+            >
+            <button 
+              type="button" 
+              id="btnSendManualSpeech" 
+              class="btn-pill btn-pill-secondary" 
+              style="padding: 8px 14px; font-size: 12px; white-space: nowrap; border-color: rgba(255,252,244,0.2);"
+            >
+              Broadcast 💬
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Audio Hardware & Real-Time Telemetry -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">Stream Health & Telemetry</h2>
+          <span class="session-template-tag" id="panelTemplateTag">CONFERENCE</span>
+        </div>
+
+        <!-- Hardware Audio Input Selector -->
+        <div class="hardware-card">
+          <label class="form-label" for="audioDeviceSelect">Microphone Input Source</label>
+          <select id="audioDeviceSelect" class="device-select">
+            <option value="default">Default System Microphone</option>
+            <option value="simulator">Synthesized Audio Test Stream (440Hz / Speech Mock)</option>
+          </select>
+        </div>
+
+        <!-- Telemetry Gauges -->
+        <div class="telemetry-grid">
+          <div class="telem-card">
+            <div class="telem-label">250ms Chunks Sent</div>
+            <div class="telem-value" id="chunksSentVal" style="color: var(--aqua-400);">0</div>
+          </div>
+          <div class="telem-card">
+            <div class="telem-label">Server Ack Count</div>
+            <div class="telem-value" id="chunksAckVal" style="color: var(--gold-400);">0</div>
+          </div>
+          <div class="telem-card">
+            <div class="telem-label">Data Throughput</div>
+            <div class="telem-value" id="throughputVal">0.0 <span style="font-size: 13px; font-weight: normal; color: rgba(255,252,244,0.5);">kbps</span></div>
+          </div>
+          <div class="telem-card">
+            <div class="telem-label">Ingestion Health</div>
+            <div class="telem-value" id="healthStatusVal" style="font-size: 16px; color: var(--success-500);">Optimal</div>
+          </div>
+        </div>
+
+        <!-- Session Quick Navigation Card -->
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--ink-border); display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-size: 11px; text-transform: uppercase; color: rgba(255,252,244,0.4); letter-spacing: 0.05em;">Session Controls & Links</span>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a id="qrPreviewLink" href="#" target="_blank" class="btn-pill btn-pill-secondary" style="flex: 1; padding: 10px 14px; font-size: 13px; text-decoration: none;">
+              QR Code Share 📱
+            </a>
+            <a id="attendeeJoinLink" href="#" target="_blank" class="btn-pill btn-pill-secondary" style="flex: 1; padding: 10px 14px; font-size: 13px; text-decoration: none;">
+              Attendee PWA ↗
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Operational Control Bar -->
+    <footer class="bottom-control-bar">
+      <div class="control-group-left">
+        <button class="btn-pill btn-pill-primary" id="startStopBtn">
+          <span id="startStopIcon">▶</span>
+          <span id="startStopText">Start Audio Broadcast</span>
+        </button>
+
+        <button class="btn-pill btn-mute" id="muteBtn" disabled>
+          <span id="muteIcon">🎙</span>
+          <span id="muteText">Mute Mic</span>
+        </button>
+
+        <button class="btn-pill btn-pill-secondary" id="pauseBtn" disabled>
+          <span id="pauseIcon">⏸</span>
+          <span id="pauseText">Pause Session</span>
+        </button>
+      </div>
+
+      <div class="control-group-right">
+        <span style="font-size: 13px; color: rgba(255,252,244,0.5);" id="statusNote">Ready to connect microphone</span>
+        <a href="/" class="btn-pill btn-pill-secondary" style="padding: 10px 18px; font-size: 13px; text-decoration: none;">
+          Exit Console ✕
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/js/host-console.js" type="module"></script>
+</body>
+</html>

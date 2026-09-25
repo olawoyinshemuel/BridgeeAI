@@ -1,0 +1,340 @@
+/* BridgeeAI — Venue Display View Stylesheet */
+/* High-contrast, high-legibility display for projectors, TVs, and LED walls */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --venue-bg: #121A16; /* Deep green-black as specified in Design Prompt */
+  --venue-text: #FFFCF4; /* Warm bone-50 */
+  --venue-accent: #7B84DC; /* Violet-500 */
+  --venue-aqua: #7AD9D2; /* Aqua-400 live state */
+  --venue-gold: #D5AE68; /* Gold-400 */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--venue-bg);
+  color: var(--venue-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Background Theme Options */
+body.theme-greenish {
+  background-color: #121A16 !important;
+}
+
+body.theme-oled {
+  background-color: #000000 !important;
+}
+
+body.theme-light {
+  background-color: #FFFCF4 !important;
+  color: #1A1818 !important;
+}
+
+body.theme-light .venue-caption-main {
+  color: #1A1818 !important;
+}
+
+body.theme-light .venue-caption-history {
+  color: rgba(26, 24, 24, 0.45) !important;
+}
+
+body.theme-light .venue-qr-card {
+  background: rgba(26, 24, 24, 0.05) !important;
+  border-color: rgba(26, 24, 24, 0.15) !important;
+  color: #1A1818 !important;
+}
+
+/* Main Venue Stage Layout */
+.venue-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 40px 60px;
+  position: relative;
+  justify-content: space-between;
+}
+
+/* Top Header Bar */
+.venue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 252, 244, 0.1);
+  padding-bottom: 24px;
+}
+
+.venue-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.venue-brand-logo {
+  width: 40px;
+  height: 40px;
+  background: var(--venue-accent);
+  color: #FFFFFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(123, 132, 220, 0.35);
+}
+
+.venue-session-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.venue-status-cluster {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.venue-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(122, 217, 210, 0.16);
+  border: 1px solid var(--venue-aqua);
+  color: var(--venue-aqua);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.venue-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--venue-aqua);
+  box-shadow: 0 0 10px var(--venue-aqua);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.venue-lang-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(123, 132, 220, 0.16);
+  border: 1px solid var(--venue-accent);
+  color: #E8E9FF;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Center Content: Two-Tier High Legibility Caption Stage */
+.venue-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1500px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 0;
+  gap: 32px;
+}
+
+/* Previous Finalized Sentence (Contextual history) */
+.venue-caption-history {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 3.2vw, 42px);
+  line-height: 1.35;
+  color: rgba(255, 252, 244, 0.42);
+  transition: all 0.3s ease;
+  min-height: 1.35em;
+}
+
+/* Current Active / Highlighted Final Sentence */
+.venue-caption-main {
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 5.2vw, 68px);
+  line-height: 1.25;
+  color: var(--venue-text);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Dual Mode Translation Split Box */
+.venue-dual-split {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+}
+
+.venue-dual-split.visible {
+  display: grid;
+}
+
+.venue-split-col {
+  background: rgba(255, 252, 244, 0.04);
+  border: 1px solid rgba(255, 252, 244, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+}
+
+.venue-split-header {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--venue-aqua);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.venue-split-text {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 3.6vw, 48px);
+  line-height: 1.3;
+}
+
+/* Bottom Bar & Live QR Code Card for In-Hall Attendees */
+.venue-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 252, 244, 0.1);
+  padding-top: 24px;
+  position: relative;
+}
+
+.venue-meta-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: rgba(255, 252, 244, 0.6);
+}
+
+.venue-qr-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: rgba(26, 24, 24, 0.85);
+  border: 1px solid rgba(255, 252, 244, 0.16);
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: opacity 0.3s ease;
+}
+
+.venue-qr-img {
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  background: #FFF;
+  padding: 4px;
+}
+
+.venue-qr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.venue-qr-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--venue-text);
+}
+
+.venue-qr-sub {
+  font-size: 12px;
+  color: rgba(255, 252, 244, 0.7);
+  max-width: 240px;
+  line-height: 1.35;
+}
+
+.venue-room-code-badge {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--venue-gold);
+  margin-top: 2px;
+}
+
+/* Floating Operator Controls (Autohiding) */
+.venue-operator-toolbar {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.venue-container:hover .venue-operator-toolbar {
+  opacity: 1;
+}
+
+.venue-tool-btn {
+  background: rgba(26, 24, 24, 0.88);
+  border: 1px solid rgba(255, 252, 244, 0.2);
+  color: #FFFCF4;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.venue-tool-btn:hover {
+  background: rgba(35, 33, 33, 0.95);
+  border-color: var(--venue-accent);
+}
+
+/* Keyboard Shortcut Tooltip */
+.key-hint {
+  display: inline-block;
+  background: rgba(255, 252, 244, 0.2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  margin-left: 4px;
+}

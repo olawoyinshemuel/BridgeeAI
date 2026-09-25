@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — Structured Requirements Document</title>
+  <style>
+    :root {
+      --ink-950: #1A1818;
+      --slate-850: #2A373B;
+      --bone-50: #FFFCF4;
+      --paper-0: #FFFFFF;
+      --violet-500: #7B84DC;
+      --violet-100: #E8E9FF;
+      --aqua-400: #7AD9D2;
+      --border-color: rgba(26, 24, 24, 0.12);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bone-50);
+      color: var(--ink-950);
+      line-height: 1.6;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--paper-0);
+      padding: 48px;
+      border-radius: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 0;
+      color: var(--ink-950);
+      border-bottom: 2px solid var(--violet-100);
+      padding-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 36px;
+      margin-bottom: 16px;
+      color: var(--slate-850);
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    p, li {
+      font-size: 15px;
+      color: #333;
+    }
+
+    .problem-box {
+      background-color: var(--violet-100);
+      border-left: 4px solid var(--violet-500);
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+
+    .problem-box p {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #FAFAFA;
+      font-weight: 600;
+      color: var(--slate-850);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-must { background-color: #FFE6E6; color: #C95F64; }
+    .badge-should { background-color: #E8E9FF; color: #5B63B7; }
+    .badge-could { background-color: #E6F7F5; color: #2B8A82; }
+    .badge-wont { background-color: #F0F0F0; color: #666666; }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>BridgeeAI — Product Requirements Document</h1>
+
+  <h2>1. Problem Statement</h2>
+  <div class="problem-box">
+    <p>Live human communication across education, conferences, religious services, and public events assumes a single shared language, forcing multilingual audiences to navigate costly human interpretation, cumbersome physical hardware receivers, interrupted speech flows, or total exclusion—a barrier exacerbated in regions with constrained, variable internet infrastructure (2G/3G/4G) where bandwidth-heavy streaming solutions frequently fail.</p>
+  </div>
+
+  <h2>2. Target Users</h2>
+  <h3>Primary Users (Session Creators & Operators)</h3>
+  <ul>
+    <li><strong>Individual Presenters & Instructors:</strong> Professional trainers, university lecturers, workshop facilitators, preachers, speakers, and creators who need to host multilingual sessions independently without technical staff or separate operators.</li>
+    <li><strong>Organization Event Managers & Media Teams:</strong> Admins, operators, and production staff at training organizations, conference hosts, churches/ministries, and corporate event producers who manage live multi-room sessions and broadcast video overlays.</li>
+  </ul>
+
+  <h3>Secondary Users (Session Participants / Audience)</h3>
+  <ul>
+    <li><strong>Live Event Attendees & Learners:</strong> Conference attendees, students, church members, and event participants who speak different native languages (with a strong emphasis on African regional languages and global languages) and require real-time text or audio translation on their personal devices or venue displays without installing an app or registering an account.</li>
+  </ul>
+
+  <h2>3. Functional Requirements (FR)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Feature</th>
+        <th>Description</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>FR-01</strong></td>
+        <td>Frictionless Participant Join</td>
+        <td>Participants join a live session via QR code or short link in a mobile browser without creating an account or downloading an app.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-02</strong></td>
+        <td>Independent Language & Mode Selection</td>
+        <td>Each participant independently selects their target language and delivery mode (Read, Listen, Read + Listen) without impacting other participants.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-03</strong></td>
+        <td>Live In-Session Language Switching</td>
+        <td>Participants can switch target languages or delivery modes during an active session without disconnecting, refreshing, or leaving.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-04</strong></td>
+        <td>Simple Host Session Creation</td>
+        <td>Individual hosts can create a session in three steps (Name, Experience Template, Source/Target Languages) and start speaking immediately.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-05</strong></td>
+        <td>Real-Time Speech Ingestion & STT</td>
+        <td>Ingest live microphone speech from the host and convert it into real-time source transcript chunks.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-06</strong></td>
+        <td>Multilingual Translation Engine</td>
+        <td>Translate source transcript chunks into selected target language streams with context and glossary sensitivity.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-07</strong></td>
+        <td>Network-Aware Adaptive Delivery</td>
+        <td>Automatically detect client network quality and degrade gracefully (e.g., fallback to ultra-lightweight text-only payloads on 2G/3G connections).</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-08</strong></td>
+        <td>Browser Production Overlays</td>
+        <td>Provide transparent, customizable browser overlay URLs (<code>bridgee.ai/overlay/{SESSION_ID}</code>) for venue displays, OBS, and vMix integrations.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-09</strong></td>
+        <td>Context & Glossary Engine</td>
+        <td>Allow hosts to upload slides/documents (PDF, PPTX, DOCX, TXT) and define explicit glossary rules to improve translation accuracy.</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-10</strong></td>
+        <td>Session Control & Health Monitoring</td>
+        <td>Provide hosts with real-time controls (Start, Pause, Resume, End) and system status indicators (mic levels, STT health, latency, audience count).</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-11</strong></td>
+        <td>Language Capability Profiles</td>
+        <td>Dynamically display language availability based on verified provider capabilities (STT, Translation, TTS, Live Caption).</td>
+        <td><span class="badge badge-must">Must</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-12</strong></td>
+        <td>Experience Templates</td>
+        <td>Offer tailored vertical UI setups (Education, Conference, Church, Event) that adjust UI labels, terminology, and defaults.</td>
+        <td><span class="badge badge-should">Should</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-13</strong></td>
+        <td>Session Analytics & Reports</td>
+        <td>Generate post-session reports detailing participant counts, active target languages, translation minutes, and average latency.</td>
+        <td><span class="badge badge-should">Should</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-14</strong></td>
+        <td>Organization & Role Management</td>
+        <td>Support hierarchical roles (Owner, Admin, Operator, Speaker) for multi-user organization accounts.</td>
+        <td><span class="badge badge-should">Should</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-15</strong></td>
+        <td>Venue Screen Formatting Controls</td>
+        <td>Provide dedicated venue display styling options (font size, line limits 2–4 lines, high contrast, margins) for overhead displays.</td>
+        <td><span class="badge badge-should">Should</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-16</strong></td>
+        <td>Offline Local Network Edge Caching</td>
+        <td>Local edge hub processing for offline/disconnected venues.</td>
+        <td><span class="badge badge-could">Could</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-17</strong></td>
+        <td>Speaker Voice Personalization</td>
+        <td>AI voice cloning/matching for synthesized Text-to-Speech audio streams.</td>
+        <td><span class="badge badge-could">Could</span></td>
+      </tr>
+      <tr>
+        <td><strong>FR-18</strong></td>
+        <td>Third-Party Platform Direct API Integrations</td>
+        <td>Direct native plugins for ProPresenter, Zoom, or Microsoft Teams.</td>
+        <td><span class="badge badge-wont">Won't</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. User Stories</h2>
+  <h3>Individual Host / Speaker</h3>
+  <ul>
+    <li><strong>As an</strong> individual instructor, <strong>I want</strong> to create a live multilingual session in under a minute without configuring complex server settings, <strong>so that</strong> I can start teaching my class immediately.</li>
+    <li><strong>As a</strong> speaker, <strong>I want</strong> to upload my presentation slides before my speech, <strong>so that</strong> the translation engine accurately translates technical terms and proper names.</li>
+    <li><strong>As a</strong> presenter, <strong>I want</strong> to pause and resume my session, <strong>so that</strong> side discussions or breaks aren't transcribed and translated.</li>
+  </ul>
+
+  <h3>Participant / Attendee</h3>
+  <ul>
+    <li><strong>As a</strong> conference attendee, <strong>I want</strong> to scan a QR code on my phone and join the session without downloading an app or signing up, <strong>so that</strong> I can follow along effortlessly.</li>
+    <li><strong>As a</strong> participant with limited mobile data, <strong>I want</strong> to select "Read" mode (text-only), <strong>so that</strong> I can receive live captions without consuming excessive data or audio bandwidth.</li>
+    <li><strong>As an</strong> attendee who speaks Yorùbá, <strong>I want</strong> to change my language mid-session from English to Yorùbá, <strong>so that</strong> I can understand a complex topic better without rejoining the session.</li>
+  </ul>
+
+  <h3>Operator / Production Staff</h3>
+  <ul>
+    <li><strong>As a</strong> church media operator, <strong>I want</strong> a dedicated browser overlay URL, <strong>so that</strong> I can stream real-time translated captions directly into our OBS/vMix broadcast setup.</li>
+    <li><strong>As an</strong> event coordinator, <strong>I want</strong> to monitor participant connections and language usage in real time, <strong>so that</strong> I can ensure everyone is receiving translated streams smoothly.</li>
+  </ul>
+
+  <h2>5. Explicit Out-of-Scope List</h2>
+  <ul>
+    <li><strong>Native Mobile Applications:</strong> No iOS App Store or Android Google Play native applications (the app operates strictly as a responsive Web PWA).</li>
+    <li><strong>Participant User Accounts & Authentication:</strong> No account registration, social login, or profile creation required or permitted for session participants.</li>
+    <li><strong>Full Learning Management System (LMS):</strong> No course management, student grading, assignment submissions, or cohort tracking.</li>
+    <li><strong>Native Meeting Platform Integrations:</strong> No direct native API integrations or bots for Zoom, Microsoft Teams, Google Meet, or Webex.</li>
+    <li><strong>AI Voice Cloning / Speaker Personalization:</strong> TTS audio will use standard high-quality provider neural voices rather than cloned speaker voices.</li>
+    <li><strong>Advanced Enterprise CRM & Complex Event Management:</strong> No ticket sales, badge printing, multi-room orchestration, or attendee email campaigns.</li>
+    <li><strong>Public API Marketplace & Webhooks:</strong> No developer API ecosystem or custom third-party webhook integrations in this phase.</li>
+    <li><strong>Edge Hardware / Offline Local Processing:</strong> No offline local server hardware or edge hubs; all processing requires an active internet connection.</li>
+  </ul>
+</div>
+
+</body>
+</html>

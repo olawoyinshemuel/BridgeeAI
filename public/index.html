@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — Speak once. Be understood by everyone in the room.</title>
+  <meta name="description" content="BridgeeAI turns live speech into real-time text captions and translated voice streams. Now every person in your audience can follow along in the language they understand best—right on their own phone.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+</head>
+<body class="landing-body">
+
+  <!-- 1. TOP NAVIGATION BAR -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand-link" id="navLogo">
+        <div class="brand-symbol">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <!-- Solutions Dropdown -->
+          <li class="nav-item" style="position: relative;">
+            <a href="javascript:void(0)" class="nav-link" id="navSolutionsLink">
+              Solutions
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left: 2px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <div class="nav-dropdown" id="solutionsDropdown">
+              <a href="/conferences" class="dropdown-item">
+                <div class="dropdown-icon" style="color: var(--gold-400);">🎙️</div>
+                <div>
+                  <div class="dropdown-title">Conferences & Summits</div>
+                  <div class="dropdown-desc">Keynotes, panel tracks & summits</div>
+                </div>
+              </a>
+              <a href="/education" class="dropdown-item">
+                <div class="dropdown-icon">🎓</div>
+                <div>
+                  <div class="dropdown-title">Education</div>
+                  <div class="dropdown-desc">Lectures, academic bootcamps & training</div>
+                </div>
+              </a>
+              <a href="/church" class="dropdown-item">
+                <div class="dropdown-icon">⛪</div>
+                <div>
+                  <div class="dropdown-title">Church & Faith</div>
+                  <div class="dropdown-desc">Sunday services, ministries & prayer rooms</div>
+                </div>
+              </a>
+              <a href="/events" class="dropdown-item">
+                <div class="dropdown-icon">🏛️</div>
+                <div>
+                  <div class="dropdown-title">Events</div>
+                  <div class="dropdown-desc">Trade shows, product launches & hybrid livestreams</div>
+                </div>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li class="nav-item"><a href="#languages" class="nav-link">Supported Languages</a></li>
+          <li class="nav-item"><a href="#overlays" class="nav-link">Production Overlays (OBS / vMix)</a></li>
+          <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-signin" id="btnSignInNav" onclick="openSignInModal()">Sign in</button>
+        <a href="/join" class="nav-link" style="font-weight: 600; padding: 0 4px;">Get started</a>
+        <a href="/host/console/TECH-2026" class="btn-start-free" id="btnCreateSessionNav" style="padding: 9px 18px; font-size: 13px;">
+          Get started ↗
+        </a>
+        <button class="btn-signin" style="padding: 6px; font-size: 18px;" onclick="openAllLanguagesModal()" title="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION (Cinematic matching user reference image) -->
+  <section class="hero-cinematic" id="hero">
+    <!-- Background Image featuring inclusive diverse audience with earpieces and keynote speaker -->
+    <div class="hero-cinematic-bg-wrap">
+      <img 
+        src="/assets/hero_participants.jpg" 
+        alt="Inclusive conference audience wearing discreet earpieces listening to live translated keynote speech"
+        class="hero-cinematic-img"
+      >
+      <div class="hero-cinematic-scrim"></div>
+      <div class="hero-cinematic-scrim-vertical"></div>
+    </div>
+
+    <div class="container hero-cinematic-container">
+      <div class="hero-cinematic-content">
+        
+        <!-- 3 Badges at top left matching screenshot -->
+        <div class="hero-badges-row">
+          <div class="hero-badge-pill">
+            <span class="badge-dot-green"></span>
+            No attendee app required
+          </div>
+          <div class="hero-badge-pill">
+            Join by QR code
+          </div>
+          <div class="hero-badge-pill">
+            Product preview
+          </div>
+        </div>
+
+        <!-- Main Headline: One speaker. Many languages. Everyone included. -->
+        <h1 class="hero-headline-cinematic">
+          One speaker.<br>
+          Many languages.<br>
+          <span class="hero-serif-italic">Everyone included.</span>
+        </h1>
+
+        <!-- Subtitle matching reference image -->
+        <p class="hero-subtitle-cinematic">
+          Live translated captions and audio let each attendee follow in their preferred language, from the device they already have.
+        </p>
+
+        <!-- CTA buttons matching screenshot -->
+        <div class="hero-cta-cinematic-row">
+          <a href="/host/console/TECH-2026" class="btn-start-free" id="heroCtaStart">
+            Start for free ↗
+          </a>
+          <button onclick="openDemoModal()" class="btn-book-demo" id="heroCtaBook">
+            Book a demo
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Floating Preview Caption Box at bottom right matching reference image -->
+      <div class="hero-floating-caption-card" id="floatingPreviewBox">
+        <div class="caption-card-tag">
+          <span id="floatingCaptionLang">PREVIEW CAPTION · FRANÇAIS</span>
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--aqua-400);"></span>
+        </div>
+        <div class="caption-card-text" id="floatingCaptionText">
+          Bienvenue à tous.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. QUICK STATS -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Regional and Global Languages Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 1.2s</div>
+          <div class="stat-label">Under 1.2 Seconds Translation Speed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">100% Web-Based (No app install needed)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Low Data</div>
+          <div class="stat-label">Low Data Use (Works smoothly even on slow networks)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. THE PROBLEM -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Real Barrier</div>
+        <h2 class="section-title">Language shouldn't decide who gets to participate.</h2>
+        <p class="section-lead">
+          The world is multilingual. Classrooms, conferences, churches, and public events are filled with people who speak different languages. But most live talks are delivered in just one language.
+        </p>
+      </div>
+
+      <div class="problem-split-grid">
+        
+        <!-- Today's Friction -->
+        <div class="problem-card">
+          <span class="problem-card-badge">Current Situation</span>
+          <h3 class="problem-card-title">Today, people who don't speak the primary language often have to:</h3>
+          <ul class="problem-list">
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Wait for slow translations.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Pay for expensive human interpreters and heavy equipment.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Sit in separate rooms or watch different livestreams.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Miss important parts of the talk—or feel completely left out.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- BridgeeAI Transformation -->
+        <div class="solution-card">
+          <div>
+            <span class="solution-card-badge">The BridgeeAI Solution</span>
+            <div class="solution-statement">
+              "BridgeeAI changes this. One speaker talks naturally, and everyone understands in their own language."
+            </div>
+            <p class="solution-lead-desc">
+              Every person in the room simply opens their smartphone browser, selects their preferred native language, and experiences complete inclusion in real time without lag, separate seating, or awkward hardware.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <a href="/host/console/TECH-2026" class="btn-pill btn-pill-primary" style="background: var(--violet-500); padding: 10px 22px; font-size: 14px;">
+              Create a Session →
+            </a>
+            <span style="font-size: 13px; color: rgba(255,252,244,0.6);">Instant 60-second setup</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HOW IT WORKS -->
+  <section class="section section-dark" id="how-it-works">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--aqua-400);">Simplicity in Motion</div>
+        <h2 class="section-title">One Speaker. Many Languages. One Simple Room.</h2>
+        <p class="section-lead">
+          Three simple steps from natural speech to total audience comprehension.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-badge">STEP 01</div>
+          <h3 class="step-title">The Speaker Speaks</h3>
+          <p class="step-desc">
+            You talk naturally into your phone, computer, or stage microphone. You don't need to pause or slow down.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Uses built-in browser mic (zero drivers)</li>
+            <li>✓ Crystal-clear 16kHz audio capture</li>
+            <li>✓ Hands-free continuous presentation</li>
+          </ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" style="border-color: rgba(123, 132, 220, 0.4);">
+          <div class="step-badge" style="color: var(--violet-500);">STEP 02</div>
+          <h3 class="step-title">BridgeeAI Processes the Audio</h3>
+          <p class="step-desc">
+            BridgeeAI listens, transcribes your voice, translates the words, and builds translated text and audio instantly.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Sub-second neural speech engine</li>
+            <li>✓ Real-time voice synthesis and text pipelines</li>
+            <li>✓ Context-aware terms & glossary adaptation</li>
+          </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--gold-400);">STEP 03</div>
+          <h3 class="step-title">The Listener Chooses How to Follow</h3>
+          <p class="step-desc">
+            Audience members scan the QR code, pick their language, and choose:
+          </p>
+          <ul class="step-sublist">
+            <li><strong>Read:</strong> Watch live translated captions on screen.</li>
+            <li><strong>Listen:</strong> Hear translated voice in their earbuds.</li>
+            <li><strong>Read + Listen:</strong> See the captions and hear the translated voice together.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. BUILT FOR REAL INTERNET (SLOW OR FAST CONNECTION) -->
+  <section class="section" id="resilience">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Network Reliability</div>
+        <h2 class="section-title">Designed for real-world networks—from 2G to 5G.</h2>
+        <p class="section-lead">
+          Internet connections aren't always perfect. BridgeeAI is built to keep working no matter what network your audience is on:
+        </p>
+      </div>
+
+      <div class="network-cards-grid">
+        
+        <!-- Fast Internet -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(89, 184, 137, 0.15); color: var(--success-500);">
+            ⚡
+          </div>
+          <h3 class="network-title">Fast Internet (4G / 5G / Wi-Fi)</h3>
+          <p class="network-desc">
+            Delivers smooth translated audio and live text captions at the same time with full high-definition streaming fidelity.
+          </p>
+        </div>
+
+        <!-- Slow Internet -->
+        <div class="network-card" style="border-color: rgba(213, 174, 104, 0.4);">
+          <div class="network-card-icon" style="background: rgba(213, 174, 104, 0.15); color: var(--gold-400);">
+            📡
+          </div>
+          <h3 class="network-title">Slow Internet (2G / 3G / Edge)</h3>
+          <p class="network-desc">
+            BridgeeAI automatically pauses audio and focuses on sending light, fast text captions so listeners never get disconnected.
+          </p>
+        </div>
+
+        <!-- Reconnection -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(123, 132, 220, 0.15); color: var(--violet-500);">
+            🔄
+          </div>
+          <h3 class="network-title">Reconnection</h3>
+          <p class="network-desc">
+            If a phone briefly drops connection, it automatically reconnects without losing chosen language settings.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. AFRICAN & GLOBAL LANGUAGES -->
+  <section class="section section-dark" id="languages">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--gold-400);">Inclusive By Design</div>
+        <h2 class="section-title">Built with multilingual Africa in mind.</h2>
+        <p class="section-lead">
+          Language shouldn't be an afterthought. BridgeeAI focuses heavily on African languages alongside popular global languages.
+        </p>
+      </div>
+
+      <!-- Featured Languages List -->
+      <div class="lang-chips-wrap" id="langChipsContainer">
+        <button class="lang-chip active" data-lang="yo-NG" onclick="switchSimLang('yo-NG', this)">Yorùbá</button>
+        <button class="lang-chip" data-lang="ig-NG" onclick="switchSimLang('ig-NG', this)">Igbo</button>
+        <button class="lang-chip" data-lang="ha-NG" onclick="switchSimLang('ha-NG', this)">Hausa</button>
+        <button class="lang-chip" data-lang="sw-KE" onclick="switchSimLang('sw-KE', this)">Kiswahili</button>
+        <button class="lang-chip" data-lang="af-ZA" onclick="switchSimLang('af-ZA', this)">Afrikaans</button>
+        <button class="lang-chip" data-lang="zu-ZA" onclick="switchSimLang('zu-ZA', this)">isiZulu</button>
+        <button class="lang-chip" data-lang="xh-ZA" onclick="switchSimLang('xh-ZA', this)">isiXhosa</button>
+        <button class="lang-chip" data-lang="am-ET" onclick="switchSimLang('am-ET', this)">Amharic</button>
+        <button class="lang-chip" data-lang="so-SO" onclick="switchSimLang('so-SO', this)">Somali</button>
+        <button class="lang-chip" data-lang="om-ET" onclick="switchSimLang('om-ET', this)">Oromo</button>
+        <button class="lang-chip" data-lang="tw-GH" onclick="switchSimLang('tw-GH', this)">Twi</button>
+        <button class="lang-chip" data-lang="wo-SN" onclick="switchSimLang('wo-SN', this)">Wolof</button>
+        <button class="lang-chip" data-lang="ee-TG" onclick="switchSimLang('ee-TG', this)">Ewe</button>
+        <button class="lang-chip" data-lang="ln-CD" onclick="switchSimLang('ln-CD', this)">Lingala</button>
+        <button class="lang-chip" data-lang="rw-RW" onclick="switchSimLang('rw-RW', this)">Kinyarwanda</button>
+        <button class="lang-chip" data-lang="rn-BI" onclick="switchSimLang('rn-BI', this)">Kirundi</button>
+        <button class="lang-chip" data-lang="st-ZA" onclick="switchSimLang('st-ZA', this)">Sesotho</button>
+        <button class="lang-chip" data-lang="tn-BW" onclick="switchSimLang('tn-BW', this)">Setswana</button>
+        <button class="lang-chip" data-lang="ar-SA" onclick="switchSimLang('ar-SA', this)">Arabic</button>
+        <button class="lang-chip" data-lang="fr-FR" onclick="switchSimLang('fr-FR', this)">French</button>
+        <button class="lang-chip" data-lang="pt-BR" onclick="switchSimLang('pt-BR', this)">Portuguese</button>
+        <button class="lang-chip" data-lang="es-ES" onclick="switchSimLang('es-ES', this)">Spanish</button>
+      </div>
+
+      <!-- Live Simulator Output Box -->
+      <div class="lang-sim-box">
+        <div class="sim-source-sentence">Spoken Source (English):</div>
+        <div class="sim-spoken-text">"Speak once. Be understood by everyone in the room."</div>
+        
+        <div class="sim-output-card">
+          <div class="sim-output-label" id="simOutputLabel">Live Translated Output (Yorùbá):</div>
+          <div class="sim-output-text" id="simLanguageOutputText">
+            "Sọ̀rọ̀ lẹ́ẹ̀kan ṣoṣo. Kí gbogbo ènìyàn tó wà nínú yàrá náà lóye rẹ."
+          </div>
+        </div>
+      </div>
+
+      <!-- Note & Explore Link -->
+      <div class="lang-note-box" style="margin-top: 32px;">
+        (Note: If translated voice audio is not available for a specific language yet, BridgeeAI automatically gives the listener fast text captions instead.)
+      </div>
+
+      <div style="text-align: center;">
+        <button class="explore-lang-link" onclick="openAllLanguagesModal()" id="btnExploreLanguages">
+          👉 Explore All Supported Languages
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 8. FOUR WAYS TO USE BRIDGEEAI (NO BG IMAGES - PURE RICH CSS CARDS) -->
+  <section class="section" id="verticals">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Solutions & Use Cases</div>
+        <h2 class="section-title">Four Ways to Use BridgeeAI</h2>
+        <p class="section-lead">
+          Tailored experiences built for environments where clear live comprehension is critical.
+        </p>
+      </div>
+
+      <div class="verticals-pure-grid">
+        
+        <!-- 1. Education & Training -->
+        <a href="/education" class="vertical-pure-card" id="cardEducation">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(123, 132, 220, 0.12); color: var(--violet-500);">
+              🎓
+            </div>
+            <div class="v-category-tag">Classrooms & Bootcamps</div>
+            <h3 class="v-title">Education & Training</h3>
+            <p class="v-desc">
+              Help students and trainees follow lectures in the language they learn best in, and download translated notes after class.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Education →</div>
+        </a>
+
+        <!-- 2. Conferences & Summits -->
+        <a href="/conferences" class="vertical-pure-card" id="cardConferences">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(213, 174, 104, 0.15); color: var(--gold-400);">
+              🎙️
+            </div>
+            <div class="v-category-tag">International Summits</div>
+            <h3 class="v-title">Conferences & Summits</h3>
+            <p class="v-desc">
+              Run international events without hiring expensive interpreter booths. Attendees listen directly on their own phones.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Conferences →</div>
+        </a>
+
+        <!-- 3. Church & Faith Communities -->
+        <a href="/church" class="vertical-pure-card" id="cardChurch">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">
+              ⛪
+            </div>
+            <div class="v-category-tag">Faith & Fellowship</div>
+            <h3 class="v-title">Church & Faith Communities</h3>
+            <p class="v-desc">
+              Share sermons and teachings with multicultural congregations in real time without interrupting the preacher.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Church & Faith →</div>
+        </a>
+
+        <!-- 4. Events & Exhibitions -->
+        <a href="/events" class="vertical-pure-card" id="cardEvents">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(215, 121, 139, 0.15); color: var(--rose-400);">
+              🏛️
+            </div>
+            <div class="v-category-tag">Civic Forums & Hybrid</div>
+            <h3 class="v-title">Events & Exhibitions</h3>
+            <p class="v-desc">
+              Provide real-time captions for venue screens while sending broadcast overlays to online viewers.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Events & Exhibitions →</div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. GIVE BRIDGEEAI EXTRA CONTEXT FOR BETTER ACCURACY -->
+  <section class="section section-dark" id="context">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--aqua-400);">Intelligent Terminology</div>
+        <h2 class="section-title">Accurate translations powered by your presentation topic.</h2>
+        <p class="section-lead">
+          General AI translation tools can struggle with special terms, local names, or industry jargon. Before you speak, you can upload:
+        </p>
+      </div>
+
+      <div class="context-cards-grid">
+        
+        <div class="context-card">
+          <div class="context-card-icon">📊</div>
+          <h3 class="context-card-title">Slide presentations (.PPTX or .PDF)</h3>
+          <p class="context-card-desc">
+            BridgeeAI pre-indexes headings, acronyms, and technical definitions directly from your slide deck before you step on stage.
+          </p>
+        </div>
+
+        <div class="context-card">
+          <div class="context-card-icon">📝</div>
+          <h3 class="context-card-title">Speaker notes and sermon outlines</h3>
+          <p class="context-card-desc">
+            Upload teaching points, theological passages, and thematic outlines so phrasing matches your exact context.
+          </p>
+        </div>
+
+        <div class="context-card">
+          <div class="context-card-icon">🔤</div>
+          <h3 class="context-card-title">Custom lists of names, acronyms, or technical terms</h3>
+          <p class="context-card-desc">
+            Ensure regional personal names, medical terminology, and brand names are translated accurately without awkward phonetic errors.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="context-benefit-banner">
+        ✨ <strong>BridgeeAI learns your terms beforehand so translations stay accurate during your talk.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. SHOW TRANSLATIONS ANYWHERE -->
+  <section class="section" id="overlays">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Display & Broadcast Integration</div>
+        <h2 class="section-title">Works on phones, big screens, and livestreams.</h2>
+        <p class="section-lead">
+          Send live translations wherever your audience is watching:
+        </p>
+      </div>
+
+      <div class="destinations-grid">
+        
+        <!-- Audience Phones -->
+        <div class="destination-card">
+          <div>
+            <div class="dest-icon">📱</div>
+            <h3 class="dest-title">Audience Phones</h3>
+            <p class="dest-desc">
+              Personal text and audio streams via QR code. Participants simply scan with their native camera and read or listen instantly in their mobile browser.
+            </p>
+          </div>
+          <a href="/join/TECH-2026" class="dest-link">Test Phone Join Experience →</a>
+        </div>
+
+        <!-- Venue Screens -->
+        <div class="destination-card">
+          <div>
+            <div class="dest-icon">🖥️</div>
+            <h3 class="dest-title">Venue Screens</h3>
+            <p class="dest-desc">
+              Big, clear translated captions on stage projectors or LED walls. Dedicated full-screen high-contrast presentation display at <code>/venue</code>.
+            </p>
+          </div>
+          <a href="/venue/TECH-2026" class="dest-link">Launch Venue Projector View →</a>
+        </div>
+
+        <!-- Livestream Overlays -->
+        <div class="destination-card">
+          <div>
+            <div class="dest-icon">📡</div>
+            <h3 class="dest-title">Livestream Overlays</h3>
+            <p class="dest-desc">
+              Transparent caption bars for production software like OBS Studio and vMix. Clean alpha-channel browser sources that fit any stream layout.
+            </p>
+          </div>
+          <a href="/overlay/TECH-2026" class="dest-link">Open OBS / vMix Overlay Studio →</a>
+        </div>
+
+      </div>
+
+      <!-- Large Screen Stage LED Transcription Visual Showcase -->
+      <div style="margin-top: 48px; border-radius: var(--radius-lg); overflow: hidden; position: relative; border: 1px solid rgba(26, 24, 24, 0.12); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);">
+        <img 
+          src="/assets/venue_led_screen.jpg" 
+          alt="Live speech transcription displayed on large stage LED screen in auditorium" 
+          style="width: 100%; height: auto; max-height: 520px; object-fit: cover; display: block;"
+        >
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 32px; background: linear-gradient(180deg, transparent 0%, rgba(14, 13, 14, 0.95) 50%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua-400); margin-bottom: 4px;">Large Screen Stage Projection Mode (/venue)</div>
+            <div style="font-family: var(--font-serif); font-size: 22px; font-weight: 600; color: #FFFFFF;">Real-Time Stage LED Wall & Balcony Screen Transcription</div>
+          </div>
+          <a href="/venue/TECH-2026" class="btn-start-free" style="padding: 11px 22px; font-size: 13px; text-decoration: none;">
+            Launch Stage LED Screen View 🖥️
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 11. SIMPLE PRICING (Competitor-Benchmarked Best Pricing Model) -->
+  <section class="section section-dark" id="pricing">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--violet-500);">Transparent Investment</div>
+        <h2 class="section-title">Transparent, High-Value Pricing</h2>
+        <p class="section-lead">
+          While legacy enterprise solutions charge $150–$300/hour or require opaque contracts, BridgeeAI delivers unlimited language channels at predictable, accessible rates.
+        </p>
+      </div>
+
+      <div class="pricing-grid" style="grid-template-columns: repeat(4, 1fr);">
+        
+        <!-- Tier 1: Free Starter -->
+        <div class="pricing-card">
+          <div>
+            <h3 class="pricing-plan-name">Free Starter</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$0</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-billing-sub">Forever free trial</div>
+            <div class="pricing-for">For independent speakers, test runs, and small community meetups.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>60 minutes</strong> free live translation</li>
+              <li><span class="check">✓</span> Up to <strong>25 concurrent listeners</strong></li>
+              <li><span class="check">✓</span> Real-time text captions on mobile browsers</li>
+              <li><span class="check">✓</span> 22+ African & Global target languages</li>
+              <li><span class="check">✓</span> Instant QR code & short URL join</li>
+              <li><span class="check">✓</span> Zero credit card required</li>
+            </ul>
+          </div>
+          <a href="/host/console/TECH-2026" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Try Free Session 🎙
+          </a>
+        </div>
+
+        <!-- Tier 2: Community & Pro (Most Popular) -->
+        <div class="pricing-card featured" style="transform: scale(1.03); z-index: 2;">
+          <div class="pricing-badge">Most Popular</div>
+          <div>
+            <h3 class="pricing-plan-name">Community & Pro</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$39</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-billing-sub">Billed annually ($49 billed monthly)</div>
+            <div class="pricing-for">For churches, universities, bootcamps, and weekly recurring live talks.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>15 Hours</strong> live translation / month</li>
+              <li><span class="check">✓</span> Up to <strong>250 concurrent listeners</strong></li>
+              <li><span class="check">✓</span> <strong>Synchronized Text + Translated Audio</strong></li>
+              <li><span class="check">✓</span> Slide (.PPTX/.PDF) & glossary uploads</li>
+              <li><span class="check">✓</span> OBS Studio & vMix alpha overlays</li>
+              <li><span class="check">✓</span> Under <strong>$2.60/hr</strong> (vs $150+/hr Wordly)</li>
+            </ul>
+          </div>
+          <a href="/host/console/TECH-2026" class="btn-pill btn-pill-primary" style="width: 100%; text-align: center; background: var(--violet-500);">
+            Start Free Trial
+          </a>
+        </div>
+
+        <!-- Tier 3: Organization & Summits -->
+        <div class="pricing-card">
+          <div>
+            <h3 class="pricing-plan-name">Organization</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$119</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-billing-sub">Billed annually ($149 billed monthly)</div>
+            <div class="pricing-for">For annual conferences, corporate summits, and multi-campus institutions.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>50 Hours</strong> live translation / month</li>
+              <li><span class="check">✓</span> Up to <strong>1,000 concurrent listeners</strong></li>
+              <li><span class="check">✓</span> Custom branding & custom QR codes</li>
+              <li><span class="check">✓</span> Venue projector / LED screen view (/venue)</li>
+              <li><span class="check">✓</span> Priority sub-500ms neural translation</li>
+              <li><span class="check">✓</span> Downloadable translated transcripts</li>
+            </ul>
+          </div>
+          <a href="/host/console/TECH-2026" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Choose Organization
+          </a>
+        </div>
+
+        <!-- Tier 4: Enterprise -->
+        <div class="pricing-card">
+          <div>
+            <h3 class="pricing-plan-name">Enterprise</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">Custom</span>
+            </div>
+            <div class="pricing-billing-sub">From $499/mo or custom event pack</div>
+            <div class="pricing-for">For global civic assemblies, broadcast networks, and international venues.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Unlimited concurrent attendees</strong></li>
+              <li><span class="check">✓</span> Dedicated sub-second cluster</li>
+              <li><span class="check">✓</span> Multi-stage concurrent room management</li>
+              <li><span class="check">✓</span> 99.9% SLA & dedicated technical operator</li>
+              <li><span class="check">✓</span> Custom terminology fine-tuning</li>
+              <li><span class="check">✓</span> Dedicated account manager & support</li>
+            </ul>
+          </div>
+          <button onclick="openDemoModal()" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Contact Enterprise
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Competitor Benchmark Comparison Banner -->
+      <div class="competitor-compare-box">
+        <h3 class="compare-title">How BridgeeAI Compares to the Market</h3>
+        <p class="compare-subtitle">
+          Traditional human interpretation and legacy AI vendors charge prohibitive hourly fees with opaque contracts. Here is how BridgeeAI redefines live multilingual communication:
+        </p>
+
+        <div style="overflow-x: auto;">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Solution</th>
+                <th>Typical Cost</th>
+                <th>Setup Friction</th>
+                <th>African Languages</th>
+                <th>Hardware Needed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row">
+                <td><strong>BridgeeAI</strong></td>
+                <td><strong>$39 / mo ($2.60/hr)</strong></td>
+                <td>Instant (60s via QR code)</td>
+                <td>Native focus (Yorùbá, Igbo, Hausa, Swahili, etc.)</td>
+                <td>Zero (attendee phones)</td>
+              </tr>
+              <tr>
+                <td><strong>Wordly AI</strong></td>
+                <td>$150 – $300 / hour ($1,500/10hr block)</td>
+                <td>Sales quote & enterprise contract</td>
+                <td>Limited African dialect support</td>
+                <td>Web/App with account limits</td>
+              </tr>
+              <tr>
+                <td><strong>KUDO AI</strong></td>
+                <td>$10 – $20 / user/hr or custom</td>
+                <td>Complex booking & scheduling</td>
+                <td>Standard global languages only</td>
+                <td>Proprietary platform setup</td>
+              </tr>
+              <tr>
+                <td><strong>Human Interpreters</strong></td>
+                <td>$1,500 – $3,500 / day per language pair</td>
+                <td>Weeks of advance notice required</td>
+                <td>Rare & expensive for local dialects</td>
+                <td>$3,000+ soundproof booth & radio packs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pricing-all-link">
+        <a href="#hero" class="explore-lang-link" style="font-size: 15px;">
+          👉 Need a custom per-event pass for a one-off conference? Contact us for flexible single-day passes.
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Clarity & Answers</div>
+        <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+      </div>
+
+      <div class="faq-accordion">
+        
+        <!-- Question 1 -->
+        <div class="faq-item open">
+          <div class="faq-question">
+            <span>Do listeners need to download an app or create an account?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            No. Listeners just scan a QR code or tap a link to open the page in their phone browser. No app install or sign-up needed.
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>How do listeners hear translated voice without disturbing others?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Listeners plug their own headphones or earbuds into their mobile phones.
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What if a language doesn't have translated voice audio?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            BridgeeAI automatically switches that listener to fast text captions (Read Mode) and shows a friendly message explaining why.
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can I show captions on a projector or live stream?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. BridgeeAI includes special links (/venue for projectors and /overlay for software like OBS and vMix).
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. FINAL CALL TO ACTION (NO BG IMAGES) -->
+  <section class="final-cta-section" id="cta">
+    <div class="container final-cta-content">
+      <div class="hero-tag" style="background: rgba(255,252,244,0.15); border-color: rgba(255,252,244,0.3); color: var(--bone-50); margin-bottom: 24px;">
+        Instant Multilingual Inclusion
+      </div>
+      
+      <h2 class="hero-heading" style="color: var(--bone-50); margin-bottom: 20px;">
+        Don't let language decide who gets to participate.
+      </h2>
+      
+      <p class="hero-subtitle" style="color: rgba(255, 252, 244, 0.85); margin-bottom: 38px;">
+        Create a live session in under 60 seconds and make your message accessible to everyone in the room.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/host/console/TECH-2026" class="btn-pill btn-pill-primary" id="btnFinalCreate" style="background: var(--violet-500); padding: 14px 32px;">
+          Create a Session
+        </a>
+        <button onclick="openDemoModal()" class="btn-pill btn-pill-secondary" id="btnFinalDemo" style="color: var(--bone-50); border-color: rgba(255,252,244,0.35); padding: 14px 30px;">
+          Schedule a Demo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      
+      <div class="footer-top-row">
+        <div class="footer-brand-summary">
+          <div class="footer-brand-title">
+            <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px;">B</div>
+            <span>BridgeeAI</span>
+          </div>
+          <div class="footer-tagline">
+            BridgeeAI: Speak once. Be understood everywhere.
+          </div>
+          <p style="font-size: 13px; line-height: 1.5; color: rgba(255,252,244,0.6);">
+            Real-time multilingual live communication layer turning speech into synchronized captions and audio for every audience member.
+          </p>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bone-50); margin-bottom: 14px;">
+            Quick Links
+          </div>
+          <div class="footer-quick-links-group">
+            <a href="#how-it-works" class="footer-quick-link">How It Works</a>
+            <a href="#languages" class="footer-quick-link">Supported Languages</a>
+            <a href="#overlays" class="footer-quick-link">Production Overlays</a>
+            <a href="#pricing" class="footer-quick-link">Pricing</a>
+            <a href="#faq" class="footer-quick-link">FAQ</a>
+            <a href="mailto:contact@bridgee.ai" class="footer-quick-link">Contact</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>
+          Copyright: © 2026 BridgeeAI Inc. All rights reserved.
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <a href="/join" style="color: inherit; text-decoration: none;">Join Session</a>
+          <a href="/overlay/TECH-2026" style="color: inherit; text-decoration: none;">OBS Overlays</a>
+          <a href="/venue/TECH-2026" style="color: inherit; text-decoration: none;">Venue Screen</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MODAL: EXPLORE ALL SUPPORTED LANGUAGES -->
+  <div class="modal-overlay" id="allLanguagesModal" onclick="if(event.target===this) closeAllLanguagesModal()">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeAllLanguagesModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--violet-500); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Language Directory</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 12px;">All Supported Languages</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.7); margin-bottom: 22px;">
+        BridgeeAI delivers sub-second text captions across all languages, with direct neural synthesized voice audio where supported.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 6px;" id="allLangList">
+        <!-- Will be populated by JS -->
+      </div>
+
+      <div style="margin-top: 24px; text-align: center;">
+        <button class="btn-pill btn-pill-primary" onclick="closeAllLanguagesModal()" style="background: var(--slate-850); padding: 10px 24px; font-size: 14px;">
+          Close Directory
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SIGN IN -->
+  <div class="modal-overlay" id="signInModal" onclick="if(event.target===this) closeSignInModal()">
+    <div class="modal-card" style="max-width: 440px;">
+      <button class="modal-close-btn" onclick="closeSignInModal()">×</button>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+        <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px;">B</div>
+        <strong style="font-size: 20px;">BridgeeAI Account</strong>
+      </div>
+      <h3 style="font-family: var(--font-serif); font-size: 24px; margin-bottom: 8px;">Host Sign In</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Sign in to manage custom terminology glossaries, slide decks, and recurring rooms.
+      </p>
+
+      <form onsubmit="event.preventDefault(); window.location.href='/host/console/TECH-2026';">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Email address</label>
+          <input type="email" required placeholder="speaker@institution.org" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Password</label>
+          <input type="password" required placeholder="••••••••" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--slate-850); padding: 12px;">
+          Sign In to Host Console
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SCHEDULE A DEMO -->
+  <div class="modal-overlay" id="demoModal" onclick="if(event.target===this) closeDemoModal()">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeDemoModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--violet-500); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Enterprise Consultation</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Schedule a 1-on-1 Demo</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        See how BridgeeAI can power your next summit, university semester, or multi-campus service.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Thank you! A BridgeeAI solutions architect will contact you within 24 hours.'); closeDemoModal();">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Your Name</label>
+          <input type="text" required placeholder="Dr. Sarah Johnson" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Work Email</label>
+          <input type="email" required placeholder="sarah@globalforum.org" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Organization & Event Size</label>
+          <input type="text" placeholder="e.g. 500-delegate annual conference" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--violet-500); padding: 12px;">
+          Confirm Demo Request
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE LOGIC SCRIPT -->
+  <script>
+    // Live translation samples for the 22 languages
+    const sampleTranslations = {
+      'yo-NG': { name: 'Yorùbá', text: "Sọ̀rọ̀ lẹ́ẹ̀kan ṣoṣo. Kí gbogbo ènìyàn tó wà nínú yàrá náà lóye rẹ.", audio: true },
+      'ig-NG': { name: 'Igbo', text: "Kwuokwa otu ugboro. Ka onye ọ bụla nọ n'ime ụlọ ghọta gị.", audio: true },
+      'ha-NG': { name: 'Hausa', text: "Yi magana sau ɗaya. Kowa a cikin ɗakin ya fahimce ka.", audio: true },
+      'sw-KE': { name: 'Kiswahili', text: "Ongea mara moja. Kila mtu chumbani akuelewe.", audio: true },
+      'af-ZA': { name: 'Afrikaans', text: "Praat een keer. Word deur almal in die vertrek verstaan.", audio: true },
+      'zu-ZA': { name: 'isiZulu', text: "Khuluma kanye nje. Qondisiswa yiwo wonke umuntu osekamelweni.", audio: true },
+      'xh-ZA': { name: 'isiXhosa', text: "Thetha kanye. Uviwe nguye wonke umntu okwelo gumbi.", audio: true },
+      'am-ET': { name: 'Amharic', text: "አንዴ ተናገር። በክፍሉ ውስጥ ባሉ ሁሉም ሰዎች ተረዳ።", audio: false },
+      'so-SO': { name: 'Somali', text: "Hadal hal mar. Qof walba oo qolka ku jira ha ku fahmo.", audio: false },
+      'om-ET': { name: 'Oromo', text: "Al tokko dubbadhu. Namni kutaa keessa jiru hundi si haa hubatu.", audio: false },
+      'tw-GH': { name: 'Twi', text: "Kasa pɛnkoro pɛ. Ma obiara a ɔwɔ dan no mu nte wo ase.", audio: false },
+      'wo-SN': { name: 'Wolof', text: "Waxal benn yoon. Ñépp ñu nekk ci néeg bi dégg la.", audio: false },
+      'ee-TG': { name: 'Ewe', text: "Ƒo nu zi ɖeka. Ame sia ame si le xɔa me nase egɔme.", audio: false },
+      'ln-CD': { name: 'Lingala', text: "Loba mbala moko. Moto nyonso na eteni ayoka yo.", audio: false },
+      'rw-RW': { name: 'Kinyarwanda', text: "Vuga rimwe gusa. Umva na buri wese mu cyumba.", audio: false },
+      'rn-BI': { name: 'Kirundi', text: "Vuga rimwe gusa. Wumvirizwe na bose mu cumba.", audio: false },
+      'st-ZA': { name: 'Sesotho', text: "Bua hanngoe feela. Utloisisoe ke motho e mong le e mong ka phaposing.", audio: false },
+      'tn-BW': { name: 'Setswana', text: "Bua gangwe fela. Utlwiwa ke mongwe le mongwe mo phaposing.", audio: false },
+      'ar-SA': { name: 'Arabic', text: "تحدث مرة واحدة. ودع الجميع في الغرفة يفهمونك.", audio: true },
+      'fr-FR': { name: 'French', text: "Parlez une seule fois. Soyez compris par tout le monde dans la salle.", audio: true },
+      'pt-BR': { name: 'Portuguese', text: "Fale uma vez. Seja compreendido por todos na sala.", audio: true },
+      'es-ES': { name: 'Spanish', text: "Habla una sola vez. Hazte entender por todos en la sala.", audio: true }
+    };
+
+    // Language switcher in Section 7
+    function switchSimLang(code, btn) {
+      document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      
+      const item = sampleTranslations[code];
+      const outputText = document.getElementById('simLanguageOutputText');
+      const outputLabel = document.getElementById('simOutputLabel');
+      
+      if (item && outputText) {
+        outputText.style.opacity = '0.3';
+        setTimeout(() => {
+          outputLabel.textContent = `Live Translated Output (${item.name}):`;
+          outputText.textContent = `"${item.text}"`;
+          outputText.style.opacity = '1';
+        }, 120);
+      }
+    }
+
+    // FAQ Accordion click toggles
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    // Populate all languages modal list
+    const allLangListEl = document.getElementById('allLangList');
+    if (allLangListEl) {
+      Object.entries(sampleTranslations).forEach(([code, data]) => {
+        const div = document.createElement('div');
+        div.style.padding = '10px 14px';
+        div.style.background = 'rgba(26,24,24,0.04)';
+        div.style.borderRadius = '8px';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.innerHTML = `
+          <div>
+            <strong>${data.name}</strong>
+            <span style="font-size: 11px; opacity: 0.6; margin-left: 6px;">(${code})</span>
+          </div>
+          <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; ${data.audio ? 'background: rgba(122,217,210,0.2); color: #167a73;' : 'background: rgba(123,132,220,0.15); color: #5058aa;'}">
+            ${data.audio ? 'Text + Voice 🎧' : 'Text Captions 📝'}
+          </span>
+        `;
+        allLangListEl.appendChild(div);
+      });
+    }
+
+    // Modal controls
+    function openAllLanguagesModal() {
+      document.getElementById('allLanguagesModal').classList.add('active');
+    }
+    function closeAllLanguagesModal() {
+      document.getElementById('allLanguagesModal').classList.remove('active');
+    }
+    function openSignInModal() {
+      document.getElementById('signInModal').classList.add('active');
+    }
+    function closeSignInModal() {
+      document.getElementById('signInModal').classList.remove('active');
+    }
+    function openDemoModal() {
+      document.getElementById('demoModal').classList.add('active');
+    }
+    function closeDemoModal() {
+      document.getElementById('demoModal').classList.remove('active');
+    }
+
+    // Keyboard escape to close modals
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAllLanguagesModal();
+        closeSignInModal();
+        closeDemoModal();
+      }
+    });
+
+    // Dynamic rotation for floating preview caption card matching reference image
+    const rotatingPreviews = [
+      { lang: 'PREVIEW CAPTION · FRANÇAIS', text: 'Bienvenue à tous.' },
+      { lang: 'PREVIEW CAPTION · YORÙBÁ', text: 'Ẹ káàbọ̀ gbogbo yín.' },
+      { lang: 'PREVIEW CAPTION · ASỤSỤ IGBO', text: 'Nnọọ unu niile.' },
+      { lang: 'PREVIEW CAPTION · KISWAHILI', text: 'Karibuni nyote.' },
+      { lang: 'PREVIEW CAPTION · ESPAÑOL', text: 'Bienvenidos a todos.' },
+      { lang: 'PREVIEW CAPTION · HAUSA', text: 'Barka da zuwa kowa da kowa.' }
+    ];
+    let previewIndex = 0;
+    const floatingLangEl = document.getElementById('floatingCaptionLang');
+    const floatingTextEl = document.getElementById('floatingCaptionText');
+
+    if (floatingLangEl && floatingTextEl) {
+      setInterval(() => {
+        previewIndex = (previewIndex + 1) % rotatingPreviews.length;
+        floatingTextEl.style.opacity = '0';
+        setTimeout(() => {
+          floatingLangEl.textContent = rotatingPreviews[previewIndex].lang;
+          floatingTextEl.textContent = rotatingPreviews[previewIndex].text;
+          floatingTextEl.style.opacity = '1';
+        }, 200);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

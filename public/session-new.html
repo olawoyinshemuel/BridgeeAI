@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI — New Session Setup & Configuration</title>
+  <meta name="description" content="Set up your live multilingual session, choose category themes, enable target languages, and upload custom technical glossaries.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <style>
+    .setup-page {
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 10%, rgba(123, 132, 220, 0.08) 0%, #0E0D12 80%);
+      color: var(--bone-50);
+      padding-bottom: 80px;
+    }
+
+    .setup-header {
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      background: rgba(14, 13, 18, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .setup-container {
+      max-width: 840px;
+      margin: 40px auto 0;
+      padding: 0 24px;
+    }
+
+    .setup-progress-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      background: rgba(24, 23, 30, 0.7);
+      border: 1px solid rgba(255, 252, 244, 0.08);
+      border-radius: var(--radius-pill);
+      padding: 8px 24px;
+    }
+
+    .step-track-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255, 252, 244, 0.45);
+    }
+
+    .step-track-item.done {
+      color: #2ECC71;
+    }
+
+    .step-track-item.active {
+      color: var(--bone-50);
+      font-weight: 700;
+    }
+
+    .step-num-bubble {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 252, 244, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .step-track-item.done .step-num-bubble {
+      background: #2ECC71;
+      color: #0E0D12;
+      font-weight: 800;
+    }
+
+    .step-track-item.active .step-num-bubble {
+      background: var(--violet-500);
+      color: #FFFFFF;
+      font-weight: 800;
+    }
+
+    .setup-card {
+      background: rgba(24, 23, 30, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 38px 42px;
+      box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    @media (max-width: 640px) {
+      .setup-card {
+        padding: 24px 20px;
+      }
+    }
+
+    .section-field {
+      margin-bottom: 30px;
+    }
+
+    .field-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .field-subtitle {
+      font-size: 12px;
+      line-height: 1.4;
+      color: rgba(255, 252, 244, 0.65);
+      margin-bottom: 12px;
+    }
+
+    /* Category Selection with Live Theme Visuals */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .category-card {
+      background: rgba(32, 30, 38, 0.8);
+      border: 1px solid rgba(255, 252, 244, 0.1);
+      border-radius: 10px;
+      padding: 16px 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .category-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 252, 244, 0.3);
+    }
+
+    .category-card.selected {
+      border-color: var(--theme-accent, #7B84DC);
+      background: rgba(38, 36, 46, 0.95);
+      box-shadow: 0 0 16px var(--theme-glow, rgba(123, 132, 220, 0.25));
+    }
+
+    .cat-icon {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .cat-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .cat-tag {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 4px;
+      opacity: 0.7;
+    }
+
+    /* Target Languages Multi-Select Grid */
+    .languages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .lang-checkbox-card {
+      background: rgba(30, 28, 36, 0.85);
+      border: 1px solid rgba(255, 252, 244, 0.1);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .lang-checkbox-card:hover {
+      border-color: var(--violet-500);
+      background: rgba(40, 38, 48, 0.9);
+    }
+
+    .lang-checkbox-card.checked {
+      border-color: #2ECC71;
+      background: rgba(22, 38, 28, 0.8);
+    }
+
+    .lang-check-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 252, 244, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: transparent;
+      transition: all 0.15s ease;
+    }
+
+    .lang-checkbox-card.checked .lang-check-icon {
+      background: #2ECC71;
+      border-color: #2ECC71;
+      color: #0E0D12;
+      font-weight: 800;
+    }
+
+    .lang-card-text {
+      text-align: left;
+    }
+
+    .lang-native-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    .lang-eng-name {
+      font-size: 11px;
+      color: rgba(255, 252, 244, 0.55);
+    }
+
+    /* Drag and Drop Zone */
+    .dropzone-box {
+      border: 2px dashed rgba(255, 252, 244, 0.2);
+      border-radius: 12px;
+      padding: 28px 20px;
+      text-align: center;
+      background: rgba(18, 17, 24, 0.6);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone-box:hover, .dropzone-box.drag-over {
+      border-color: var(--aqua-400);
+      background: rgba(20, 35, 38, 0.5);
+    }
+
+    .uploaded-file-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(35, 33, 44, 0.9);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin: 4px 4px 0 0;
+    }
+
+    .uploaded-file-item .file-remove {
+      color: #FF5A5F;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .quick-preset-btn {
+      background: rgba(255, 252, 244, 0.08);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      color: rgba(255, 252, 244, 0.8);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quick-preset-btn:hover {
+      background: rgba(255, 252, 244, 0.18);
+      color: #FFF;
+    }
+  </style>
+</head>
+<body class="setup-page">
+
+  <!-- Header -->
+  <header class="setup-header">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="/" class="brand-link">
+        <div class="brand-symbol">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span id="hostProfileBadge" style="font-size: 13px; color: rgba(255,252,244,0.7);">Pastor Marcus Adeyemi</span>
+        <a href="/auth" style="font-size: 12px; color: var(--aqua-400); text-decoration: none;">Switch Host</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="setup-container">
+    
+    <!-- Progress Indicator -->
+    <div class="setup-progress-bar">
+      <div class="step-track-item done">
+        <div class="step-num-bubble">✓</div>
+        <span>1. Host Auth</span>
+      </div>
+      <span style="color: rgba(255,252,244,0.2);">→</span>
+      <div class="step-track-item active">
+        <div class="step-num-bubble">2</div>
+        <span>2. Session Setup</span>
+      </div>
+      <span style="color: rgba(255,252,244,0.2);">→</span>
+      <div class="step-track-item">
+        <div class="step-num-bubble">3</div>
+        <span>3. QR & Links</span>
+      </div>
+      <span style="color: rgba(255,252,244,0.2);">→</span>
+      <div class="step-track-item">
+        <div class="step-num-bubble">4</div>
+        <span>4. Live Console</span>
+      </div>
+    </div>
+
+    <!-- 1-Minute Setup Card -->
+    <div class="setup-card">
+      <div style="font-size: 11px; font-weight: 700; color: var(--aqua-400); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;">
+        Quick 1-Minute Setup Card
+      </div>
+      <h1 style="font-family: var(--font-serif); font-size: 32px; font-weight: 600; margin-bottom: 8px; color: #FFFFFF;">
+        Configure Your Live Session
+      </h1>
+      <p style="font-size: 14px; line-height: 1.5; color: rgba(255,252,244,0.7); margin-bottom: 28px;">
+        Define your title, pick an audience category, and prime AI glossaries before generating attendee links.
+      </p>
+
+      <form id="sessionSetupForm" onsubmit="handleSessionSubmit(event)">
+        
+        <!-- Field 1: Category Selection -->
+        <div class="section-field">
+          <div class="field-title">
+            <span>🏷️ 1. Category Selection</span>
+          </div>
+          <div class="field-subtitle">
+            Automatically applies tailored UI themes and acoustic speech models for your room.
+          </div>
+          
+          <div class="category-grid">
+            <!-- Church -->
+            <div class="category-card selected" id="catChurch" onclick="selectCategory('Church', '#D5AE68', 'rgba(213, 174, 104, 0.25)')" style="--theme-accent: #D5AE68;">
+              <div class="cat-icon">⛪</div>
+              <div class="cat-name">Church & Faith</div>
+              <div class="cat-tag" style="color: var(--gold-400);">Warm Gold Theme</div>
+            </div>
+
+            <!-- Conference -->
+            <div class="category-card" id="catConference" onclick="selectCategory('Conference', '#7B84DC', 'rgba(123, 132, 220, 0.25)')" style="--theme-accent: #7B84DC;">
+              <div class="cat-icon">🌐</div>
+              <div class="cat-name">Conference</div>
+              <div class="cat-tag" style="color: var(--violet-500);">Slate & Violet</div>
+            </div>
+
+            <!-- Education -->
+            <div class="category-card" id="catEducation" onclick="selectCategory('Education', '#00F5D4', 'rgba(0, 245, 212, 0.25)')" style="--theme-accent: #00F5D4;">
+              <div class="cat-icon">🎓</div>
+              <div class="cat-name">Education</div>
+              <div class="cat-tag" style="color: var(--aqua-400);">Sky Blue Theme</div>
+            </div>
+
+            <!-- General Event -->
+            <div class="category-card" id="catEvent" onclick="selectCategory('Event', '#2ECC71', 'rgba(46, 204, 113, 0.25)')" style="--theme-accent: #2ECC71;">
+              <div class="cat-icon">🎪</div>
+              <div class="cat-name">General Event</div>
+              <div class="cat-tag" style="color: #2ECC71;">Emerald Green</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field 2: Session Title & Presenter -->
+        <div class="section-field">
+          <div class="field-title">
+            <span>📝 2. Session Title & Domain</span>
+          </div>
+          <div class="field-subtitle">
+            Shown to attendees on mobile screens, auditorium displays, and OBS stream lower-thirds.
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+            <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('Sunday Sermon: Walking in Divine Purpose')">"Sunday Sermon"</button>
+            <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('CS101: Distributed Systems & Neural Pipelines')">"CS101 Lecture"</button>
+            <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('Keynote: The Future of Global Artificial Intelligence')">"Keynote: Future of AI"</button>
+            <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('Global Product Launch & Developer Keynote')">"Product Launch"</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
+            <div>
+              <label class="form-label" for="sessionTitle">Session Title</label>
+              <input 
+                type="text" 
+                id="sessionTitle" 
+                class="form-input" 
+                placeholder="e.g. Sunday Sermon: Walking in Faith" 
+                required 
+                value="Sunday Sermon: Walking in Divine Purpose"
+              >
+            </div>
+            <div>
+              <label class="form-label" for="customRoomCode">Custom Room Code (Optional)</label>
+              <input 
+                type="text" 
+                id="customRoomCode" 
+                class="form-input" 
+                placeholder="Auto-generated if empty" 
+                style="font-family: monospace; text-transform: uppercase;"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Field 3: Source Language & Target Languages -->
+        <div class="section-field">
+          <div class="field-title">
+            <span>🗣️ 3. Source & Target Languages</span>
+          </div>
+          <div class="field-subtitle">
+            Choose what language the speaker will talk in, and select which target languages will be available for listeners.
+          </div>
+
+          <div style="display: grid; grid-template-columns: 240px 1fr; gap: 16px; margin-bottom: 16px;">
+            <div>
+              <label class="form-label" for="sourceLangSelect">Speaker's Native Language</label>
+              <select id="sourceLangSelect" class="form-input" style="background: #1C1B24;">
+                <option value="en-US">English (US / UK / Global)</option>
+                <option value="fr-FR">Français (French)</option>
+                <option value="es-ES">Español (Spanish)</option>
+                <option value="de-DE">Deutsch (German)</option>
+                <option value="pt-BR">Português (Portuguese)</option>
+                <option value="ar-SA">العربية (Arabic)</option>
+                <option value="ja-JP">日本語 (Japanese)</option>
+                <option value="zh-CN">简体中文 (Chinese)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Quick Select Bundles</label>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="quick-preset-btn" onclick="applyLangBundle('african')">African Regional (Yorùbá, Swahili, Hausa, Igbo)</button>
+                <button type="button" class="quick-preset-btn" onclick="applyLangBundle('global')">Global UN (French, Spanish, Arabic, Chinese)</button>
+                <button type="button" class="quick-preset-btn" onclick="applyLangBundle('all')">Select All (11 Languages)</button>
+              </div>
+            </div>
+          </div>
+
+          <label class="form-label">Enabled Audience Target Languages</label>
+          <div class="languages-grid" id="languagesGrid">
+            <!-- Rendered dynamically via JS with all supported languages -->
+          </div>
+        </div>
+
+        <!-- Field 4: Context & Glossary Upload (Optional) -->
+        <div class="section-field">
+          <div class="field-title">
+            <span>📚 4. Context & Glossary Upload (Optional)</span>
+          </div>
+          <div class="field-subtitle">
+            Drag-and-drop slide decks (.pdf, .pptx) or text files containing specialized terms, scripture references, or acronyms to prime translation accuracy.
+          </div>
+
+          <!-- Drag and Drop Dropzone -->
+          <div 
+            class="dropzone-box" 
+            id="dropzone"
+            onclick="document.getElementById('fileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handleFileDrop(event)"
+          >
+            <input type="file" id="fileInput" multiple accept=".pdf,.pptx,.txt,.docx" style="display: none;" onchange="handleFileSelect(event)">
+            <div style="font-size: 32px; margin-bottom: 8px;">📑</div>
+            <div style="font-size: 14px; font-weight: 600; color: #FFFFFF; margin-bottom: 4px;">
+              Drop Speaker Slide Decks (.PDF, .PPTX) or Document Briefs here
+            </div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.5);">
+              or click to browse from your computer
+            </div>
+          </div>
+
+          <!-- Uploaded Files List -->
+          <div id="uploadedFilesContainer" style="margin-top: 10px;"></div>
+
+          <!-- Manual Terms & Scripture References Textarea -->
+          <div style="margin-top: 16px;">
+            <label class="form-label" for="glossaryTerms">
+              Specialized Vocabulary, Scripture References & Speaker Acronyms (One per line)
+            </label>
+            <textarea 
+              id="glossaryTerms" 
+              class="form-input" 
+              rows="3" 
+              placeholder="e.g.&#10;John 3:16&#10;Pastor Marcus Adeyemi&#10;Hallelujah&#10;Kubernetes & RAG architecture"
+              style="font-family: inherit; font-size: 13px; line-height: 1.5;"
+            >John 3:16
+Grace International Sanctuary
+Pastor Marcus Adeyemi
+Hallelujah</textarea>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="border-top: 1px solid rgba(255,252,244,0.1); padding-top: 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px;">
+          <a href="/auth" style="font-size: 13px; color: rgba(255,252,244,0.6); text-decoration: none;">← Back to Host Profile</a>
+          <button type="submit" class="btn-pill btn-pill-primary" id="btnCreateSessionSubmit" style="background: var(--theme-accent, #D5AE68); color: #0E0D12; font-weight: 700; padding: 14px 32px; font-size: 14px; border: none; cursor: pointer;">
+            Create Session & Generate Assets →
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // All 11 Supported Target Languages
+    const allLanguages = [
+      { code: 'fr-FR', native: 'Français', english: 'French' },
+      { code: 'es-ES', native: 'Español', english: 'Spanish' },
+      { code: 'yo-NG', native: 'Yorùbá', english: 'Yoruba' },
+      { code: 'ha-NG', native: 'Hausa', english: 'Hausa' },
+      { code: 'ig-NG', native: 'Asụsụ Igbo', english: 'Igbo' },
+      { code: 'sw-KE', native: 'Kiswahili', english: 'Swahili' },
+      { code: 'de-DE', native: 'Deutsch', english: 'German' },
+      { code: 'ja-JP', native: '日本語', english: 'Japanese' },
+      { code: 'zh-CN', native: '简体中文', english: 'Chinese (Simplified)' },
+      { code: 'ar-SA', native: 'العربية', english: 'Arabic' },
+      { code: 'pt-BR', native: 'Português', english: 'Portuguese' }
+    ];
+
+    let selectedCategory = 'Church';
+    let selectedLanguages = new Set(['fr-FR', 'es-ES', 'yo-NG', 'sw-KE', 'ar-SA']);
+    let uploadedFiles = [];
+
+    // Load Host Profile from Step 1
+    const storedUser = localStorage.getItem('bridgee_host_user');
+    if (storedUser) {
+      try {
+        const u = JSON.parse(storedUser);
+        if (u.name) document.getElementById('hostProfileBadge').textContent = `${u.name} (${u.role || 'Host'})`;
+      } catch (e) {}
+    }
+
+    // Render Language Checkbox Grid
+    function renderLanguages() {
+      const grid = document.getElementById('languagesGrid');
+      grid.innerHTML = '';
+      allLanguages.forEach(l => {
+        const isChecked = selectedLanguages.has(l.code);
+        const card = document.createElement('div');
+        card.className = `lang-checkbox-card ${isChecked ? 'checked' : ''}`;
+        card.onclick = () => toggleLanguage(l.code);
+        card.innerHTML = `
+          <div class="lang-check-icon">${isChecked ? '✓' : ''}</div>
+          <div class="lang-card-text">
+            <div class="lang-native-name">${l.native}</div>
+            <div class="lang-eng-name">${l.english}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleLanguage(code) {
+      if (selectedLanguages.has(code)) {
+        if (selectedLanguages.size > 1) selectedLanguages.delete(code);
+      } else {
+        selectedLanguages.add(code);
+      }
+      renderLanguages();
+    }
+
+    function applyLangBundle(type) {
+      if (type === 'african') {
+        selectedLanguages = new Set(['yo-NG', 'ha-NG', 'ig-NG', 'sw-KE', 'fr-FR', 'en-US']);
+      } else if (type === 'global') {
+        selectedLanguages = new Set(['fr-FR', 'es-ES', 'ar-SA', 'zh-CN', 'de-DE']);
+      } else if (type === 'all') {
+        selectedLanguages = new Set(allLanguages.map(l => l.code));
+      }
+      renderLanguages();
+    }
+
+    function selectCategory(cat, color, glow) {
+      selectedCategory = cat;
+      ['catChurch', 'catConference', 'catEducation', 'catEvent'].forEach(id => {
+        document.getElementById(id).classList.remove('selected');
+      });
+      document.getElementById(`cat${cat}`).classList.add('selected');
+
+      const submitBtn = document.getElementById('btnCreateSessionSubmit');
+      submitBtn.style.background = color;
+      submitBtn.style.color = (cat === 'Church' || cat === 'Event' || cat === 'Education') ? '#0E0D12' : '#FFFFFF';
+    }
+
+    function fillTitlePreset(title) {
+      document.getElementById('sessionTitle').value = title;
+    }
+
+    // Drag and drop handling
+    function handleFileDrop(e) {
+      e.preventDefault();
+      document.getElementById('dropzone').classList.remove('drag-over');
+      if (e.dataTransfer.files) {
+        addFiles(Array.from(e.dataTransfer.files));
+      }
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files) {
+        addFiles(Array.from(e.target.files));
+      }
+    }
+
+    function addFiles(files) {
+      files.forEach(f => {
+        if (!uploadedFiles.some(existing => existing.name === f.name)) {
+          uploadedFiles.push({ name: f.name, size: f.size });
+        }
+      });
+      renderUploadedFiles();
+    }
+
+    function removeFile(index) {
+      uploadedFiles.splice(index, 1);
+      renderUploadedFiles();
+    }
+
+    function renderUploadedFiles() {
+      const container = document.getElementById('uploadedFilesContainer');
+      container.innerHTML = '';
+      uploadedFiles.forEach((file, idx) => {
+        const item = document.createElement('div');
+        item.className = 'uploaded-file-item';
+        item.innerHTML = `
+          <span>📄 ${file.name} (${Math.round(file.size / 1024)} KB)</span>
+          <span class="file-remove" onclick="removeFile(${idx})">×</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Submit handler -> POST /api/sessions -> redirect to Step 3 (/session/:roomId/preview)
+    async function handleSessionSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btnCreateSessionSubmit');
+      submitBtn.textContent = 'Generating Room & QR Codes...';
+      submitBtn.disabled = true;
+
+      const title = document.getElementById('sessionTitle').value;
+      const customCode = document.getElementById('customRoomCode').value;
+      const sourceLang = document.getElementById('sourceLangSelect').value;
+      const glossary = document.getElementById('glossaryTerms').value;
+
+      let hostName = 'Event Host';
+      if (storedUser) {
+        try {
+          const u = JSON.parse(storedUser);
+          if (u.name) hostName = u.name;
+        } catch (e) {}
+      }
+
+      const payload = {
+        title,
+        template: selectedCategory,
+        hostName,
+        sourceLanguage: sourceLang,
+        enabledLanguages: Array.from(selectedLanguages),
+        glossaryTerms: glossary,
+        uploadedFiles: uploadedFiles.map(f => f.name),
+        customRoomId: customCode
+      };
+
+      try {
+        const res = await fetch('/api/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.success && data.urls && data.urls.previewUrl) {
+          window.location.href = data.urls.previewUrl;
+        } else {
+          alert('Error creating session: ' + (data.error || 'Server error'));
+          submitBtn.textContent = 'Create Session & Generate Assets →';
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error creating session.');
+        submitBtn.textContent = 'Create Session & Generate Assets →';
+        submitBtn.disabled = false;
+      }
+    }
+
+    renderLanguages();
+  </script>
+</body>
+</html>

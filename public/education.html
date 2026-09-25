@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI for Education — Real-Time Hybrid Classroom Captioning & Translation</title>
+  <meta name="description" content="Multi-language classrooms without language barriers. Empower students, international scholars, and trainees to follow lectures in the language they understand best—live on their mobile devices.">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <style>
+    /* Education Dedicated Styles */
+    .edu-hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+      background-color: #0B0E14;
+      color: var(--bone-50);
+      overflow: hidden;
+      padding: 90px 0 70px;
+    }
+
+    .edu-hero-bg-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .edu-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center right;
+      filter: contrast(1.08) brightness(0.78);
+    }
+
+    .edu-hero-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(11, 14, 20, 0.98) 0%,
+        rgba(11, 14, 20, 0.93) 44%,
+        rgba(11, 14, 20, 0.72) 70%,
+        rgba(11, 14, 20, 0.45) 88%,
+        rgba(11, 14, 20, 0.6) 100%
+      );
+      pointer-events: none;
+    }
+
+    .edu-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      text-align: left;
+    }
+
+    .edu-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(123, 132, 220, 0.16);
+      border: 1px solid rgba(123, 132, 220, 0.4);
+      color: var(--violet-100);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .edu-headline {
+      font-family: var(--font-serif);
+      font-size: clamp(38px, 5.2vw, 62px);
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      font-weight: 500;
+      color: #FFFFFF;
+      margin-bottom: 22px;
+    }
+
+    .edu-subtitle {
+      font-size: clamp(16px, 1.8vw, 19px);
+      line-height: 1.6;
+      color: rgba(255, 252, 244, 0.88);
+      max-width: 640px;
+      margin-bottom: 34px;
+    }
+
+    /* Interactive Classroom Visual Demo Stage */
+    .classroom-demo-stage {
+      background: #141720;
+      border: 1px solid rgba(123, 132, 220, 0.25);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      margin-top: 48px;
+    }
+
+    .classroom-demo-header {
+      background: #1B202C;
+      border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .classroom-demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      min-height: 500px;
+    }
+
+    .instructor-transmitter-panel {
+      padding: 30px 26px;
+      background: radial-gradient(circle at top left, rgba(123, 132, 220, 0.18), transparent 70%), #171B26;
+      border-right: 1px solid rgba(255, 252, 244, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .student-receivers-panel {
+      padding: 30px 24px;
+      background: rgba(20, 24, 34, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .student-card-box {
+      background: rgba(30, 36, 50, 0.92);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .student-card-box:hover {
+      transform: translateY(-2px);
+      border-color: var(--violet-500);
+      background: rgba(38, 45, 64, 0.98);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .student-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .student-meta {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 252, 244, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .student-lang-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .student-caption-text {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--bone-50);
+      margin-bottom: 10px;
+      min-height: 52px;
+      transition: opacity 0.3s ease;
+    }
+
+    .student-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(255, 252, 244, 0.55);
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 252, 244, 0.08);
+    }
+
+    .projector-display-box {
+      margin-top: 18px;
+      background: rgba(14, 18, 26, 0.85);
+      border: 1px dashed rgba(122, 217, 210, 0.4);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+    }
+
+    .interactive-demo-callout {
+      background: rgba(123, 132, 220, 0.12);
+      border: 1px dashed rgba(123, 132, 220, 0.45);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--violet-100);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    /* Topic switcher pills */
+    .edu-topic-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .edu-topic-pill {
+      background: rgba(255, 252, 244, 0.08);
+      border: 1px solid rgba(255, 252, 244, 0.15);
+      color: var(--bone-50);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .edu-topic-pill:hover, .edu-topic-pill.active {
+      background: var(--violet-500);
+      color: #FFFFFF;
+      border-color: var(--violet-500);
+    }
+
+    /* African & Global Languages Grid */
+    .african-lang-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .african-lang-card {
+      background: rgba(22, 28, 40, 0.7);
+      border: 1px solid rgba(255, 252, 244, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .african-lang-card:hover {
+      border-color: var(--violet-500);
+      background: rgba(30, 38, 56, 0.9);
+      transform: translateY(-2px);
+    }
+
+    /* Glossary Demo Widget */
+    .glossary-preview-box {
+      background: rgba(18, 22, 32, 0.95);
+      border: 1px solid rgba(255, 252, 244, 0.12);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-top: 36px;
+    }
+
+    .glossary-row {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 252, 244, 0.08);
+      font-size: 13px;
+    }
+
+    .glossary-row:last-child {
+      border-bottom: none;
+    }
+
+    @media (max-width: 960px) {
+      .classroom-demo-grid {
+        grid-template-columns: 1fr;
+      }
+      .edu-hero {
+        padding: 60px 0 80px;
+      }
+      .glossary-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="landing-body">
+
+  <!-- 1. TOP NAVIGATION BAR -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand-link" id="navLogo">
+        <div class="brand-symbol" style="background: var(--violet-500);">B</div>
+        <span class="brand-name">BridgeeAI</span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <!-- Solutions Dropdown -->
+          <li class="nav-item">
+            <a href="#solutions" class="nav-link" id="navSolutionsLink">
+              Solutions
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <div class="nav-dropdown" id="solutionsDropdown">
+              <a href="/education" class="dropdown-item" style="background: rgba(123, 132, 220, 0.12);">
+                <div class="dropdown-icon" style="color: var(--violet-500);">🎓</div>
+                <div>
+                  <div class="dropdown-title">Education</div>
+                  <div class="dropdown-desc">Lectures, training & classrooms</div>
+                </div>
+              </a>
+              <a href="/conferences" class="dropdown-item">
+                <div class="dropdown-icon" style="color: var(--gold-400);">🎙️</div>
+                <div>
+                  <div class="dropdown-title">Conferences & Summits</div>
+                  <div class="dropdown-desc">Keynotes, summits & breakout rooms</div>
+                </div>
+              </a>
+              <a href="/church" class="dropdown-item">
+                <div class="dropdown-icon">⛪</div>
+                <div>
+                  <div class="dropdown-title">Church & Faith</div>
+                  <div class="dropdown-desc">Sermons, fellowship & worship</div>
+                </div>
+              </a>
+              <a href="/events" class="dropdown-item">
+                <div class="dropdown-icon">🏛️</div>
+                <div>
+                  <div class="dropdown-title">Events</div>
+                  <div class="dropdown-desc">Civic forums, exhibitions & broadcasts</div>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li class="nav-item"><a href="#languages" class="nav-link">Supported Languages</a></li>
+          <li class="nav-item"><a href="#hybrid-broadcast" class="nav-link">Production Overlays (OBS / vMix)</a></li>
+          <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/auth" class="btn-signin" id="btnSignInNav" onclick="event.preventDefault(); openSignInModal();">Sign In</a>
+        <a href="/session/new?template=Education" class="btn-pill btn-pill-primary" id="btnCreateSessionNav" style="background: var(--violet-500); padding: 9px 20px; font-size: 13px;">
+          Create a Session
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION (TOP OF PAGE) -->
+  <section class="edu-hero" id="hero">
+    <!-- Visual Image: University Lecture Hall with International Students -->
+    <div class="edu-hero-bg-wrap">
+      <img 
+        src="/assets/education_lecture_hall.jpg" 
+        alt="Modern university lecture hall with diverse international students taking notes on laptops as professor speaks"
+        class="edu-hero-img"
+      >
+      <div class="edu-hero-scrim"></div>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 2; width: 100%;">
+      <div class="edu-hero-content">
+        
+        <!-- Small Top Tag -->
+        <div class="edu-tag">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--violet-500); box-shadow: 0 0 8px var(--violet-500);"></span>
+          REAL-TIME HYBRID CLASSROOM CAPTIONING & TRANSLATION
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="edu-headline">
+          Multi-language classrooms without language barriers.
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="edu-subtitle">
+          Empower students, international scholars, and trainees to follow lectures in the language they understand best—live on their mobile devices, with downloadable translated notes after class.
+        </p>
+
+        <!-- Main Action Buttons -->
+        <div class="hero-cta-cinematic-row" style="margin-bottom: 28px;">
+          <a href="/session/new?template=Education" class="btn-pill btn-pill-primary" id="btnCreateTrainingHero" style="background: var(--violet-500); color: #FFFFFF; font-weight: 700; padding: 14px 28px;">
+            Create a Training Session <span class="arrow-icon">→</span>
+          </a>
+          <a href="#classroom-demo" class="btn-book-demo" id="btnWatchInteractiveDemo" onclick="runClassroomDemoAuto();">
+            Watch Interactive Demo (1 Min)
+          </a>
+        </div>
+
+        <!-- Quick Highlights -->
+        <div class="hero-highlights" style="justify-content: flex-start; color: rgba(255,252,244,0.9); font-size: 13px; gap: 20px;">
+          <span>✓ Zero student logins, account creation, or app downloads required</span>
+          <span>✓ Replaces expensive classroom interpretation equipment</span>
+          <span>✓ Engineered to run smoothly on weak campus Wi-Fi or cellular networks</span>
+        </div>
+
+      </div>
+
+      <!-- 3. INTERACTIVE CLASSROOM VISUAL DEMO -->
+      <div class="classroom-demo-stage" id="classroom-demo">
+        <div class="classroom-demo-header">
+          <div class="demo-header-dots">
+            <span class="demo-dot red"></span>
+            <span class="demo-dot yellow"></span>
+            <span class="demo-dot green"></span>
+          </div>
+          <div class="demo-stage-title" style="color: var(--bone-50); font-weight: 600;">
+            <span style="color: #4ade80;">●</span> [LIVE HYBRID LECTURE ROOM DEMO] · Room: EDU-101
+          </div>
+          <div style="font-size: 12px; color: var(--aqua-400); font-weight: 600; display: flex; align-items: center; gap: 10px;">
+            <span>Latency: 0.28s · Sync Active</span>
+            <button onclick="toggleLectureDemoSpeech()" id="btnLecturePlayPause" style="background: rgba(123, 132, 220, 0.25); border: 1px solid var(--violet-500); color: var(--bone-50); border-radius: 4px; padding: 2px 10px; font-size: 11px; cursor: pointer;">
+              ▶ Next Sentence
+            </button>
+          </div>
+        </div>
+
+        <div class="classroom-demo-grid">
+          
+          <!-- Left Column: Instructor Transmitter (Lecture Hall) -->
+          <div class="instructor-transmitter-panel">
+            <div>
+              <div class="speaker-live-badge" style="background: rgba(123, 132, 220, 0.2); border-color: var(--violet-500); color: var(--violet-100); margin-bottom: 16px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--violet-500); animation: pulse-glow 1.5s infinite;"></span>
+                INSTRUCTOR TRANSMITTER (Lecture Hall)
+              </div>
+
+              <div class="speaker-profile-wrap" style="margin-bottom: 16px;">
+                <div class="speaker-avatar" style="background: linear-gradient(135deg, #7B84DC, #59B889);">👨‍🏫</div>
+                <div>
+                  <div class="speaker-name-title">Prof. David Chen</div>
+                  <div class="speaker-role">Lead Faculty · Computer Science & AI 101</div>
+                </div>
+              </div>
+
+              <div class="speaker-audio-box" style="background: rgba(14, 18, 26, 0.85); border: 1px solid rgba(255,252,244,0.1); padding: 18px; border-radius: var(--radius-md);">
+                <div class="audio-box-label" style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,252,244,0.6); margin-bottom: 10px;">
+                  <span style="color: var(--aqua-400);">[ Audio Input: Active Studio Mic ]</span>
+                  <span style="color: var(--gold-400);">[ Context: Slide deck 'AI_101.pptx' active ]</span>
+                </div>
+
+                <!-- Animated Equalizer Bars -->
+                <div class="audio-equalizer-bars" id="lectureWaveform" style="display: flex; gap: 4px; height: 28px; align-items: flex-end; margin-bottom: 14px;">
+                  <span style="width: 4px; background: var(--violet-500); height: 65%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 95%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 100%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 80%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 85%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 60%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 90%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 75%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 70%; border-radius: 2px;"></span>
+                  <span style="width: 4px; background: var(--violet-500); height: 50%; border-radius: 2px;"></span>
+                </div>
+
+                <div class="spoken-quote" id="instructorSpokenQuote" style="font-family: var(--font-serif); font-size: 16px; line-height: 1.5; color: var(--bone-50); margin-bottom: 14px;">
+                  "Today we will explore the core concepts of artificial intelligence and neural network architectures."
+                </div>
+
+                <!-- Topic selector pills -->
+                <div class="edu-topic-pills">
+                  <button class="edu-topic-pill active" onclick="setLectureDemoIndex(0)">1. AI & Neural Nets</button>
+                  <button class="edu-topic-pill" onclick="setLectureDemoIndex(1)">2. Gradient Descent</button>
+                  <button class="edu-topic-pill" onclick="setLectureDemoIndex(2)">3. Bias & Ethics</button>
+                </div>
+              </div>
+
+              <!-- Projector / Stage Display Mode Box -->
+              <div class="projector-display-box">
+                <div style="font-size: 11px; font-weight: 700; color: var(--aqua-400); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;">
+                  PROJECTOR / STAGE DISPLAY MODE (/venue)
+                </div>
+                <div id="projectorCaptionText" style="font-family: var(--font-serif); font-size: 14px; color: var(--bone-50); line-height: 1.4;">
+                  "Aujourd'hui, nous allons explorer les concepts de base de l'intelligence artificielle et des architectures de réseaux neuronaux."
+                </div>
+                <div style="margin-top: 8px; display: flex; justify-content: flex-end;">
+                  <a href="/venue/EDU-101" target="_blank" style="font-size: 11px; color: var(--aqua-400); text-decoration: none; font-weight: 600;">
+                    Launch Classroom Projector View 📽 →
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="speaker-meta-footer" style="padding-top: 18px; border-top: 1px solid rgba(255,252,244,0.08); display: flex; justify-content: space-between;">
+              <a href="/host/console/EDU-101" style="color: var(--violet-100); font-weight: 600; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                Instructor Console 🎙 →
+              </a>
+              <a href="/join/EDU-101" style="color: var(--bone-50); font-weight: 600; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                Class QR Pass 📱
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Column: Student Receivers (In-Person / Remote) -->
+          <div class="student-receivers-panel">
+            <div class="listeners-side-header" style="margin-bottom: 12px; font-size: 11px; font-weight: 700; color: rgba(255,252,244,0.65); letter-spacing: 0.08em; display: flex; justify-content: space-between;">
+              <span>STUDENT RECEIVERS (In-Person / Remote)</span>
+              <span style="color: var(--aqua-400);">Zero App Downloads</span>
+            </div>
+
+            <div>
+              <!-- Student 01 (In-Person): Yorùbá · Mode: Read -->
+              <div class="student-card-box">
+                <div class="student-card-header">
+                  <div class="student-meta">
+                    <span>📱 Student 01 (In-Person)</span> · Lagos / Campus 🇳🇬
+                  </div>
+                  <span class="student-lang-badge" style="background: rgba(89, 184, 137, 0.2); color: var(--success-500);">
+                    Yorùbá · Mode: Read
+                  </span>
+                </div>
+                <p class="student-caption-text" id="captionStudentYoruba">
+                  "Lónìí a ó yẹ̀ wò àwọn pátákó àgbéyẹ̀wò fáìlì àti ètò orí-ìsopọ̀ ọpọlọ-oní-nẹ́tíwọ̀ọ̀kì (neural network architectures)..."
+                </p>
+                <div class="student-card-footer">
+                  <span>Text-First High-Contrast Display</span>
+                  <span style="color: var(--success-500); font-weight: 600;">● &lt; 1.2 KB/s</span>
+                </div>
+              </div>
+
+              <!-- Student 02 (Remote Zoom): Français · Mode: Read+Listen -->
+              <div class="student-card-box">
+                <div class="student-card-header">
+                  <div class="student-meta">
+                    <span>💻 Student 02 (Remote Zoom)</span> · Dakar / Online 🇸🇳
+                  </div>
+                  <span class="student-lang-badge" style="background: rgba(123, 132, 220, 0.25); color: var(--violet-100);">
+                    Français · Mode: Read+Listen
+                  </span>
+                </div>
+                <p class="student-caption-text" id="captionStudentFrench">
+                  "Aujourd'hui, nous allons explorer les concepts fondamentaux de l'intelligence artificielle et des architectures de réseaux neuronaux."
+                </p>
+                <div class="student-card-footer">
+                  <span style="display: flex; align-items: center; gap: 6px; color: var(--violet-100);">
+                    🔊 Spoken audio in French
+                    <span style="display: inline-flex; gap: 2px; align-items: flex-end; height: 10px;">
+                      <span style="width: 2px; background: var(--violet-500); height: 100%;"></span>
+                      <span style="width: 2px; background: var(--violet-500); height: 60%;"></span>
+                      <span style="width: 2px; background: var(--violet-500); height: 80%;"></span>
+                    </span>
+                  </span>
+                  <span style="color: var(--aqua-400); font-weight: 600;">🎧 + 📝 Synced</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Callout -->
+            <div class="interactive-demo-callout">
+              <span style="font-size: 18px;">💡</span>
+              <span><strong>Interactive Callout:</strong> Students can toggle between live text captions and synchronized voice streams at any point during the lecture.</span>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. CLASSROOM IMPACT METRICS -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Global & Regional Languages Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Under 1.2s</div>
+          <div class="stat-label">Real-Time End-to-End Latency</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">100% Web-Based (Zero app installation or student account setup)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 2 KB/s</div>
+          <div class="stat-label">Bandwidth Footprint (Maintains live text captions even on crowded campus Wi-Fi)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. THE CHALLENGE IN MODERN ACADEMIA -->
+  <section class="section" id="challenge">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--violet-500);">The Academic Comprehension Gap</div>
+        <h2 class="section-title">Learning complex topics is hard enough. Doing it in a second language is harder.</h2>
+        <p class="section-lead">
+          Universities, vocational centers, and corporate bootcamps welcome increasingly diverse student bodies, yet traditional teaching environments create learning gaps:
+        </p>
+      </div>
+
+      <div class="problem-split-grid">
+        
+        <!-- Traditional Lecture Limitations -->
+        <div class="problem-card">
+          <span class="problem-card-badge" style="background: rgba(201, 95, 100, 0.2); color: var(--danger-500);">Legacy Academic Hurdles</span>
+          <h3 class="problem-card-title">Traditional classrooms leave international scholars behind:</h3>
+          <ul class="problem-list">
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>International students waste mental energy</strong> translating complex concepts in their heads instead of absorbing the material.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Fast-paced technical lectures</strong> leave non-native speakers behind during Q&A and group discussions.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Hiring human interpreters</strong> for every class or workshop is financially impossible for most institutions.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span><strong>Recording-only subtitles</strong> don't help students who need real-time clarity during the live lecture.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- The BridgeeAI Academic Solution -->
+        <div class="solution-card" style="border-color: rgba(123, 132, 220, 0.35);">
+          <div>
+            <span class="solution-card-badge" style="background: rgba(123, 132, 220, 0.2); color: var(--violet-100);">Classroom Equity</span>
+            <div class="solution-statement">
+              "BridgeeAI closes the comprehension gap. Instructors teach naturally in their native language, and every student understands in theirs."
+            </div>
+            <p class="solution-lead-desc">
+              Whether sitting in the front row, attending overflow auditoriums, or dialing in remotely from abroad, learners receive word-for-word conceptual comprehension without missing a beat.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+            <a href="/host/console/EDU-101" class="btn-pill btn-pill-primary" style="background: var(--violet-500); color: #FFFFFF; font-weight: 700; padding: 11px 24px; font-size: 14px;">
+              Launch Instructor Console →
+            </a>
+            <span style="font-size: 13px; color: rgba(255,252,244,0.65);">Supports up to 500+ students per lecture</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. HOW IT WORKS IN 3 SIMPLE STEPS -->
+  <section class="section section-dark" id="how-it-works">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--aqua-400);">Frictionless Hybrid Learning</div>
+        <h2 class="section-title">How It Works in 3 Simple Steps</h2>
+        <p class="section-lead">
+          From instructor podium to student devices with zero onboarding overhead.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--violet-500);">STEP 01</div>
+          <h3 class="step-title">The Instructor Speaks Naturally</h3>
+          <p class="step-desc">
+            The lecturer speaks into any standard microphone (laptop, podium, or wireless headset). No artificial pauses or changed delivery cadence required.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Natural, uninterrupted teaching delivery</li>
+            <li>✓ Plugs into existing classroom AV or Zoom audio</li>
+            <li>✓ No special instructor training needed</li>
+          </ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" style="border-color: rgba(123, 132, 220, 0.4);">
+          <div class="step-badge" style="color: var(--aqua-400);">STEP 02</div>
+          <h3 class="step-title">BridgeeAI Applies Course Context</h3>
+          <p class="step-desc">
+            Our neural engine transcribes the lecture, matching technical vocabulary against pre-uploaded lecture slides, glossaries, and reading lists.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Technical formulas & academic terms recognized</li>
+            <li>✓ Real-time grammar & context correction</li>
+            <li>✓ Parallel multi-language translation pipeline</li>
+          </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--success-500);">STEP 03</div>
+          <h3 class="step-title">Students Follow Live & Review After Class</h3>
+          <p class="step-desc">
+            Students scan a QR code on the lecture slide or whiteboard, choose their preferred language, and select:
+          </p>
+          <ul class="step-sublist">
+            <li><strong>Read:</strong> Follow high-contrast translated captions on their mobile screen or laptop.</li>
+            <li><strong>Listen:</strong> Hear synthesized voice translation through personal earbuds.</li>
+            <li><strong>Read + Listen:</strong> View captions while listening to matching voice audio concurrently.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. PRE-LOAD COURSE DECKS FOR 99%+ TECHNICAL ACCURACY -->
+  <section class="section" id="glossary">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Academic Terminology Precision</div>
+        <h2 class="section-title">Pre-Load Course Decks for 99%+ Technical Accuracy</h2>
+        <p class="section-lead">
+          Train the AI on your specific syllabus, jargon, and formulas. Academic lectures often involve specialized formulas, jargon, and acronyms that general AI translation tools misinterpret. BridgeeAI lets educators prime the session intelligence before class starts:
+        </p>
+      </div>
+
+      <div class="context-feature-grid">
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">📑</div>
+          <h3 class="font-serif" style="font-size: 22px; color: #FFFFFF; margin-bottom: 10px;">Lecture Slides & Briefs</h3>
+          <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.85);">
+            Drag and drop lecture slides (.PPTX, .PDF) and reading briefs.
+          </p>
+        </div>
+
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">🔤</div>
+          <h3 class="font-serif" style="font-size: 22px; color: #FFFFFF; margin-bottom: 10px;">Jargon & Acronyms</h3>
+          <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.85);">
+            Add lists of technical terms, acronyms, historical names, or scientific jargon.
+          </p>
+        </div>
+
+        <div class="context-feature-card">
+          <div style="font-size: 30px; margin-bottom: 14px;">🎯</div>
+          <h3 class="font-serif" style="font-size: 22px; color: #FFFFFF; margin-bottom: 10px;">Enforced Recognition</h3>
+          <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.85);">
+            BridgeeAI enforces precise terminology recognition across all target languages throughout the class.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Glossary Inspector -->
+      <div class="glossary-preview-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div style="font-size: 12px; font-weight: 700; color: var(--violet-100); text-transform: uppercase; letter-spacing: 0.08em;">
+            Live Syllabus Vocabulary Mapping · Course: CS-402 Advanced AI
+          </div>
+          <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500);">99.4% Terminology Match</span>
+        </div>
+
+        <div class="glossary-row">
+          <div><strong style="color: var(--aqua-400);">Backpropagation</strong> <span style="font-size: 11px; color: rgba(255,252,244,0.5);">(Algorithm)</span></div>
+          <div style="color: var(--bone-50);">Français: <em>Rétropropagation du gradient</em> · Yorùbá: <em>Ìtànkálẹ̀-padà ìṣirò</em> · Español: <em>Retropropagación</em></div>
+        </div>
+
+        <div class="glossary-row">
+          <div><strong style="color: var(--aqua-400);">Stochastic Gradient Descent</strong> <span style="font-size: 11px; color: rgba(255,252,244,0.5);">(Optimization)</span></div>
+          <div style="color: var(--bone-50);">Français: <em>Descente de gradient stochastique</em> · Swahili: <em>Mteremko wa gradient ya kubahatisha</em></div>
+        </div>
+
+        <div class="glossary-row">
+          <div><strong style="color: var(--aqua-400);">Eigenvector Decomposition</strong> <span style="font-size: 11px; color: rgba(255,252,244,0.5);">(Linear Algebra)</span></div>
+          <div style="color: var(--bone-50);">Français: <em>Décomposition en vecteurs propres</em> · Deutsch: <em>Eigenvektorzerlegung</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. PURPOSE-BUILT FOR HYBRID & MULTI-SCREEN CLASSROOMS -->
+  <section class="section section-dark" id="hybrid-broadcast">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--violet-500);">Campus Integration</div>
+        <h2 class="section-title">Purpose-Built for Hybrid & Multi-Screen Classrooms</h2>
+        <p class="section-lead">
+          Fits seamlessly into your institutional tech stack. BridgeeAI bridges physical lecture halls and remote learning environments simultaneously:
+        </p>
+      </div>
+
+      <div class="av-workflow-grid">
+        
+        <!-- Touchpoint 1 -->
+        <div class="av-workflow-card" style="background: rgba(22, 28, 40, 0.95); border-color: rgba(255,252,244,0.12);">
+          <div>
+            <div style="font-size: 34px; margin-bottom: 16px;">📱</div>
+            <h3 class="font-serif" style="font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--bone-50);">Personal Student Browsers</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.75); margin-bottom: 20px;">
+              Students join on their own smartphones, tablets, or laptops without app store installs.
+            </p>
+          </div>
+          <a href="/join/EDU-101" class="dest-link" style="color: var(--aqua-400);">Open Student PWA View →</a>
+        </div>
+
+        <!-- Touchpoint 2 -->
+        <div class="av-workflow-card" style="background: rgba(22, 28, 40, 0.95); border-color: rgba(123, 132, 220, 0.35);">
+          <div>
+            <div style="font-size: 34px; margin-bottom: 16px;">📽️</div>
+            <h3 class="font-serif" style="font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--bone-50);">Classroom Projector Displays (/venue)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.75); margin-bottom: 20px;">
+              Display real-time translated captions on secondary hall screens or overflow room displays.
+            </p>
+          </div>
+          <a href="/venue/EDU-101" class="dest-link" style="color: var(--aqua-400);">Open Projector Display View →</a>
+        </div>
+
+        <!-- Touchpoint 3 -->
+        <div class="av-workflow-card" style="background: rgba(22, 28, 40, 0.95); border-color: rgba(255,252,244,0.12);">
+          <div>
+            <div style="font-size: 34px; margin-bottom: 16px;">📡</div>
+            <h3 class="font-serif" style="font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--bone-50);">Hybrid Stream Overlays (/overlay)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.75); margin-bottom: 20px;">
+              Output transparent browser caption sources directly into Zoom, MS Teams, OBS Studio, or campus broadcast setups.
+            </p>
+          </div>
+          <a href="/overlay/EDU-101" class="dest-link" style="color: var(--aqua-400);">Open Stream Overlay Studio →</a>
+        </div>
+
+        <!-- Touchpoint 4 -->
+        <div class="av-workflow-card" style="background: rgba(22, 28, 40, 0.95); border-color: rgba(89, 184, 137, 0.35);">
+          <div>
+            <div style="font-size: 34px; margin-bottom: 16px;">💾</div>
+            <h3 class="font-serif" style="font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--bone-50);">Post-Class Transcript Export</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: rgba(255,252,244,0.75); margin-bottom: 20px;">
+              Allow students to download full lecture transcripts in their selected target language for exam preparation and review.
+            </p>
+          </div>
+          <span style="font-size: 12px; color: var(--success-500); font-weight: 600;">✓ Automated .TXT / .PDF Exports</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. BUILT FOR GLOBAL & AFRICAN STUDENT POPULATIONS -->
+  <section class="section section-dark" id="languages">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--violet-500);">Linguistic Inclusivity</div>
+        <h2 class="section-title">Built for Global & African Student Populations</h2>
+        <p class="section-lead">
+          Native support for regional and international learning environments. Language should never dictate academic achievement. BridgeeAI features robust speech model support tailored specifically for regional and global educational institutions:
+        </p>
+      </div>
+
+      <!-- Featured Languages List -->
+      <div class="african-lang-grid">
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Yorùbá</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">West Africa Regional</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Igbo</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Southeastern Nigeria</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Hausa</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Northern Nigeria & Sahel</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Kiswahili</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">East African Community</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">French</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Francophone Africa & Global</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(123, 132, 220, 0.25); color: var(--violet-100); font-weight: 700;">Text + Voice</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Spanish</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Latin America & Spain</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(123, 132, 220, 0.25); color: var(--violet-100); font-weight: 700;">Text + Voice</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Portuguese</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Angola, Mozambique & Brazil</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(123, 132, 220, 0.25); color: var(--violet-100); font-weight: 700;">Text + Voice</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Arabic</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">North Africa & Middle East</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(123, 132, 220, 0.25); color: var(--violet-100); font-weight: 700;">Text + Voice</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Amharic</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Ethiopia & Horn of Africa</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Afrikaans</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">South Africa & Namibia</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">isiZulu</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Southern Africa</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">isiXhosa</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">South Africa</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Lingala</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Central Africa & DR Congo</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Kinyarwanda</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Rwanda & Great Lakes</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+
+        <div class="african-lang-card">
+          <div>
+            <div style="font-weight: 700; color: #FFFFFF;">Twi</div>
+            <div style="font-size: 12px; color: rgba(255,252,244,0.7);">Ghana & Akan Diaspora</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(89, 184, 137, 0.2); color: var(--success-500); font-weight: 700;">Text-First</span>
+        </div>
+      </div>
+
+      <!-- Note Callout -->
+      <div style="margin-top: 28px; padding: 14px 20px; background: rgba(123, 132, 220, 0.15); border-left: 4px solid var(--violet-500); border-radius: var(--radius-sm); font-size: 14px; color: var(--bone-50);">
+        <strong>(Note:</strong> If spoken voice audio is unavailable for a specific language, BridgeeAI automatically defaults to high-speed text captions so no student is left behind.)
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 10. FLEXIBLE PLANS FOR EDUCATORS & UNIVERSITIES -->
+  <section class="section section-dark" id="pricing">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--violet-500);">Educational Pricing</div>
+        <h2 class="section-title">Flexible Plans for Educators & Universities</h2>
+        <p class="section-lead">
+          Empower classrooms with transparent pricing structured for individual lecturers, departments, and entire campus deployments.
+        </p>
+      </div>
+
+      <div class="ministry-plans-grid">
+        
+        <!-- Plan 1: Individual Instructor -->
+        <div class="ministry-plan-card">
+          <div>
+            <h3 class="pricing-plan-name">Individual Instructor</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$49</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-for">Ideal for independent educators, workshop facilitators, and guest lecturers hosting live classes.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Up to 50 concurrent students</strong> per session</li>
+              <li><span class="check">✓</span> Unlimited live lecture sessions</li>
+              <li><span class="check">✓</span> Slide deck & reading glossary priming</li>
+              <li><span class="check">✓</span> Real-time text captions & voice audio</li>
+              <li><span class="check">✓</span> Post-class student transcript export</li>
+              <li><span class="check">✓</span> Instant QR code class join</li>
+            </ul>
+          </div>
+          <a href="/session/new?template=Education" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Start Instructor Plan
+          </a>
+        </div>
+
+        <!-- Plan 2: Department & Bootcamp Plan (Featured) -->
+        <div class="ministry-plan-card featured" style="transform: scale(1.03); z-index: 2; border-color: var(--violet-500);">
+          <div class="pricing-badge" style="background: var(--violet-500); color: #FFFFFF;">Most Popular for Faculty</div>
+          <div>
+            <h3 class="pricing-plan-name">Department & Bootcamp Plan</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">$189</span>
+              <span class="pricing-period">/ month</span>
+            </div>
+            <div class="pricing-for">Designed for academic departments running recurring courses with full slide deck priming and transcript export rights.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Up to 500 concurrent students</strong> per lecture</li>
+              <li><span class="check">✓</span> Multi-classroom simultaneous sessions</li>
+              <li><span class="check">✓</span> Unlimited slide & syllabus glossary uploads</li>
+              <li><span class="check">✓</span> Projector LED hall view (/venue)</li>
+              <li><span class="check">✓</span> Zoom & OBS transparent overlays (/overlay)</li>
+              <li><span class="check">✓</span> Batch transcript export in all 20+ languages</li>
+            </ul>
+          </div>
+          <a href="/session/new?template=Education" class="btn-pill btn-pill-primary" style="width: 100%; text-align: center; background: var(--violet-500); color: #FFFFFF; font-weight: 700;">
+            Start 14-Day Free Trial
+          </a>
+        </div>
+
+        <!-- Plan 3: Institutional Campus License -->
+        <div class="ministry-plan-card">
+          <div>
+            <h3 class="pricing-plan-name">Institutional Campus License</h3>
+            <div class="pricing-price-wrap">
+              <span class="pricing-amount">Custom</span>
+            </div>
+            <div class="pricing-for">For universities and large educational networks requiring dedicated infrastructure, LMS integrations, and unlimited concurrent student access.</div>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Unlimited concurrent student seats</strong></li>
+              <li><span class="check">✓</span> Campus-wide LMS integration (Canvas, Blackboard, Moodle)</li>
+              <li><span class="check">✓</span> Single Sign-On (SSO / SAML / Okta)</li>
+              <li><span class="check">✓</span> Private institutional speech model fine-tuning</li>
+              <li><span class="check">✓</span> FERPA & GDPR institutional data compliance</li>
+              <li><span class="check">✓</span> Dedicated academic success architect & SLA</li>
+            </ul>
+          </div>
+          <button onclick="openInstitutionalDemoModal()" class="btn-pill btn-pill-secondary" style="width: 100%; text-align: center; color: var(--ink-950); border-color: rgba(26,24,24,0.3);">
+            Schedule Institutional Demo
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Academic Operations</div>
+        <h2 class="section-title">Frequently Asked Questions (FAQ)</h2>
+      </div>
+
+      <div class="faq-accordion">
+        
+        <!-- Question 1 -->
+        <div class="faq-item open">
+          <div class="faq-question">
+            <span>Do students need to download an app or create an account?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            No. Students simply scan a QR code or click a session link to join instantly in their web browser.
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can students download translated notes after class?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. Instructors and students can export full transcript logs in their target language at the end of the session.
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>How does BridgeeAI handle crowded campus Wi-Fi?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            BridgeeAI automatically switches to an ultra-light text fallback mode (&lt;2 KB/s) if network connectivity degrades, keeping captions flowing without crashing.
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can we integrate BridgeeAI with our remote stream software (Zoom, OBS, vMix)?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            Yes. BridgeeAI provides transparent browser overlay links (/overlay) that layer cleanly over remote video streams.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FINAL CALL TO ACTION -->
+  <section class="final-cta-section" id="cta" style="background: radial-gradient(circle at center top, #1A1F30 0%, #0B0E14 100%);">
+    <div class="container final-cta-content">
+      <div class="hero-tag" style="background: rgba(123, 132, 220, 0.2); border-color: rgba(123, 132, 220, 0.45); color: var(--violet-100); margin-bottom: 24px;">
+        Empower Every Learner
+      </div>
+      
+      <h2 class="hero-heading" style="color: var(--bone-50); margin-bottom: 20px;">
+        Make your next lecture accessible to every student in the room.
+      </h2>
+      
+      <p class="hero-subtitle" style="color: rgba(255, 252, 244, 0.85); margin-bottom: 38px;">
+        Create a live training session in under 60 seconds and eliminate language barriers in your classroom.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/session/new?template=Education" class="btn-pill btn-pill-primary" id="btnFinalCreateTraining" style="background: var(--violet-500); color: #FFFFFF; font-weight: 700; padding: 14px 32px;">
+          Create a Training Session
+        </a>
+        <button onclick="openInstitutionalDemoModal()" class="btn-pill btn-pill-secondary" id="btnFinalScheduleDemo" style="color: var(--bone-50); border-color: rgba(255,252,244,0.35); padding: 14px 30px;">
+          Schedule an Institutional Demo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-row">
+        <div class="footer-brand-summary">
+          <div class="footer-brand-title">
+            <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px; background: var(--violet-500);">B</div>
+            <span>BridgeeAI</span>
+          </div>
+          <div class="footer-tagline">
+            BridgeeAI: Speak once. Be understood everywhere.
+          </div>
+          <p style="font-size: 13px; line-height: 1.5; color: rgba(255,252,244,0.6);">
+            Empowering universities, colleges, and training academies worldwide with real-time multilingual lecture translation.
+          </p>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bone-50); margin-bottom: 14px;">
+            Quick Links
+          </div>
+          <div class="footer-quick-links-group">
+            <a href="#how-it-works" class="footer-quick-link">How It Works</a>
+            <a href="#languages" class="footer-quick-link">Supported Languages</a>
+            <a href="#hybrid-broadcast" class="footer-quick-link">Production Overlays</a>
+            <a href="#pricing" class="footer-quick-link">Pricing</a>
+            <a href="#faq" class="footer-quick-link">FAQ</a>
+            <a href="mailto:education@bridgee.ai" class="footer-quick-link">Contact</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>
+          Copyright: © 2026 BridgeeAI Inc. All rights reserved.
+        </div>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <a href="/join/EDU-101" style="color: inherit; text-decoration: none;">Join EDU-101</a>
+          <a href="/venue/EDU-101" style="color: inherit; text-decoration: none;">Classroom Projector Mode</a>
+          <a href="/overlay/EDU-101" style="color: inherit; text-decoration: none;">Zoom & Stream Overlay</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: SCHEDULE AN INSTITUTIONAL DEMO -->
+  <div class="modal-overlay" id="institutionalDemoModal" onclick="if(event.target===this) closeInstitutionalDemoModal()">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeInstitutionalDemoModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--violet-500); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Higher Education Consultation</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Schedule an Institutional Demo</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Connect with our higher education solutions team to explore campus LMS integration, SSO, and multi-department licensing.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Thank you! A higher education solutions specialist will contact your institution within 24 hours.'); closeInstitutionalDemoModal();">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Your Name</label>
+          <input type="text" required placeholder="Prof. David Chen" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Academic Email (.edu / institutional)</label>
+          <input type="email" required placeholder="david.chen@university.edu" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Institution & Student Enrollment</label>
+          <input type="text" placeholder="e.g. University of Lagos · 12,000 students" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--violet-500); padding: 12px;">
+          Request Institutional Walkthrough
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SIGN IN -->
+  <div class="modal-overlay" id="signInModal" onclick="if(event.target===this) closeSignInModal()">
+    <div class="modal-card" style="max-width: 440px;">
+      <button class="modal-close-btn" onclick="closeSignInModal()">×</button>
+      <div style="font-size: 11px; font-weight: 700; color: var(--violet-500); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">BridgeeAI Faculty Portal</div>
+      <h3 style="font-family: var(--font-serif); font-size: 26px; margin-bottom: 10px;">Sign In to Console</h3>
+      <p style="font-size: 14px; color: rgba(26,24,24,0.65); margin-bottom: 20px;">
+        Access your active lecture rooms, syllabus glossaries, and student logs.
+      </p>
+
+      <form onsubmit="event.preventDefault(); window.location.href='/host/console/EDU-101';">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Instructor Email</label>
+          <input type="email" required placeholder="instructor@university.edu" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Classroom Code</label>
+          <input type="text" placeholder="e.g. EDU-101" value="EDU-101" style="width: 100%; padding: 10px 14px; border: 1px solid rgba(26,24,24,0.2); border-radius: 8px; font-size: 14px;">
+        </div>
+        <button type="submit" class="btn-pill btn-pill-primary" style="width: 100%; background: var(--violet-500); padding: 12px;">
+          Continue to Instructor Console →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE SCRIPTS -->
+  <script>
+    // Demo Lecture Statements & Parallel Student Captions
+    const lectureDemoSentences = [
+      {
+        en: '"Today we will explore the core concepts of artificial intelligence and neural network architectures."',
+        projectorFr: '"Aujourd\'hui, nous allons explorer les concepts de base de l\'intelligence artificielle et des architectures de réseaux neuronaux."',
+        student01Yo: '"Lónìí a ó yẹ̀ wò àwọn pátákó àgbéyẹ̀wò fáìlì àti ètò orí-ìsopọ̀ ọpọlọ-oní-nẹ́tíwọ̀ọ̀kì (neural network architectures)..."',
+        student02Fr: '"Aujourd\'hui, nous allons explorer les concepts fondamentaux de l\'intelligence artificielle et des architectures de réseaux neuronaux."'
+      },
+      {
+        en: '"Notice how stochastic gradient descent updates our weights iteratively to minimize the overall loss function."',
+        projectorFr: '"Remarquez comment la descente de gradient stochastique met à jour nos poids de manière itérative pour minimiser la fonction de perte."',
+        student01Yo: '"Ẹ kíyèsí bí ìtẹ̀síwájú stochastic gradient descent ṣe ń tún àwọn ìwọ̀n ṣe ní ìgbésẹ̀-kọ̀ọ̀kan láti dín àwọn àṣìṣe kù..."',
+        student02Fr: '"Remarquez comment la descente de gradient stochastique met à jour nos poids de manière itérative afin de minimiser la perte globale."'
+      },
+      {
+        en: '"Algorithmic fairness requires continuous auditing of training data to prevent historical biases from propagating."',
+        projectorFr: '"L\'équité algorithmique exige un audit continu des données d\'entraînement pour empêcher la propagation des biais historiques."',
+        student01Yo: '"Òtítọ́ nínú àwọn ètò kọ̀mpútà gba àyẹ̀wò títí lọ lórí àwọn àkójọpọ̀ ẹ̀kọ́ láti dènà àṣìṣe àtijọ́..."',
+        student02Fr: '"L\'équité algorithmique exige un audit continu des données d\'entraînement afin d\'éviter que les biais historiques ne se propagent."'
+      }
+    ];
+
+    let currentLectureIndex = 0;
+    let lectureInterval = null;
+
+    function setLectureDemoIndex(index) {
+      currentLectureIndex = index % lectureDemoSentences.length;
+      const data = lectureDemoSentences[currentLectureIndex];
+
+      // Update pills
+      document.querySelectorAll('.edu-topic-pill').forEach((pill, i) => {
+        pill.classList.toggle('active', i === currentLectureIndex);
+      });
+
+      // Update speech text with fade
+      const spokenEl = document.getElementById('instructorSpokenQuote');
+      spokenEl.style.opacity = '0.5';
+      setTimeout(() => {
+        spokenEl.textContent = data.en;
+        document.getElementById('projectorCaptionText').textContent = data.projectorFr;
+        document.getElementById('captionStudentYoruba').textContent = data.student01Yo;
+        document.getElementById('captionStudentFrench').textContent = data.student02Fr;
+        spokenEl.style.opacity = '1';
+      }, 150);
+
+      // Randomize waveform bars
+      const bars = document.querySelectorAll('#lectureWaveform span');
+      bars.forEach(b => {
+        const h = Math.floor(40 + Math.random() * 60);
+        b.style.height = `${h}%`;
+      });
+    }
+
+    function toggleLectureDemoSpeech() {
+      setLectureDemoIndex((currentLectureIndex + 1) % lectureDemoSentences.length);
+    }
+
+    function runClassroomDemoAuto() {
+      const demoEl = document.getElementById('classroom-demo');
+      demoEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      toggleLectureDemoSpeech();
+    }
+
+    // Auto-advance lecture simulator every 6.5 seconds
+    lectureInterval = setInterval(() => {
+      toggleLectureDemoSpeech();
+    }, 6500);
+
+    // FAQ Accordion click toggles
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    function openInstitutionalDemoModal() {
+      document.getElementById('institutionalDemoModal').classList.add('active');
+    }
+    function closeInstitutionalDemoModal() {
+      document.getElementById('institutionalDemoModal').classList.remove('active');
+    }
+
+    function openSignInModal() {
+      document.getElementById('signInModal').classList.add('active');
+    }
+    function closeSignInModal() {
+      document.getElementById('signInModal').classList.remove('active');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeInstitutionalDemoModal();
+        closeSignInModal();
+      }
+    });
+  </script>
+</body>
+</html>
