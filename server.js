@@ -473,12 +473,14 @@ wssAudio.on('connection', (ws, req, roomId) => {
           ws.send(JSON.stringify({ type: 'STOP_ACK', totalChunksReceived: audioState.totalChunksReceived }));
           broadcastToRoom(roomId, { type: 'STREAM_STATUS', isStreaming: false });
         } else if (msg.type === 'REAL_SPEECH_INIT') {
-          sttEngine.setRealSpeechActive(roomId, true);
-          console.log(`[STT Real Voice] Host real speech recognition active for room: ${roomId}`);
+          console.log(`[STT Real Voice] Host real speech recognition initialized for room: ${roomId}`);
+        } else if (msg.type === 'SIMULATOR_MODE') {
+          sttEngine.setRealSpeechActive(roomId, false);
+          console.log(`[STT Simulator] Simulator mode enabled for room: ${roomId}`);
         } else if (msg.type === 'REAL_SPEECH_PARTIAL') {
-          sttEngine.setRealSpeechActive(roomId, true);
-          const partialText = msg.text || '';
-          if (partialText.trim()) {
+          const partialText = (msg.text || '').trim();
+          if (partialText) {
+            sttEngine.setRealSpeechActive(roomId, true);
             ws.send(JSON.stringify({
               type: 'SOURCE_PARTIAL',
               partialText,
@@ -491,9 +493,10 @@ wssAudio.on('connection', (ws, req, roomId) => {
             });
           }
         } else if (msg.type === 'REAL_SPEECH_FINAL') {
-          sttEngine.setRealSpeechActive(roomId, true);
           const finalText = (msg.text || '').trim();
           if (finalText) {
+            sttEngine.setRealSpeechActive(roomId, true);
+            console.log(`[Host Speech Captured] Room ${roomId}: "${finalText}"`);
             const timestamp = new Date().toISOString();
             audioState.transcriptHistory.push({
               text: finalText,
@@ -505,7 +508,9 @@ wssAudio.on('connection', (ws, req, roomId) => {
               timestamp
             }));
             const sessionGlossary = sessions[roomId]?.glossary || [];
-            await dispatchTranslatedFinals(roomId, finalText, timestamp, sessionGlossary);
+            dispatchTranslatedFinals(roomId, finalText, timestamp, sessionGlossary).catch(e => {
+              console.error('[Dispatch Error]:', e);
+            });
           }
         }
       } catch (err) {

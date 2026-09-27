@@ -59,6 +59,18 @@ const statusNote = document.getElementById('statusNote');
 
 const qrPreviewLink = document.getElementById('qrPreviewLink');
 const attendeeJoinLink = document.getElementById('attendeeJoinLink');
+const speechLangSelect = document.getElementById('speechLangSelect');
+
+// Map any language code to a valid Web Speech API code supported by Chrome/Edge
+function getBrowserSpeechLang(langCode) {
+  if (!langCode) return 'en-US';
+  const supported = ['en-US', 'en-GB', 'en-NG', 'fr-FR', 'es-ES', 'de-DE', 'ja-JP', 'zh-CN', 'ar-SA', 'pt-BR', 'sw-KE'];
+  if (supported.includes(langCode)) return langCode;
+  if (langCode.startsWith('yo') || langCode.startsWith('ha') || langCode.startsWith('ig')) {
+    return 'en-NG'; // Nigerian English model in Chrome accepts Nigerian accents and tone structures without erroring
+  }
+  return 'en-US';
+}
 
 // Get Room ID from URL
 function getRoomId() {
@@ -90,6 +102,10 @@ async function initConsole() {
           ? (data.session.sourceLanguage.code || 'en-US')
           : data.session.sourceLanguage;
 
+        if (speechLangSelect) {
+          speechLangSelect.value = getBrowserSpeechLang(hostSourceLanguage);
+        }
+
         const natlasLangs = ['yo-NG', 'ha-NG', 'ig-NG', 'en-NG'];
         const natlasBadge = document.getElementById('natlasEngineBadge');
         const sttStatusBadge = document.getElementById('sttStatusBadge');
@@ -104,6 +120,18 @@ async function initConsole() {
     }
   } catch (err) {
     console.error('Failed to load session details:', err);
+  }
+
+  // Bind speechLangSelect change
+  if (speechLangSelect) {
+    speechLangSelect.addEventListener('change', () => {
+      logActivity(`Speech language set to: ${speechLangSelect.value}`);
+      if (speechRecognizer) {
+        try {
+          speechRecognizer.lang = speechLangSelect.value;
+        } catch (e) {}
+      }
+    });
   }
 
   // Populate audio input devices if supported
@@ -227,13 +255,18 @@ let isRecognizing = false;
 let restartTimeout = null;
 let recognizerWatchdog = null;
 let silenceTimer = null;
-let lastInterimText = '';
-let lastCommittedSentence = '';
+let lastSentFinal = '';
+let lastSentFinalTime = 0;
 
 function setupSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    logActivity('Browser SpeechRecognition API not supported. Falling back to PCM streaming.', 'warn');
+    logActivity('⚠️ Browser SpeechRecognition API not supported. Please use Google Chrome or Microsoft Edge.', 'warn');
+    const sttBadge = document.getElementById('sttStatusBadge');
+    if (sttBadge) {
+      sttBadge.textContent = 'Voice STT Unsupported in this browser';
+      sttBadge.style.color = '#F39C12';
+    }
     return;
   }
 
@@ -257,18 +290,34 @@ function setupSpeechRecognition() {
       speechRecognizer.continuous = true;
       speechRecognizer.interimResults = true;
       speechRecognizer.maxAlternatives = 1;
-      speechRecognizer.lang = hostSourceLanguage || 'en-US';
+
+      const langChoice = speechLangSelect ? speechLangSelect.value : getBrowserSpeechLang(hostSourceLanguage);
+      speechRecognizer.lang = langChoice || 'en-US';
 
       speechRecognizer.onstart = () => {
         isRecognizing = true;
-        logActivity('🎙️ Real-time voice STT engine active & listening', 'active-chunk');
+        logActivity(`🎙️ Speech recognition active [${speechRecognizer.lang}]`, 'active-chunk');
         const sttBadge = document.getElementById('sttStatusBadge');
         if (sttBadge) {
-          sttBadge.textContent = 'Voice STT Active 🟢';
+          sttBadge.textContent = `Voice STT Active (${speechRecognizer.lang}) 🟢`;
           sttBadge.style.color = '#2ECC71';
         }
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'REAL_SPEECH_INIT', roomId }));
+        const partialEl = document.getElementById('partialLiveText');
+        if (partialEl) {
+          partialEl.textContent = '🎙️ Microphone listening... Speak now to transcribe and translate live';
+          partialEl.style.color = 'var(--aqua-400)';
+        }
+      };
+
+      speechRecognizer.onaudiostart = () => {
+        isRecognizing = true;
+      };
+
+      speechRecognizer.onspeechstart = () => {
+        const partialEl = document.getElementById('partialLiveText');
+        if (partialEl) {
+          partialEl.textContent = 'Speaking detected...';
+          partialEl.style.color = 'var(--gold-400)';
         }
       };
 
@@ -279,49 +328,33 @@ function setupSpeechRecognition() {
         let finalizedPhrase = '';
 
         for (let i = event.resultIndex; i < event.results.length; ++i) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalizedPhrase += ' ' + transcript;
+          const res = event.results[i];
+          const text = res[0].transcript;
+          if (res.isFinal) {
+            finalizedPhrase += ' ' + text;
           } else {
-            interim += transcript;
+            interim += text;
           }
         }
 
         finalizedPhrase = finalizedPhrase.trim();
-        if (finalizedPhrase && finalizedPhrase !== lastCommittedSentence) {
+        if (finalizedPhrase) {
           clearTimeout(silenceTimer);
-          lastCommittedSentence = finalizedPhrase;
-          lastInterimText = '';
           handleRealVoiceFinal(finalizedPhrase);
         }
 
         interim = interim.trim();
         if (interim) {
-          lastInterimText = interim;
           handleRealVoicePartial(interim);
 
-          // Sentence boundary segmentation during continuous speaking:
-          // 1. If interim contains punctuation ending a sentence (. ? !)
-          const punctMatch = interim.match(/([.?!])\s*$/);
-          if (punctMatch && interim.length > 5) {
-            clearTimeout(silenceTimer);
-            const sentenceToCommit = interim;
-            lastInterimText = '';
-            lastCommittedSentence = sentenceToCommit;
-            handleRealVoiceFinal(sentenceToCommit);
-            return;
-          }
-
-          // 2. Pause detector: if user stops speaking for 900ms after at least 3 words, commit as sentence
+          // Sentence boundary segmentation: pause detector of 1000ms
           clearTimeout(silenceTimer);
           silenceTimer = setTimeout(() => {
-            if (lastInterimText && lastInterimText.split(' ').length >= 3 && lastInterimText !== lastCommittedSentence) {
-              const committed = lastInterimText;
-              lastInterimText = '';
-              lastCommittedSentence = committed;
-              handleRealVoiceFinal(committed);
+            const pending = interim.trim();
+            if (pending.split(' ').length >= 2) {
+              handleRealVoiceFinal(pending);
             }
-          }, 900);
+          }, 1100);
         }
       };
 
@@ -330,21 +363,17 @@ function setupSpeechRecognition() {
           console.warn('SpeechRecognition event error:', event.error);
         }
         if (event.error === 'not-allowed') {
-          logActivity('Microphone access denied for speech recognition.', 'warn');
+          logActivity('Microphone access blocked. Please allow mic permissions in your browser.', 'warn');
           isRecognizing = false;
+        } else if (event.error === 'language-not-supported') {
+          logActivity(`Language ${speechRecognizer.lang} not supported by browser. Falling back to en-US.`, 'warn');
+          speechRecognizer.lang = 'en-US';
+          if (speechLangSelect) speechLangSelect.value = 'en-US';
         }
       };
 
       speechRecognizer.onend = () => {
         isRecognizing = false;
-        // Check if pending uncommitted interim speech should be flushed
-        if (lastInterimText && lastInterimText !== lastCommittedSentence && lastInterimText.trim().length > 2) {
-          const flushed = lastInterimText.trim();
-          lastInterimText = '';
-          lastCommittedSentence = flushed;
-          handleRealVoiceFinal(flushed);
-        }
-
         // Clean auto-restart while broadcasting is live
         if (isStreaming && !isPaused && !isMuted) {
           clearTimeout(restartTimeout);
@@ -352,7 +381,7 @@ function setupSpeechRecognition() {
             if (isStreaming && !isPaused && !isMuted && !isRecognizing) {
               createAndStart();
             }
-          }, 180);
+          }, 200);
         }
       };
 
@@ -378,7 +407,7 @@ function handleRealVoicePartial(interimText) {
   const partialEl = document.getElementById('partialLiveText');
   if (partialEl) {
     partialEl.textContent = `${interimText} ...`;
-    partialEl.style.color = 'var(--bone-50)';
+    partialEl.style.color = 'var(--gold-400)';
   }
 
   if (ws && ws.readyState === WebSocket.OPEN) {
@@ -391,6 +420,16 @@ function handleRealVoicePartial(interimText) {
 }
 
 function handleRealVoiceFinal(finalSentence) {
+  const trimmed = (finalSentence || '').trim();
+  if (!trimmed) return;
+
+  const now = Date.now();
+  if (trimmed.toLowerCase() === lastSentFinal.toLowerCase() && (now - lastSentFinalTime) < 1800) {
+    return; // suppress rapid duplicates
+  }
+  lastSentFinal = trimmed;
+  lastSentFinalTime = now;
+
   const feed = document.getElementById('hostTranscriptFeed');
   const partialEl = document.getElementById('partialLiveText');
   
@@ -398,11 +437,11 @@ function handleRealVoiceFinal(finalSentence) {
     const time = new Date().toLocaleTimeString('en-US', { hour12: false });
     const item = document.createElement('div');
     item.style.cssText = 'color: var(--bone-50); font-size: 14px; line-height: 1.4; padding: 4px 0; border-bottom: 1px solid rgba(255,252,244,0.05);';
-    item.innerHTML = `<span style="color: var(--gold-400); font-family: monospace; font-size: 11px; margin-right: 8px;">[${time}]</span>${finalSentence}`;
+    item.innerHTML = `<span style="color: var(--gold-400); font-family: monospace; font-size: 11px; margin-right: 8px;">[${time}]</span>${trimmed}`;
     
     if (partialEl) {
       feed.insertBefore(item, partialEl);
-      partialEl.textContent = 'Listening for speech...';
+      partialEl.textContent = 'Listening for next sentence...';
       partialEl.style.color = 'rgba(255,252,244,0.5)';
     } else {
       feed.appendChild(item);
@@ -410,12 +449,12 @@ function handleRealVoiceFinal(finalSentence) {
     feed.scrollTop = feed.scrollHeight;
   }
 
-  logActivity(`Spoken: "${finalSentence}"`, 'active-chunk');
+  logActivity(`Spoken: "${trimmed}"`, 'active-chunk');
 
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({
       type: 'REAL_SPEECH_FINAL',
-      text: finalSentence,
+      text: trimmed,
       roomId
     }));
   }
@@ -424,7 +463,16 @@ function handleRealVoiceFinal(finalSentence) {
 // Start Audio Streaming
 async function startStreaming() {
   try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+    } catch (e) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
+    }
+
     analyserNode = audioContext.createAnalyser();
     analyserNode.fftSize = 256;
 
@@ -432,11 +480,15 @@ async function startStreaming() {
 
     if (deviceId === 'simulator') {
       startSimulatedAudio();
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'SIMULATOR_MODE', roomId }));
+      }
     } else {
       try {
-        const constraints = {
-          audio: deviceId === 'default' ? true : { deviceId: { exact: deviceId } }
-        };
+        const constraints = (deviceId && deviceId !== 'default' && deviceId !== 'simulator')
+          ? { audio: { deviceId: { ideal: deviceId }, echoCancellation: true, noiseSuppression: true } }
+          : { audio: { echoCancellation: true, noiseSuppression: true } };
+
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
         const source = audioContext.createMediaStreamSource(mediaStream);
         source.connect(analyserNode);
@@ -447,20 +499,25 @@ async function startStreaming() {
         // Launch Browser Real-Voice Speech Recognition
         setupSpeechRecognition();
       } catch (micErr) {
-        console.warn('Physical microphone unavailable. Falling back to built-in Audio Simulator.', micErr);
+        console.warn('Physical microphone error:', micErr);
         logActivity('Physical mic unavailable. Starting built-in Audio Simulator.', 'active-chunk');
         startSimulatedAudio();
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'SIMULATOR_MODE', roomId }));
+        }
       }
     }
 
     // Send Handshake
-    ws.send(JSON.stringify({
-      type: 'AUDIO_INIT',
-      roomId,
-      sampleRate: SAMPLE_RATE,
-      channelCount: 1,
-      chunkDurationMs: CHUNK_DURATION_MS
-    }));
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: 'AUDIO_INIT',
+        roomId,
+        sampleRate: audioContext.sampleRate || SAMPLE_RATE,
+        channelCount: 1,
+        chunkDurationMs: CHUNK_DURATION_MS
+      }));
+    }
 
     isStreaming = true;
     isMuted = false;
