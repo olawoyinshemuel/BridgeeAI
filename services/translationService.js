@@ -92,6 +92,37 @@ const translationDictionary = {
     "ar-SA": "دعونا نتفحص نتائجنا من تجارب النشر الدولية.",
     "pt-BR": "Vamos agora examinar nossas desco эмоционаais dos testes de implantação internacional.",
     "sw-KE": "Hebu tuchunguze matokeo yetu kutoka kwa majaribio ya kimataifa ya utekelezaji."
+  },
+  "Ẹ káàbọ̀ sí àpérò àgbáyé lórí ọgbọ́n ẹ̀rọ àti ìbánisọ̀rọ̀.": {
+    "en-US": "Welcome everyone to the global summit on artificial intelligence and communication.",
+    "fr-FR": "Bienvenue à tous au sommet mondial sur l'intelligence artificielle et la communication.",
+    "es-ES": "Bienvenidos a todos a la cumbre global sobre inteligencia artificial y comunicación.",
+    "ha-NG": "Barka da zuwa babban taron kasa da kasa kan fasahar kere-kere da sadarwa.",
+    "ig-NG": "Nnọọ na nnukwu ọgbakọ mba ụwa maka amamihe arụrụ arụ na nkwukọrịta.",
+    "yo-NG": "Ẹ káàbọ̀ sí àpérò àgbáyé lórí ọgbọ́n ẹ̀rọ àti ìbánisọ̀rọ̀."
+  },
+  "Barka da zuwa babban taron kasa da kasa kan fasahar zamani.": {
+    "en-US": "Welcome to the international conference on modern technology.",
+    "fr-FR": "Bienvenue à la conférence internationale sur les technologies modernes.",
+    "es-ES": "Bienvenidos a la conferencia internacional sobre tecnología moderna.",
+    "yo-NG": "Ẹ káàbọ̀ sí àpérò àgbáyé lórí ìmọ̀ ẹ̀rọ òde òní.",
+    "ig-NG": "Nnọọ na nnukwu ọgbakọ mba ụwa maka teknụzụ ọgbara ọhụrụ.",
+    "ha-NG": "Barka da zuwa babban taron kasa da kasa kan fasahar zamani."
+  },
+  "Nnọọ na nnukwu ọgbakọ mba ụwa maka ọganihu teknụzụ.": {
+    "en-US": "Welcome to the world assembly for technological advancement.",
+    "fr-FR": "Bienvenue à l'assemblée mondiale pour le progrès technologique.",
+    "es-ES": "Bienvenidos a la asamblea mundial para el avance tecnológico.",
+    "yo-NG": "Ẹ káàbọ̀ sí àpérò àgbáyé fún ìtẹ̀síwájú ìmọ̀ ẹ̀rọ.",
+    "ha-NG": "Barka da zuwa babban taron duniya don ci gaban fasaha.",
+    "ig-NG": "Nnọọ na nnukwu ọgbakọ mba ụwa maka ọganihu teknụzụ."
+  },
+  "Welcome everybody to this special innovation summit today.": {
+    "fr-FR": "Bienvenue à tous à ce sommet spécial sur l'innovation aujourd'hui.",
+    "es-ES": "Bienvenidos a todos a esta cumbre especial de innovación hoy.",
+    "yo-NG": "Ẹ káàbọ̀ gbogbo ènìyàn sí àpérò àkànṣe lórí ìṣẹ̀dá tuntun lónìí.",
+    "ha-NG": "Barka da zuwa kowa da kowa a wannan taron koli na kirkire-kirkire a yau.",
+    "ig-NG": "Nnọọ onye ọ bụla na nzukọ pụrụ iche nke ihe ọhụrụ taa."
   }
 };
 
@@ -109,9 +140,24 @@ const languageNames = {
   'sw-KE': 'Swahili'
 };
 
+const gtxLangMap = {
+  'fr-FR': 'fr',
+  'es-ES': 'es',
+  'yo-NG': 'yo',
+  'ha-NG': 'ha',
+  'ig-NG': 'ig',
+  'de-DE': 'de',
+  'ja-JP': 'ja',
+  'zh-CN': 'zh-CN',
+  'ar-SA': 'ar',
+  'pt-BR': 'pt',
+  'sw-KE': 'sw'
+};
+
 export class TranslationService {
   constructor() {
     this.dynamicCache = new Map(); // Map<sentence, { [langCode]: string }>
+    this.geminiFailedKey = null;
   }
 
   // Synchronous translate (checks cache and dictionary, falls back cleanly)
@@ -134,7 +180,30 @@ export class TranslationService {
     return this.fallbackTranslate(trimmed, targetLangCode);
   }
 
-  // Asynchronous batch translation using Gemini 3.6 Flash
+  // Fast direct translation for single language
+  async fastOnlineTranslate(text, langCode) {
+    const tl = gtxLangMap[langCode] || langCode.split('-')[0];
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1800);
+
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (Array.isArray(data?.[0])) {
+        const fullTranslation = data[0].map(chunk => chunk[0]).join('');
+        return fullTranslation.trim() || null;
+      }
+      return null;
+    } catch (e) {
+      clearTimeout(timeoutId);
+      return null;
+    }
+  }
+
+  // Asynchronous batch translation: Gemini Flash + Parallel Ultra-Fast Engine
   async translateBatchAsync(sourceSentence, targetLangCodes, glossary = {}) {
     if (!sourceSentence) return {};
     const trimmed = sourceSentence.trim();
@@ -165,9 +234,12 @@ export class TranslationService {
       return results;
     }
 
-    // If Gemini API key is available, call Gemini 3.6 Flash for batch translation
+    // Try Gemini if API key is present and formatted properly and not marked invalid
     const apiKey = process.env.GEMINI_API_KEY;
-    if (apiKey) {
+    const isValidKeyFormat = typeof apiKey === 'string' && apiKey.startsWith('AIzaSy');
+    let geminiSucceeded = false;
+
+    if (apiKey && isValidKeyFormat && this.geminiFailedKey !== apiKey) {
       try {
         const langTargetsDesc = missingLangs.map(code => `${code} (${languageNames[code] || code})`).join(', ');
         let glossaryPrompt = '';
@@ -184,14 +256,18 @@ Return a JSON object where the keys are EXACTLY the language codes (${missingLan
 Source sentence to translate:
 "${trimmed}"`;
 
-        const fallbackModels = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];
-        for (const model of fallbackModels) {
+        const primaryModels = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+        for (const model of primaryModels) {
           try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
             const response = await fetch(
               `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
               {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
                   contents: [{ parts: [{ text: prompt }] }],
                   generationConfig: {
@@ -201,6 +277,7 @@ Source sentence to translate:
                 })
               }
             );
+            clearTimeout(timeoutId);
 
             if (response.ok) {
               const data = await response.json();
@@ -212,18 +289,37 @@ Source sentence to translate:
                     sentenceTranslations[code] = parsed[code];
                   }
                 }
-                break; // Successfully translated with this model
+                geminiSucceeded = true;
+                break;
               }
-            } else {
-              console.warn(`[Gemini Translation] Model ${model} returned status ${response.status}, trying fallback model...`);
+            } else if (response.status === 400 || response.status === 401 || response.status === 403) {
+              // API key invalid or unauthorized - mark failed to avoid slowing down future sentences
+              console.warn(`[Gemini Translation] Invalid or unauthorized API key (${response.status}). Switching to high-speed fast fallback engine.`);
+              this.geminiFailedKey = apiKey;
+              break;
             }
           } catch (modelErr) {
-            console.warn(`[Gemini Translation] Model ${model} exception:`, modelErr.message);
+            // Model call timed out or failed
           }
         }
       } catch (err) {
-        console.error('[Gemini Translation Error]:', err.message);
+        console.warn('[Gemini Translation Error]:', err.message);
       }
+    }
+
+    // For any still-unresolved languages, run fast online translation in parallel
+    const stillMissing = missingLangs.filter(code => !sentenceTranslations[code]);
+    if (stillMissing.length > 0) {
+      await Promise.allSettled(
+        stillMissing.map(async (code) => {
+          try {
+            const translated = await this.fastOnlineTranslate(trimmed, code);
+            if (translated) {
+              sentenceTranslations[code] = translated;
+            }
+          } catch (e) {}
+        })
+      );
     }
 
     // Fill any still-unresolved languages with fallback
@@ -269,4 +365,5 @@ Source sentence to translate:
 }
 
 export const translationEngine = new TranslationService();
+
 

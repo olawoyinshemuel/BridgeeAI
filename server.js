@@ -6,6 +6,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import QRCode from 'qrcode';
 import { sttEngine } from './services/sttService.js';
 import { translationEngine } from './services/translationService.js';
+import { getSpeechProvider, isNatlasSupportedLanguage, natlasTelemetry } from './services/natlas/index.js';
 
 try {
   if (process.loadEnvFile) {
@@ -67,6 +68,17 @@ const sessions = {
     sourceLanguage: { code: 'en-US', name: 'English' },
     status: 'active',
     activeParticipants: 85,
+    createdAt: new Date().toISOString()
+  },
+  'NAIC-VOICE': {
+    sessionId: 'sess_naic_voice_2026_uuid',
+    roomId: 'NAIC-VOICE',
+    title: 'NAIC Voice-First Access Demonstration',
+    hostName: 'Babajide Adeleke',
+    template: 'Conference',
+    sourceLanguage: { code: 'yo-NG', name: 'Yorùbá' },
+    status: 'active',
+    activeParticipants: 64,
     createdAt: new Date().toISOString()
   }
 };
@@ -183,6 +195,37 @@ app.get('/api/sessions/:roomId/audio-status', (req, res) => {
     roomId: token,
     audioState: state
   });
+});
+
+app.get('/api/health', async (req, res) => {
+  let natlasStatus = 'mock_fallback';
+  try {
+    const provider = getSpeechProvider();
+    const health = await provider.healthCheck();
+    natlasStatus = health.status || (health.ok ? 'ready' : 'degraded');
+  } catch (e) {
+    natlasStatus = 'error';
+  }
+
+  res.json({
+    status: 'healthy',
+    application: 'BridgeeAIX',
+    version: '1.0.0',
+    uptimeSec: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+    subsystems: {
+      server: 'healthy',
+      realtimeWebSocket: 'healthy',
+      translationEngine: 'healthy',
+      natlasASR: natlasStatus
+    }
+  });
+});
+
+app.get('/api/sessions/:roomId/telemetry', (req, res) => {
+  const token = req.params.roomId.toUpperCase();
+  const telemetry = natlasTelemetry.getSessionTelemetry(token);
+  res.json(telemetry);
 });
 
 app.post('/api/sessions/:roomId/translate', async (req, res) => {
@@ -368,6 +411,10 @@ app.get('/venue', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'venue.html'));
 });
 
+app.get('/natlas', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'natlas.html'));
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -422,6 +469,7 @@ wssAudio.on('connection', (ws, req, roomId) => {
         } else if (msg.type === 'STOP_STREAM') {
           audioState.isStreaming = false;
           sttEngine.resetSession(roomId);
+          try { getSpeechProvider().resetSession(roomId); } catch (e) {}
           ws.send(JSON.stringify({ type: 'STOP_ACK', totalChunksReceived: audioState.totalChunksReceived }));
           broadcastToRoom(roomId, { type: 'STREAM_STATUS', isStreaming: false });
         } else if (msg.type === 'REAL_SPEECH_INIT') {
@@ -486,50 +534,146 @@ wssAudio.on('connection', (ws, req, roomId) => {
       }
 
       // Feed into Real-Time Speech-to-Text Pipeline
-      sttEngine.processAudioChunk(
-        roomId,
-        buffer,
-        // On Partial Speech Arrival
-        (partialEvent) => {
-          // Push partial transcript to host console
-          ws.send(JSON.stringify({
-            type: 'SOURCE_PARTIAL',
-            partialText: partialEvent.partialText,
-            timestamp: partialEvent.timestamp
-          }));
+      // When real microphone voice is active, suppress mock sentence generation
+      if (sttEngine.isRealSpeechActive(roomId)) {
+        // If live remote upstream N-ATLAS provider is active, stream to it
+        const currentSession = sessions[roomId];
+        const sourceLangCode = (typeof currentSession?.sourceLanguage === 'object'
+          ? currentSession?.sourceLanguage?.code
+          : currentSession?.sourceLanguage) || 'en-US';
 
-          // Push partial to participants in their room
-          broadcastToRoom(roomId, {
-            type: 'CAPTION_PARTIAL',
-            partialText: partialEvent.partialText,
-            timestamp: partialEvent.timestamp
-          });
-        },
-        // On Finalized Sentence Boundary (VAD Trigger)
-        async (finalEvent) => {
-          const sourceSentence = finalEvent.finalText;
-          audioState.transcriptHistory.push({
-            text: sourceSentence,
-            timestamp: finalEvent.timestamp
-          });
-
-          // Echo finalized sentence to host console
-          ws.send(JSON.stringify({
-            type: 'SOURCE_FINAL',
-            finalText: sourceSentence,
-            timestamp: finalEvent.timestamp
-          }));
-
-          // Translate into participant languages and broadcast
-          await dispatchTranslatedFinals(roomId, sourceSentence, finalEvent.timestamp);
+        if (isNatlasSupportedLanguage(sourceLangCode)) {
+          const provider = getSpeechProvider();
+          if (provider && provider.isLiveAvailable) {
+            try {
+              const event = await provider.processChunk(roomId, buffer, sourceLangCode);
+              if (event && event.isFinal) {
+                const sessionGlossary = currentSession?.glossary || [];
+                dispatchTranslatedFinals(roomId, event.text, event.timestamp, sessionGlossary).catch(() => {});
+              }
+            } catch (e) {}
+          }
         }
-      );
+        // Return so mock speech is suppressed
+        return;
+      }
+
+      const currentSession = sessions[roomId];
+      const sourceLangCode = (typeof currentSession?.sourceLanguage === 'object'
+        ? currentSession?.sourceLanguage?.code
+        : currentSession?.sourceLanguage) || 'en-US';
+
+      if (isNatlasSupportedLanguage(sourceLangCode)) {
+        try {
+          const natlasProvider = getSpeechProvider({ provider: 'natlas', language: sourceLangCode });
+          const event = await natlasProvider.processChunk(roomId, buffer, sourceLangCode);
+          if (event) {
+            if (!event.isFinal) {
+              // Push partial transcript to host console
+              ws.send(JSON.stringify({
+                type: 'SOURCE_PARTIAL',
+                partialText: event.text,
+                timestamp: event.timestamp,
+                provider: event.provider || 'natlas'
+              }));
+
+              // Push partial to participants in their room
+              broadcastToRoom(roomId, {
+                type: 'CAPTION_PARTIAL',
+                partialText: event.text,
+                timestamp: event.timestamp
+              });
+            } else {
+              const sourceSentence = event.text;
+              audioState.transcriptHistory.push({
+                text: sourceSentence,
+                timestamp: event.timestamp
+              });
+
+              // Echo finalized sentence to host console
+              ws.send(JSON.stringify({
+                type: 'SOURCE_FINAL',
+                finalText: sourceSentence,
+                timestamp: event.timestamp,
+                provider: event.provider || 'natlas'
+              }));
+
+              // Measure timing and record telemetry
+              const asrEndTime = Date.now();
+              const asrLatencyMs = Math.max(1, asrEndTime - (audioState.lastChunkTime || asrEndTime));
+
+              // Translate into participant languages and broadcast
+              const sessionGlossary = currentSession?.glossary || [];
+              const transStartTime = Date.now();
+              await dispatchTranslatedFinals(roomId, sourceSentence, event.timestamp, sessionGlossary);
+              const transEndTime = Date.now();
+              const translationLatencyMs = Math.max(1, transEndTime - transStartTime);
+
+              natlasTelemetry.recordInteraction({
+                roomId,
+                sourceLanguage: sourceLangCode,
+                provider: event.provider || 'natlas',
+                audioDurationMs: 250,
+                asrLatencyMs,
+                translationLatencyMs,
+                deliveryLatencyMs: 12,
+                success: true,
+                sourceText: sourceSentence
+              });
+            }
+          }
+        } catch (natlasErr) {
+          console.error('[Natlas Ingestion] Error processing chunk:', natlasErr.message);
+        }
+      } else {
+        // Fallback for non-Nigerian languages (en-US, etc.)
+        sttEngine.processAudioChunk(
+          roomId,
+          buffer,
+          // On Partial Speech Arrival
+          (partialEvent) => {
+            // Push partial transcript to host console
+            ws.send(JSON.stringify({
+              type: 'SOURCE_PARTIAL',
+              partialText: partialEvent.partialText,
+              timestamp: partialEvent.timestamp
+            }));
+
+            // Push partial to participants in their room
+            broadcastToRoom(roomId, {
+              type: 'CAPTION_PARTIAL',
+              partialText: partialEvent.partialText,
+              timestamp: partialEvent.timestamp
+            });
+          },
+          // On Finalized Sentence Boundary (VAD Trigger)
+          async (finalEvent) => {
+            const sourceSentence = finalEvent.finalText;
+            audioState.transcriptHistory.push({
+              text: sourceSentence,
+              timestamp: finalEvent.timestamp
+            });
+
+            // Echo finalized sentence to host console
+            ws.send(JSON.stringify({
+              type: 'SOURCE_FINAL',
+              finalText: sourceSentence,
+              timestamp: finalEvent.timestamp
+            }));
+
+            // Translate into participant languages and broadcast
+            const sessionGlossary = currentSession?.glossary || [];
+            await dispatchTranslatedFinals(roomId, sourceSentence, finalEvent.timestamp, sessionGlossary);
+          }
+        );
+      }
     }
   });
 
   ws.on('close', () => {
     console.log(`[WS Host Ingestion] Closed host connection for: ${roomId}`);
     audioState.isStreaming = false;
+    try { getSpeechProvider().resetSession(roomId); } catch (e) {}
   });
 });
 
@@ -591,13 +735,19 @@ function broadcastToRoom(roomId, messageObj) {
   const payload = JSON.stringify(messageObj);
   for (const sub of roomSet) {
     if (sub.ws.readyState === WebSocket.OPEN) {
-      sub.ws.send(payload);
+      try {
+        sub.ws.send(payload);
+      } catch (err) {
+        roomSet.delete(sub);
+      }
+    } else if (sub.ws.readyState === WebSocket.CLOSED || sub.ws.readyState === WebSocket.CLOSING) {
+      roomSet.delete(sub);
     }
   }
 }
 
 // Dispatches finalized sentence translated to each participant's target language
-async function dispatchTranslatedFinals(roomId, sourceSentence, timestamp) {
+async function dispatchTranslatedFinals(roomId, sourceSentence, timestamp, glossary = []) {
   const roomSet = roomSubscribers.get(roomId);
   if (!roomSet || roomSet.size === 0) return;
 
@@ -609,10 +759,11 @@ async function dispatchTranslatedFinals(roomId, sourceSentence, timestamp) {
     }
   }
 
-  // Perform cached or batch Gemini translation for all room languages
+  // Perform cached or batch translation for all room languages
   const translations = await translationEngine.translateBatchAsync(
     sourceSentence,
-    Array.from(neededLangs)
+    Array.from(neededLangs),
+    glossary
   );
 
   for (const sub of roomSet) {
@@ -620,14 +771,20 @@ async function dispatchTranslatedFinals(roomId, sourceSentence, timestamp) {
       const targetLang = sub.lang;
       const translatedText = translations[targetLang] || translationEngine.translate(sourceSentence, targetLang);
 
-      sub.ws.send(JSON.stringify({
-        type: 'CAPTION_FINAL',
-        originalText: sourceSentence,
-        translatedText,
-        lang: targetLang,
-        mode: sub.mode,
-        timestamp
-      }));
+      try {
+        sub.ws.send(JSON.stringify({
+          type: 'CAPTION_FINAL',
+          originalText: sourceSentence,
+          translatedText,
+          lang: targetLang,
+          mode: sub.mode,
+          timestamp
+        }));
+      } catch (err) {
+        roomSet.delete(sub);
+      }
+    } else if (sub.ws.readyState === WebSocket.CLOSED || sub.ws.readyState === WebSocket.CLOSING) {
+      roomSet.delete(sub);
     }
   }
 }
@@ -653,6 +810,11 @@ server.on('upgrade', (request, socket, head) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`BridgeeAI server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`BridgeeAI server running on http://localhost:${PORT}`);
+  });
+}
+
+export { app, server };
+export default app;

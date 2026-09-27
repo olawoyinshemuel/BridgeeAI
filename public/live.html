@@ -244,16 +244,48 @@
       document.getElementById('audioIndicator').style.display = 'none';
     }
 
-    // Speech Synthesis for Audio Earbuds Listening
+    // Resilient Speech Synthesis Queue for Audio Earbuds Listening (prevents browser audio lockup)
+    let speechQueue = [];
+    let isSpeaking = false;
+    let audioUnlocked = false;
+
+    // Mobile audio unlock trigger on first user interaction
+    function unlockAudioEngine() {
+      if (audioUnlocked || !('speechSynthesis' in window)) return;
+      try {
+        const primer = new SpeechSynthesisUtterance('');
+        primer.volume = 0;
+        window.speechSynthesis.speak(primer);
+        audioUnlocked = true;
+      } catch (e) {}
+    }
+    document.addEventListener('touchstart', unlockAudioEngine, { once: true });
+    document.addEventListener('click', unlockAudioEngine, { once: true });
+
     function playTranslatedSpeech(text, lang) {
       if (!('speechSynthesis' in window) || !text) return;
+      unlockAudioEngine();
+
+      // Keep speech synchronized with live speaker: drop backlog if queue exceeds 2
+      if (speechQueue.length >= 2) {
+        speechQueue.shift();
+      }
+      speechQueue.push({ text, lang });
+      drainSpeechQueue();
+    }
+
+    function drainSpeechQueue() {
+      if (isSpeaking || speechQueue.length === 0) return;
+      if (!('speechSynthesis' in window)) return;
+
+      const item = speechQueue.shift();
       try {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang || 'fr-FR';
-        utterance.rate = 1.0;
+        const utterance = new SpeechSynthesisUtterance(item.text);
+        utterance.lang = item.lang || langCode || 'fr-FR';
+        utterance.rate = 1.05;
         utterance.pitch = 1.0;
 
+        isSpeaking = true;
         const indicator = document.getElementById('audioStatusText');
         if (indicator) {
           indicator.textContent = 'TRANSLATED AUDIO PLAYING 🎧';
@@ -261,15 +293,23 @@
         }
 
         utterance.onend = () => {
-          if (indicator) {
+          isSpeaking = false;
+          if (speechQueue.length > 0) {
+            setTimeout(drainSpeechQueue, 40);
+          } else if (indicator) {
             indicator.textContent = 'SYNCHRONIZED AUDIO READY';
             indicator.style.color = 'var(--aqua-400)';
           }
         };
 
+        utterance.onerror = (e) => {
+          isSpeaking = false;
+          drainSpeechQueue();
+        };
+
         window.speechSynthesis.speak(utterance);
       } catch (e) {
-        console.warn('Speech synthesis error:', e);
+        isSpeaking = false;
       }
     }
 
@@ -353,9 +393,18 @@
         const statusDot = document.querySelector('.live-pulse-dot');
         if (statusDot) statusDot.style.background = 'var(--warning-500)';
         document.getElementById('liveStatus').textContent = 'RECONNECTING...';
-        setTimeout(connectLiveStream, 2500);
+        setTimeout(connectLiveStream, 2000);
       };
     }
+
+    // Reconnect immediately when mobile screen wakes up
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (!liveWs || liveWs.readyState === WebSocket.CLOSED || liveWs.readyState === WebSocket.CLOSING) {
+          connectLiveStream();
+        }
+      }
+    });
 
     connectLiveStream();
 

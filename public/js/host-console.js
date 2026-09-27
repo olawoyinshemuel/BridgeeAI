@@ -89,6 +89,17 @@ async function initConsole() {
         hostSourceLanguage = typeof data.session.sourceLanguage === 'object'
           ? (data.session.sourceLanguage.code || 'en-US')
           : data.session.sourceLanguage;
+
+        const natlasLangs = ['yo-NG', 'ha-NG', 'ig-NG', 'en-NG'];
+        const natlasBadge = document.getElementById('natlasEngineBadge');
+        const sttStatusBadge = document.getElementById('sttStatusBadge');
+        if (natlasLangs.includes(hostSourceLanguage)) {
+          if (natlasBadge) natlasBadge.style.display = 'inline-flex';
+          if (sttStatusBadge) {
+            sttStatusBadge.textContent = 'N-ATLAS ASR Active';
+            sttStatusBadge.style.color = '#00F5D4';
+          }
+        }
       }
     }
   } catch (err) {
@@ -211,7 +222,14 @@ function handleServerMessage(msg) {
   }
 }
 
-// Real-Time Speech Recognition Engine (Web Speech API)
+// Real-Time Speech Recognition Engine (Web Speech API) with continuous multi-sentence support
+let isRecognizing = false;
+let restartTimeout = null;
+let recognizerWatchdog = null;
+let silenceTimer = null;
+let lastInterimText = '';
+let lastCommittedSentence = '';
+
 function setupSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
@@ -219,68 +237,141 @@ function setupSpeechRecognition() {
     return;
   }
 
-  try {
-    if (speechRecognizer) {
-      try { speechRecognizer.stop(); } catch (e) {}
-    }
-
-    speechRecognizer = new SpeechRecognition();
-    speechRecognizer.continuous = true;
-    speechRecognizer.interimResults = true;
-    speechRecognizer.lang = hostSourceLanguage || 'en-US';
-
-    speechRecognizer.onstart = () => {
-      logActivity('🎙️ Real-time voice STT engine active & listening', 'active-chunk');
-      const sttBadge = document.getElementById('sttStatusBadge');
-      if (sttBadge) {
-        sttBadge.textContent = 'Voice STT Active 🟢';
-        sttBadge.style.color = '#2ECC71';
-      }
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'REAL_SPEECH_INIT', roomId }));
-      }
-    };
-
-    speechRecognizer.onresult = (event) => {
-      if (!isStreaming || isMuted || isPaused) return;
-
-      let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          const finalSpoken = transcript.trim();
-          if (finalSpoken) {
-            handleRealVoiceFinal(finalSpoken);
-          }
-        } else {
-          interim += transcript;
-        }
-      }
-
-      if (interim.trim()) {
-        handleRealVoicePartial(interim.trim());
-      }
-    };
-
-    speechRecognizer.onerror = (event) => {
-      if (event.error !== 'no-speech') {
-        console.warn('SpeechRecognition event error:', event.error);
-      }
-    };
-
-    speechRecognizer.onend = () => {
-      // Auto-restart while broadcasting is live
-      if (isStreaming && !isPaused && !isMuted) {
-        try {
-          speechRecognizer.start();
-        } catch (e) {}
-      }
-    };
-
-    speechRecognizer.start();
-  } catch (err) {
-    console.warn('Failed to start SpeechRecognition:', err);
+  // Clear any existing watchdog
+  if (recognizerWatchdog) {
+    clearInterval(recognizerWatchdog);
+    recognizerWatchdog = null;
   }
+
+  function createAndStart() {
+    if (!isStreaming || isPaused || isMuted) return;
+    if (isRecognizing) return;
+
+    try {
+      if (speechRecognizer) {
+        try { speechRecognizer.abort(); } catch (e) {}
+        speechRecognizer = null;
+      }
+
+      speechRecognizer = new SpeechRecognition();
+      speechRecognizer.continuous = true;
+      speechRecognizer.interimResults = true;
+      speechRecognizer.maxAlternatives = 1;
+      speechRecognizer.lang = hostSourceLanguage || 'en-US';
+
+      speechRecognizer.onstart = () => {
+        isRecognizing = true;
+        logActivity('🎙️ Real-time voice STT engine active & listening', 'active-chunk');
+        const sttBadge = document.getElementById('sttStatusBadge');
+        if (sttBadge) {
+          sttBadge.textContent = 'Voice STT Active 🟢';
+          sttBadge.style.color = '#2ECC71';
+        }
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'REAL_SPEECH_INIT', roomId }));
+        }
+      };
+
+      speechRecognizer.onresult = (event) => {
+        if (!isStreaming || isMuted || isPaused) return;
+
+        let interim = '';
+        let finalizedPhrase = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalizedPhrase += ' ' + transcript;
+          } else {
+            interim += transcript;
+          }
+        }
+
+        finalizedPhrase = finalizedPhrase.trim();
+        if (finalizedPhrase && finalizedPhrase !== lastCommittedSentence) {
+          clearTimeout(silenceTimer);
+          lastCommittedSentence = finalizedPhrase;
+          lastInterimText = '';
+          handleRealVoiceFinal(finalizedPhrase);
+        }
+
+        interim = interim.trim();
+        if (interim) {
+          lastInterimText = interim;
+          handleRealVoicePartial(interim);
+
+          // Sentence boundary segmentation during continuous speaking:
+          // 1. If interim contains punctuation ending a sentence (. ? !)
+          const punctMatch = interim.match(/([.?!])\s*$/);
+          if (punctMatch && interim.length > 5) {
+            clearTimeout(silenceTimer);
+            const sentenceToCommit = interim;
+            lastInterimText = '';
+            lastCommittedSentence = sentenceToCommit;
+            handleRealVoiceFinal(sentenceToCommit);
+            return;
+          }
+
+          // 2. Pause detector: if user stops speaking for 900ms after at least 3 words, commit as sentence
+          clearTimeout(silenceTimer);
+          silenceTimer = setTimeout(() => {
+            if (lastInterimText && lastInterimText.split(' ').length >= 3 && lastInterimText !== lastCommittedSentence) {
+              const committed = lastInterimText;
+              lastInterimText = '';
+              lastCommittedSentence = committed;
+              handleRealVoiceFinal(committed);
+            }
+          }, 900);
+        }
+      };
+
+      speechRecognizer.onerror = (event) => {
+        if (event.error !== 'no-speech') {
+          console.warn('SpeechRecognition event error:', event.error);
+        }
+        if (event.error === 'not-allowed') {
+          logActivity('Microphone access denied for speech recognition.', 'warn');
+          isRecognizing = false;
+        }
+      };
+
+      speechRecognizer.onend = () => {
+        isRecognizing = false;
+        // Check if pending uncommitted interim speech should be flushed
+        if (lastInterimText && lastInterimText !== lastCommittedSentence && lastInterimText.trim().length > 2) {
+          const flushed = lastInterimText.trim();
+          lastInterimText = '';
+          lastCommittedSentence = flushed;
+          handleRealVoiceFinal(flushed);
+        }
+
+        // Clean auto-restart while broadcasting is live
+        if (isStreaming && !isPaused && !isMuted) {
+          clearTimeout(restartTimeout);
+          restartTimeout = setTimeout(() => {
+            if (isStreaming && !isPaused && !isMuted && !isRecognizing) {
+              createAndStart();
+            }
+          }, 180);
+        }
+      };
+
+      speechRecognizer.start();
+    } catch (err) {
+      isRecognizing = false;
+      console.warn('SpeechRecognition start error:', err);
+    }
+  }
+
+  // Start initial instance
+  createAndStart();
+
+  // Watchdog timer to ensure recognizer stays alive during long continuous sessions
+  recognizerWatchdog = setInterval(() => {
+    if (isStreaming && !isPaused && !isMuted && !isRecognizing) {
+      createAndStart();
+    }
+  }, 2500);
 }
 
 function handleRealVoicePartial(interimText) {
@@ -429,8 +520,12 @@ function setupAudioProcessing(source) {
     }
   };
 
+  // Route through zero-gain node so script processor continues to process without playing mic back through speakers
+  const silenceGain = audioContext.createGain();
+  silenceGain.gain.value = 0;
   source.connect(scriptProcessorNode);
-  scriptProcessorNode.connect(audioContext.destination);
+  scriptProcessorNode.connect(silenceGain);
+  silenceGain.connect(audioContext.destination);
 }
 
 // Audio Simulator Mode (generates pure 250ms PCM chunks)
@@ -473,6 +568,14 @@ function sendAudioChunk(buffer) {
 // Stop Audio Streaming
 function stopStreaming() {
   isStreaming = false;
+  isRecognizing = false;
+
+  if (recognizerWatchdog) {
+    clearInterval(recognizerWatchdog);
+    recognizerWatchdog = null;
+  }
+  clearTimeout(restartTimeout);
+  clearTimeout(silenceTimer);
 
   if (speechRecognizer) {
     try {

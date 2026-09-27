@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BridgeeAI × N-ATLAS | Nigerian Language AI & Live Captions</title>
+  <meta name="description" content="BridgeeAI integrates N-ATLAS speech recognition to enable real-time Nigerian-language communication and live captions for training, events, education, and multilingual communication.">
+  
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="BridgeeAI × N-ATLAS | Nigerian Language AI & Live Captions">
+  <meta property="og:description" content="Real-time Nigerian-language speech access powered by N-ATLAS. Speak in Yorùbá, Hausa, Igbo, or Nigerian English and be understood across languages instantly.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bridgee.ai/natlas">
+
+  <!-- Core Design System & Landing Stylesheets (Exact Homepage CSS) -->
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+</head>
+<body class="landing-body">
+
+  <!-- 1. TOP NAVIGATION BAR (Exact Homepage Style) -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="/" class="brand-link" id="navLogo">
+          <div class="brand-symbol">B</div>
+          <span class="brand-name">BridgeeAI</span>
+        </a>
+        <span style="font-size: 11px; font-weight: 700; background: rgba(122, 217, 210, 0.18); color: var(--aqua-400); border: 1px solid rgba(122, 217, 210, 0.35); padding: 3px 8px; border-radius: var(--radius-pill); letter-spacing: 0.06em; text-transform: uppercase;">
+          × N-ATLAS
+        </span>
+      </div>
+
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li class="nav-item"><a href="#demo" class="nav-link">Live Demo</a></li>
+          <li class="nav-item"><a href="#languages" class="nav-link">Languages</a></li>
+          <li class="nav-item"><a href="#architecture" class="nav-link">Architecture</a></li>
+          <li class="nav-item"><a href="#use-cases" class="nav-link">Use Cases</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/auth" class="btn-signin">Sign in</a>
+        <a href="/host/console/NAIC-VOICE" class="btn-start-free" style="padding: 7px 15px; font-size: 12.5px;">
+          Try Live Demo ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION (Exact Cinematic Style with Visual Image) -->
+  <section class="hero-cinematic" id="hero">
+    <!-- Visual Image: Keynote Speaker & Multilingual Audience -->
+    <div class="hero-cinematic-bg-wrap">
+      <img 
+        src="/assets/conference_summit.jpg" 
+        alt="Keynote presenter speaking on stage to a diverse multilingual audience" 
+        class="hero-cinematic-img"
+      >
+      <div class="hero-cinematic-scrim"></div>
+      <div class="hero-cinematic-scrim-vertical"></div>
+    </div>
+
+    <div class="container hero-cinematic-container">
+      <div class="hero-cinematic-content">
+        
+        <!-- Badges Row -->
+        <div class="hero-badges-row">
+          <div class="hero-badge-pill">
+            <span class="badge-dot-green"></span>
+            N-ATLAS Speech AI
+          </div>
+          <div class="hero-badge-pill">
+            NAIC Voice-First Access
+          </div>
+          <div class="hero-badge-pill">
+            Real-Time Nigerian ASR
+          </div>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="hero-headline-cinematic">
+          Speak. Be understood.<br>
+          <span class="hero-serif-italic">In Nigerian languages.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="hero-subtitle-cinematic">
+          BridgeeAI combines real-time speech recognition powered by N-ATLAS with multilingual translation to make spoken communication accessible across Nigerian languages and international audiences.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="hero-cta-cinematic-row">
+          <a href="/host/console/NAIC-VOICE" class="btn-start-free" id="heroCtaStart">
+            Try the Live Demo ↗
+          </a>
+          <a href="#how-it-works" class="btn-book-demo" id="heroCtaHow">
+            See How It Works
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Floating Preview Caption Card at Bottom Right -->
+      <div class="hero-floating-caption-card" id="floatingPreviewBox">
+        <div class="caption-card-tag">
+          <span id="floatingCaptionLang">LIVE N-ATLAS CAPTION · YORÙBÁ ➔ ENGLISH</span>
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--aqua-400);"></span>
+        </div>
+        <div class="caption-card-text" id="floatingCaptionText">
+          "Ẹ káàbọ̀ sí àpérò wa..." ➔ "Welcome to our conference."
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. QUICK STATS (Exact Homepage Stats Layout) -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">4 Languages</div>
+          <div class="stat-label">Verified Nigerian Speech (Yorùbá, Hausa, Igbo, English)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">250ms</div>
+          <div class="stat-label">Live Audio Streaming Ingestion Cadence</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">&lt; 2 KB/s</div>
+          <div class="stat-label">Low Data Footprint (Smooth on 2G/3G Cellular Networks)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100% Web</div>
+          <div class="stat-label">Zero App Install Required (Join Instantly via QR Code)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. THE PROBLEM (Exact Homepage Problem-Split Grid) -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">The Real Barrier</div>
+        <h2 class="section-title">Language should not be a barrier to participation.</h2>
+        <p class="section-lead">
+          Multilingual training, conferences, education, and public events can require interpreters or create delays when participants and speakers do not share the same language. BridgeeAI is designed to reduce that communication friction through real-time AI speech processing and live translated captions.
+        </p>
+      </div>
+
+      <div class="problem-split-grid">
+        
+        <!-- Left: Today's Friction -->
+        <div class="problem-card">
+          <span class="problem-card-badge">Current Situation</span>
+          <h3 class="problem-card-title">In multilingual gatherings, participants and speakers face:</h3>
+          <ul class="problem-list">
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Consecutive interpretation delays that halve speaker pace.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Regional language exclusion when training is delivered only in foreign languages.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Prohibitive costs for human interpreter booths and heavy audio headsets.</span>
+            </li>
+            <li>
+              <span class="icon-x">✕</span>
+              <span>Heavy video streaming tools that buffer and disconnect on slow mobile data.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right: The BridgeeAI × N-ATLAS Solution -->
+        <div class="solution-card">
+          <div>
+            <span class="solution-card-badge">The BridgeeAI × N-ATLAS Solution</span>
+            <div class="solution-statement">
+              "Speak naturally in your Nigerian language. Every participant understands in their own language in real time."
+            </div>
+            <p class="solution-lead-desc">
+              By combining N-ATLAS speech recognition with BridgeeAI's lightweight real-time delivery layer, speakers present comfortably in their native language while attendees read synchronized captions on their personal phone browser or auditorium screens.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <a href="/host/console/NAIC-VOICE" class="btn-pill btn-pill-primary" style="background: var(--violet-500); padding: 10px 22px; font-size: 14px;">
+              Try the Live Demo ↗
+            </a>
+            <span style="font-size: 13px; color: rgba(255,252,244,0.6);">Pre-seeded room: NAIC-VOICE</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HOW IT WORKS (Exact Homepage Steps Grid) -->
+  <section class="section section-dark" id="how-it-works">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--aqua-400);">Simplicity in Motion</div>
+        <h2 class="section-title">How BridgeeAI × N-ATLAS Works</h2>
+        <p class="section-lead">
+          A simple 4-step pipeline from spoken Nigerian words to live translated captions.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-badge">STEP 01</div>
+          <h3 class="step-title">The Speaker Speaks</h3>
+          <p class="step-desc">
+            The presenter talks naturally into any standard microphone in Yorùbá, Hausa, Igbo, or Nigerian English without pausing or slowing down.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Built-in browser microphone capture</li>
+            <li>✓ 16kHz mono audio streaming</li>
+            <li>✓ Hands-free continuous speech</li>
+          </ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" style="border-color: rgba(122, 217, 210, 0.4);">
+          <div class="step-badge" style="color: var(--aqua-400);">STEP 02</div>
+          <h3 class="step-title">Understand (N-ATLAS)</h3>
+          <p class="step-desc">
+            N-ATLAS processes 250ms streaming PCM chunks and produces phonetically accurate transcript tokens with full tone marks and diacritics.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Specialized Nigerian acoustic models</li>
+            <li>✓ Diacritics and tonal accuracy</li>
+            <li>✓ Sub-second token generation</li>
+          </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--violet-500);">STEP 03</div>
+          <h3 class="step-title">Translate (BridgeeAI)</h3>
+          <p class="step-desc">
+            BridgeeAI routes finalized transcripts through its low-latency translation layer with session-specific domain glossaries.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Multilingual translation engine</li>
+            <li>✓ Technical term and acronym preservation</li>
+            <li>✓ Synchronized sentence delivery</li>
+          </ul>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card">
+          <div class="step-badge" style="color: var(--gold-400);">STEP 04</div>
+          <h3 class="step-title">Deliver & Follow Along</h3>
+          <p class="step-desc">
+            Participants follow along on personal phones, auditorium stage screens, or broadcast overlays with data usage under 2 KB/s.
+          </p>
+          <ul class="step-sublist">
+            <li>✓ Instant QR code joining (no app needed)</li>
+            <li>✓ Live venue projector display mode</li>
+            <li>✓ Mid-session language switching</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. REAL PRODUCT DEMO WITH VISUAL SHOWCASE & INTERACTIVE SIMULATOR -->
+  <section class="section" id="demo">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Real Product Demo</div>
+        <h2 class="section-title">See BridgeeAI × N-ATLAS in action.</h2>
+        <p class="section-lead">
+          Experience live speech recognition and caption fan-out using our pre-configured NAIC Voice-First Access demonstration environment.
+        </p>
+      </div>
+
+      <!-- Visual Image Showcase Card (Exact Homepage Style) -->
+      <div style="border-radius: var(--radius-lg); overflow: hidden; position: relative; border: 1px solid rgba(26, 24, 24, 0.12); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12); margin-bottom: 36px;">
+        <img 
+          src="/assets/venue_led_screen.jpg" 
+          alt="Live speech transcription displayed on large stage LED screen in an auditorium" 
+          style="width: 100%; height: auto; max-height: 440px; object-fit: cover; display: block;"
+        >
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 32px; background: linear-gradient(180deg, transparent 0%, rgba(14, 13, 14, 0.95) 50%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua-400); margin-bottom: 4px;">
+              Live Interactive Demo · Pre-Seeded Room: NAIC-VOICE
+            </div>
+            <div style="font-family: var(--font-serif); font-size: 22px; font-weight: 600; color: #FFFFFF;">
+              Real-Time Nigerian Speech Recognition & Stage Subtitles
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="/host/console/NAIC-VOICE" class="btn-start-free" style="padding: 10px 20px; font-size: 13px; text-decoration: none;">
+              🎙️ Launch Host Console
+            </a>
+            <a href="/live/NAIC-VOICE" class="btn-book-demo" style="padding: 10px 18px; font-size: 13px; color: #FFF; border-color: rgba(255,252,244,0.3); text-decoration: none;">
+              📱 Join as Participant
+            </a>
+            <a href="/venue/NAIC-VOICE" class="btn-book-demo" style="padding: 10px 18px; font-size: 13px; color: #FFF; border-color: rgba(255,252,244,0.3); text-decoration: none;">
+              🖥️ Venue Screen View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Nigerian Language Simulator Box (Exact Homepage Simulator Layout) -->
+      <div class="lang-chips-wrap" id="langChipsContainer" style="justify-content: center; margin-bottom: 24px;">
+        <button class="lang-chip active" onclick="switchNatlasLang('yo-NG', this)">Yorùbá (yo-NG)</button>
+        <button class="lang-chip" onclick="switchNatlasLang('ha-NG', this)">Hausa (ha-NG)</button>
+        <button class="lang-chip" onclick="switchNatlasLang('ig-NG', this)">Asụsụ Igbo (ig-NG)</button>
+        <button class="lang-chip" onclick="switchNatlasLang('en-NG', this)">Nigerian English (en-NG)</button>
+      </div>
+
+      <div class="lang-sim-box" style="max-width: 860px; margin: 0 auto;">
+        <div class="sim-source-sentence" id="simSourceLangLabel">Spoken Source (Yorùbá):</div>
+        <div class="sim-spoken-text" id="simSpokenText">"Ẹ káàbọ̀ sí àpérò àgbáyé lórí ọgbọ́n ẹ̀rọ àti ìbánisọ̀rọ̀."</div>
+        
+        <div class="sim-output-card">
+          <div class="sim-output-label" id="simOutputLabel">Live Translated Caption (English):</div>
+          <div class="sim-output-text" id="simLanguageOutputText">
+            "Welcome everyone to our global conference on artificial intelligence and communication."
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 7. BUILT WITH N-ATLAS. DESIGNED BY BRIDGEEAI (Technical Separation) -->
+  <section class="section section-dark" id="technical-separation">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow" style="color: var(--gold-400);">Technical Foundation</div>
+        <h2 class="section-title">Built with N-ATLAS. Designed by BridgeeAI.</h2>
+        <p class="section-lead">
+          A transparent engineering partnership: N-ATLAS provides the Nigerian language speech recognition capability, while BridgeeAI delivers the real-time application and delivery platform.
+        </p>
+      </div>
+
+      <div class="context-cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+        
+        <!-- N-ATLAS Pillar -->
+        <div class="context-card" style="border-color: rgba(122, 217, 210, 0.4); text-align: left;">
+          <div class="context-card-icon" style="color: var(--aqua-400);">⚡</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--aqua-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Speech AI Engine</div>
+          <h3 class="context-card-title">N-ATLAS (NCAIR)</h3>
+          <p class="context-card-desc">
+            Provides foundational speech-to-text recognition specialized for Nigerian linguistic realities.
+          </p>
+          <ul class="step-sublist" style="margin-top: 16px;">
+            <li>✓ Sovereign African language acoustic models</li>
+            <li>✓ Yorùbá, Hausa, Igbo & Nigerian English ASR</li>
+            <li>✓ Accurate tone mark and diacritic transcription</li>
+            <li>✓ Official NAIC Voice-First Access integration</li>
+          </ul>
+        </div>
+
+        <!-- BridgeeAI Pillar -->
+        <div class="context-card" style="border-color: rgba(213, 174, 104, 0.4); text-align: left;">
+          <div class="context-card-icon" style="color: var(--gold-400);">🌐</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Application Platform</div>
+          <h3 class="context-card-title">BridgeeAI</h3>
+          <p class="context-card-desc">
+            Provides the real-time session architecture, user experience, and low-bandwidth delivery layer.
+          </p>
+          <ul class="step-sublist" style="margin-top: 16px;">
+            <li>✓ 250ms binary PCM audio capture & streaming</li>
+            <li>✓ Multilingual translation orchestration</li>
+            <li>✓ Real-time participant WebSocket fan-out (&lt; 2 KB/s)</li>
+            <li>✓ Mobile viewer, venue display & OBS broadcast overlays</li>
+            <li>✓ Session management, QR codes & observability telemetry</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. ARCHITECTURE VISUAL (Exact Simple Workflow Flow) -->
+  <section class="section" id="architecture">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">End-to-End Pipeline</div>
+        <h2 class="section-title">System Architecture</h2>
+        <p class="section-lead">
+          Clean modular separation ensuring resilient transmission from microphone capture to participant screen.
+        </p>
+      </div>
+
+      <div class="destinations-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        
+        <!-- Stage 1 -->
+        <div class="destination-card">
+          <div class="dest-icon">🎙️</div>
+          <h3 class="dest-title">01. Speaker Audio</h3>
+          <p class="dest-desc">
+            Host microphone captures 16kHz mono audio and streams 250ms PCM chunks over WebSockets.
+          </p>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="destination-card" style="border-color: rgba(122, 217, 210, 0.4);">
+          <div class="dest-icon" style="color: var(--aqua-400);">🇳🇬</div>
+          <h3 class="dest-title">02. N-ATLAS ASR</h3>
+          <p class="dest-desc">
+            Processes Nigerian language voice with tonal diacritics into accurate transcript tokens.
+          </p>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="destination-card">
+          <div class="dest-icon">🌐</div>
+          <h3 class="dest-title">03. BridgeeAI Translation</h3>
+          <p class="dest-desc">
+            Orchestrates low-latency multilingual translation with domain-specific terminology preservation.
+          </p>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="destination-card">
+          <div class="dest-icon">📱</div>
+          <h3 class="dest-title">04. Audience Delivery</h3>
+          <p class="dest-desc">
+            Lightweight caption streams (&lt; 2 KB/s) broadcast to participant phones and venue LED walls.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. USE CASES (Exact Homepage Verticals-Pure Grid) -->
+  <section class="section" id="use-cases">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Real-World Applications</div>
+        <h2 class="section-title">Where BridgeeAI × N-ATLAS Can Be Used</h2>
+        <p class="section-lead">
+          Enabling multilingual communication across professional, academic, and civic gatherings.
+        </p>
+      </div>
+
+      <div class="verticals-pure-grid">
+        
+        <!-- 1. Education & Training -->
+        <a href="/education" class="vertical-pure-card">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(123, 132, 220, 0.12); color: var(--violet-500);">
+              🎓
+            </div>
+            <div class="v-category-tag">Bootcamps & Lectures</div>
+            <h3 class="v-title">Education & Training</h3>
+            <p class="v-desc">
+              Allow instructors to teach in their preferred Nigerian language while students and international trainees follow in English or French.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Education →</div>
+        </a>
+
+        <!-- 2. Conferences & Summits -->
+        <a href="/conferences" class="vertical-pure-card">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(213, 174, 104, 0.15); color: var(--gold-400);">
+              🎙️
+            </div>
+            <div class="v-category-tag">International Summits</div>
+            <h3 class="v-title">Conferences & Summits</h3>
+            <p class="v-desc">
+              Make regional keynote presentations accessible to visiting foreign delegates and partners without hiring expensive interpreter booths.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Conferences →</div>
+        </a>
+
+        <!-- 3. Church & Faith Communities -->
+        <a href="/church" class="vertical-pure-card">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(122, 217, 210, 0.15); color: var(--aqua-400);">
+              🕊️
+            </div>
+            <div class="v-category-tag">Faith & Fellowship</div>
+            <h3 class="v-title">Churches & Community</h3>
+            <p class="v-desc">
+              Provide live sermon captions so attendees of all linguistic backgrounds experience fellowship in complete unity.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Church →</div>
+        </a>
+
+        <!-- 4. Events & Public Forums -->
+        <a href="/events" class="vertical-pure-card">
+          <div>
+            <div class="v-icon-badge" style="background: rgba(215, 121, 139, 0.15); color: var(--rose-400);">
+              🏛️
+            </div>
+            <div class="v-category-tag">Civic & Public Forums</div>
+            <h3 class="v-title">Public Forums & Events</h3>
+            <p class="v-desc">
+              Deliver public briefings, town halls, and hybrid events where every citizen can follow along on their personal phone.
+            </p>
+          </div>
+          <div class="v-arrow-link">Explore Events →</div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. ACCESSIBILITY & LOW BANDWIDTH (Exact Homepage Network Cards Grid) -->
+  <section class="section" id="resilience">
+    <div class="container">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">African Infrastructure</div>
+        <h2 class="section-title">Engineered for real-world networks—from 2G to 5G.</h2>
+        <p class="section-lead">
+          BridgeeAI is built to keep working smoothly on actual mobile devices and cellular connections across Africa:
+        </p>
+      </div>
+
+      <div class="network-cards-grid">
+        
+        <!-- Mobile First -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(89, 184, 137, 0.15); color: var(--success-500);">
+            📲
+          </div>
+          <h3 class="network-title">Mobile-First, No Install</h3>
+          <p class="network-desc">
+            Participants join instantly by scanning a QR code or opening a short link. No app download or account creation required.
+          </p>
+        </div>
+
+        <!-- Low Data -->
+        <div class="network-card" style="border-color: rgba(213, 174, 104, 0.4);">
+          <div class="network-card-icon" style="background: rgba(213, 174, 104, 0.15); color: var(--gold-400);">
+            📶
+          </div>
+          <h3 class="network-title">&lt; 2 KB/s Bandwidth</h3>
+          <p class="network-desc">
+            Captions stream as ultra-lean text packets (~180 bytes) optimized to prevent buffering on congested 2G/3G mobile networks.
+          </p>
+        </div>
+
+        <!-- Reconnection -->
+        <div class="network-card">
+          <div class="network-card-icon" style="background: rgba(123, 132, 220, 0.15); color: var(--violet-500);">
+            🔄
+          </div>
+          <h3 class="network-title">Automatic Reconnection</h3>
+          <p class="network-desc">
+            If a phone drops network during a cellular handover, it automatically reconnects and resumes captions without refreshing.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. REAL-WORLD ORIGIN STORY -->
+  <section class="section section-dark" id="origin">
+    <div class="container container-narrow" style="text-align: center;">
+      <div class="section-eyebrow" style="color: var(--gold-400);">Origin & Purpose</div>
+      <h2 class="section-title" style="margin-bottom: 20px;">Built from a real communication problem.</h2>
+      <p style="font-size: 17px; line-height: 1.7; color: rgba(255, 252, 244, 0.85); margin-bottom: 30px;">
+        BridgeeAI emerged from a multilingual training environment where language interpretation created delays during technical AI training. The product was developed to help speakers and participants communicate more effectively through real-time speech recognition and translated captions.
+      </p>
+      <div style="font-size: 14px; color: rgba(255, 252, 244, 0.6); line-height: 1.6;">
+        Integrating N-ATLAS brings native Nigerian language speech access into this communication layer, delivering speech-to-text accuracy tailored for Nigerian dialects.
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FINAL CALL TO ACTION (Exact Homepage Final CTA Style) -->
+  <section class="final-cta-section" id="cta">
+    <div class="container final-cta-content">
+      <div class="hero-tag" style="background: rgba(255,252,244,0.15); border-color: rgba(255,252,244,0.3); color: var(--bone-50); margin-bottom: 24px;">
+        Ready for Voice-First Access
+      </div>
+      
+      <h2 class="hero-heading" style="color: var(--bone-50); margin-bottom: 20px;">
+        Make every voice easier to understand.
+      </h2>
+      
+      <p class="hero-subtitle" style="color: rgba(255, 252, 244, 0.85); margin-bottom: 38px;">
+        BridgeeAI is building real-time multilingual communication tools for a more connected, accessible Africa.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/host/console/NAIC-VOICE" class="btn-pill btn-pill-primary" id="btnFinalDemo" style="background: var(--violet-500); padding: 14px 32px; text-decoration: none;">
+          Try Live Demo ↗
+        </a>
+        <a href="/session/new" class="btn-pill btn-pill-secondary" id="btnFinalCreate" style="color: var(--bone-50); border-color: rgba(255,252,244,0.35); padding: 14px 30px; text-decoration: none;">
+          Create a Session
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. SITE FOOTER (Exact Homepage Footer) -->
+  <footer class="site-footer">
+    <div class="container">
+      
+      <div class="footer-top-row">
+        <div class="footer-brand-summary">
+          <div class="footer-brand-title">
+            <div class="brand-symbol" style="width: 32px; height: 32px; font-size: 18px;">B</div>
+            <span>BridgeeAI</span>
+          </div>
+          <div class="footer-tagline">
+            BridgeeAI × N-ATLAS: Real-time Nigerian speech access.
+          </div>
+          <p style="font-size: 13px; line-height: 1.5; color: rgba(255,252,244,0.6);">
+            Empowering live conferences, training bootcamps, and civic assemblies with native Nigerian language speech recognition and real-time live captions.
+          </p>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bone-50); margin-bottom: 14px;">
+            Quick Links
+          </div>
+          <div class="footer-quick-links-group">
+            <a href="/" class="footer-quick-link">Homepage</a>
+            <a href="/conferences" class="footer-quick-link">Conferences</a>
+            <a href="/education" class="footer-quick-link">Education</a>
+            <a href="/church" class="footer-quick-link">Church</a>
+            <a href="/events" class="footer-quick-link">Events</a>
+            <a href="/session/new" class="footer-quick-link">New Session</a>
+            <a href="/api/health" class="footer-quick-link">Health API</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>
+          Copyright: © 2026 BridgeeAI Inc. Built for NAIC Voice-First Access with N-ATLAS.
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <a href="/join/NAIC-VOICE" style="color: inherit; text-decoration: none;">Join Demo</a>
+          <a href="/host/console/NAIC-VOICE" style="color: inherit; text-decoration: none;">Host Console</a>
+          <a href="/venue/NAIC-VOICE" style="color: inherit; text-decoration: none;">Venue Screen</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- SIMPLE INTERACTIVE SIMULATOR SCRIPT (Exact Homepage Pattern) -->
+  <script>
+    const natlasDemoSamples = {
+      'yo-NG': {
+        name: 'Yorùbá',
+        spoken: '"Ẹ káàbọ̀ sí àpérò àgbáyé lórí ọgbọ́n ẹ̀rọ àti ìbánisọ̀rọ̀."',
+        translation: '"Welcome everyone to our global conference on artificial intelligence and communication."'
+      },
+      'ha-NG': {
+        name: 'Hausa',
+        spoken: '"Barka da zuwa babban taron kasa da kasa kan fasahar zamani."',
+        translation: '"Welcome to the major international conference on modern technology."'
+      },
+      'ig-NG': {
+        name: 'Asụsụ Igbo',
+        spoken: '"Nnọọ na nnukwu ọgbakọ mba ụwa maka ọganihu teknụzụ."',
+        translation: '"Welcome to the international gathering for technological advancement."'
+      },
+      'en-NG': {
+        name: 'Nigerian English',
+        spoken: '"Welcome everybody to this special innovation summit today."',
+        translation: '"Bienvenue à tous à ce sommet spécial sur l\'innovation aujourd\'hui."'
+      }
+    };
+
+    function switchNatlasLang(code, btn) {
+      document.querySelectorAll('#langChipsContainer .lang-chip').forEach(c => c.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const data = natlasDemoSamples[code];
+      const sourceLabel = document.getElementById('simSourceLangLabel');
+      const spokenText = document.getElementById('simSpokenText');
+      const outputLabel = document.getElementById('simOutputLabel');
+      const outputText = document.getElementById('simLanguageOutputText');
+
+      if (data && spokenText && outputText) {
+        spokenText.style.opacity = '0.3';
+        outputText.style.opacity = '0.3';
+        setTimeout(() => {
+          sourceLabel.textContent = `Spoken Source (${data.name}):`;
+          spokenText.textContent = data.spoken;
+          outputLabel.textContent = code === 'en-NG' ? 'Live Translated Caption (French):' : 'Live Translated Caption (English):';
+          outputText.textContent = data.translation;
+          spokenText.style.opacity = '1';
+          outputText.style.opacity = '1';
+        }, 150);
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -397,6 +397,7 @@
             <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('Sunday Sermon: Walking in Divine Purpose')">"Sunday Sermon"</button>
             <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('CS101: Distributed Systems & Neural Pipelines')">"CS101 Lecture"</button>
             <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('Keynote: The Future of Global Artificial Intelligence')">"Keynote: Future of AI"</button>
+            <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('NAIC Keynote: Voice-First Multilingual Inclusion in Nigeria'); document.getElementById('sourceLangSelect').value='yo-NG'; applyLangBundle('african');">"🇳🇬 NAIC Voice Demo"</button>
             <button type="button" class="quick-preset-btn" onclick="fillTitlePreset('Global Product Launch & Developer Keynote')">"Product Launch"</button>
           </div>
 
@@ -434,18 +435,26 @@
             Choose what language the speaker will talk in, and select which target languages will be available for listeners.
           </div>
 
-          <div style="display: grid; grid-template-columns: 240px 1fr; gap: 16px; margin-bottom: 16px;">
+          <div style="display: grid; grid-template-columns: 280px 1fr; gap: 16px; margin-bottom: 16px;">
             <div>
               <label class="form-label" for="sourceLangSelect">Speaker's Native Language</label>
               <select id="sourceLangSelect" class="form-input" style="background: #1C1B24;">
-                <option value="en-US">English (US / UK / Global)</option>
-                <option value="fr-FR">Français (French)</option>
-                <option value="es-ES">Español (Spanish)</option>
-                <option value="de-DE">Deutsch (German)</option>
-                <option value="pt-BR">Português (Portuguese)</option>
-                <option value="ar-SA">العربية (Arabic)</option>
-                <option value="ja-JP">日本語 (Japanese)</option>
-                <option value="zh-CN">简体中文 (Chinese)</option>
+                <optgroup label="🇳🇬 Nigerian Languages (N-ATLAS ASR)">
+                  <option value="yo-NG">Yorùbá (N-ATLAS Voice AI)</option>
+                  <option value="ha-NG">Hausa (N-ATLAS Voice AI)</option>
+                  <option value="ig-NG">Asụsụ Igbo (N-ATLAS Voice AI)</option>
+                  <option value="en-NG">Nigerian English / Pidgin (N-ATLAS)</option>
+                </optgroup>
+                <optgroup label="Global Languages">
+                  <option value="en-US">English (US / UK / Global)</option>
+                  <option value="fr-FR">Français (French)</option>
+                  <option value="es-ES">Español (Spanish)</option>
+                  <option value="de-DE">Deutsch (German)</option>
+                  <option value="pt-BR">Português (Portuguese)</option>
+                  <option value="ar-SA">العربية (Arabic)</option>
+                  <option value="ja-JP">日本語 (Japanese)</option>
+                  <option value="zh-CN">简体中文 (Chinese)</option>
+                </optgroup>
               </select>
             </div>
             <div>
